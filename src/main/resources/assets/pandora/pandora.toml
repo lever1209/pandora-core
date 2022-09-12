@@ -1,0 +1,80 @@
+# Pandora TOML config
+
+# Settings used by Grondags True Darkness (https://github.com/grondag/darkness)
+# The version bundled with Pandora is modified, and can be obtained from (https://github.com/lever1209/darkness)
+[grondag]
+	
+	# Fog options
+	[grondag.fog]
+		
+		# Enables all custom fog used by Darkness (default: true)
+		enableCustomFog = true
+		
+		# Enables custom fog in the End (default: false)
+		enableEndFog = false
+		
+		# Enables custom fog in the Nether (default: true)
+		enableNetherFog = true
+		
+		# Enables custom fog in the Overworld (default: true)
+		enableOverworldFog = true
+	
+# Settings relating to the looming threat in the darkness
+[grues]
+	
+	# The chances a grue will eat an item on the ground (default: true)
+	gruesCanEatItems = true
+	
+	# Will grues only target players (default: false)
+	gruesOnlyAttackPlayers = false
+	
+	# Can grues attack Animals/Passive Entities (default: false)
+	gruesCanAttackAnimals = false
+	
+	# Can grues attack villagers (default: true)
+	gruesCanAttackVillagers = true
+	
+	# Can grues attack hostile mobs excluding bosses (default: false)
+	gruesCanAttackHostileMobs = false
+	
+	# Can grues attack boss monsters (default: false)
+	gruesCanAttackBossMobs = false
+	
+	# Can grues attack you or any other mob in water (default: false) 
+	# Exploring anything under water becomes almost impossible because water source blocks suck up light
+	# I recommend leaving this at false
+	gruesCanAttackInWater = false
+	
+	# Can hardcore mode effect other mobs (default: false)
+	# Hardcore mode deals 8 damage about every 4 seconds, thats a heart a second regardless of armor type
+	# I recommend leaving this at false unless you are very familliar with this mod, or have a cheat light source
+	hardcoreAffectsOtherMobs = false
+	
+	# The maximum light level a grue needs to attack you (default: 2)
+	# this number is tuned for max gamma, darkness/custom fog enabled
+	grueAttackLightLevelMaximum = 2
+	
+	# Items you can hold to become mostly immune to grues
+	grueWards= []
+	
+# Settings that change the behavior of the darkness, and whatevers in it
+[darkness]
+	
+	# Should villagers fear darkness (default: true)
+	villagersFearDarkness = true
+	
+	# Should Animals/Passive mobs fear darkness (default: false)
+	animalsFearDarkness = false
+	
+	# Should hostile mobs fear darkness (default: false)
+	hostileMobsFearDarkness = false
+	
+# Settings to do with how Pandora will modify in game gamma settings
+[gamma]
+	
+	# Should Pandora lock your gamma to the next value (default: true)
+	# This is recommended to be left at default
+	resetGamma = true
+	
+	# The default gamma value if resetGamma is true, max value is 1.0 (default: 1.0)
+	defaultGammaValue = 1.0

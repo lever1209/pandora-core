@@ -1,0 +1,38 @@
+{
+	"schemaVersion": 1,
+	"id": "pandora",
+	"version": "${version}",
+	"name": "Pandora",
+	"description": "",
+	"authors": [
+		"deepCurse"
+	],
+	"contact": {
+		"homepage": "https://github.com/lever1209/pandora",
+		"sources": "https://github.com/lever1209/pandora"
+	},
+	"license": "BSD-3",
+	"icon": "assets/pandora/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"pkg.deepCurse.pandora.core.Pandora"
+		],
+		"modmenu": [
+			"pkg.deepCurse.pandora.core.integrations.ModMenu"
+		]
+	},
+	"mixins": [
+		"pandora.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.13.3",
+		"fabric": "*",
+		"minecraft": "1.19.x",
+		"java": ">=16"
+	},
+	"suggests": {
+		"modmenu": "*",
+		"lambdynlights":">=2.1.0"
+	}
+}

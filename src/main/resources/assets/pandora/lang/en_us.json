@@ -1,0 +1,76 @@
+{
+	"pandora.config.menu.title":"Pandora Config Menu",
+	
+	"pandora.config.menu.category.grondag":"Grondags Config",
+	"pandora.config.menu.category.grues":"Grues",
+	"pandora.config.menu.category.darkness":"Darkness",
+	"pandora.config.menu.category.gamma":"Gamma",
+	
+	"pandora.config.menu.category.grondag.enable.custom.fog":"Enable Custom Fog",
+	"pandora.config.menu.category.grondag.enable.custom.fog.tooltip":"Enables the fog used in Grondags Darkness",
+	
+	"pandora.config.menu.category.grondag.enable.end.fog":"Enable End Fog",
+	"pandora.config.menu.category.grondag.enable.end.fog.tooltip":"Enables custom fog in the End",
+	
+	"pandora.config.menu.category.grondag.enable.nether.fog":"Enable Nether Fog",
+	"pandora.config.menu.category.grondag.enable.nether.fog.tooltip":"Enables custom fog in the Nether",
+	
+	"pandora.config.menu.category.grondag.enable.overworld.fog":"Enable Overworld Fog",
+	"pandora.config.menu.category.grondag.enable.overworld.fog.tooltip":"Enables custom fog in the Overworld",
+	
+	"pandora.config.menu.category.grues.grues.can.eat.items":"Allow grues to eat items",
+	"pandora.config.menu.category.grues.grues.can.eat.items.tooltip":"If true, grues will sometimes eat items off the ground",
+	
+	"pandora.config.menu.category.grues.grues.only.attack.players":"Grues will only attack players",
+	"pandora.config.menu.category.grues.grues.only.attack.players.tooltip":"If true, grues will only attack players",
+	
+	"pandora.config.menu.category.grues.grues.can.attack.villagers":"Grues can attack villagers",
+	"pandora.config.menu.category.grues.grues.can.attack.villagers.tooltip":"If true, grues will attack villagers",
+	
+	"pandora.config.menu.category.grues.grues.can.attack.animals":"Grues can attack animals",
+	"pandora.config.menu.category.grues.grues.can.attack.animals.tooltip":"If true, grues will attack animals (any entity that extends PassiveEntity)",
+	
+	"pandora.config.menu.category.grues.grues.can.attack.hostile.mobs":"Grues can attack hostile mobs",
+	"pandora.config.menu.category.grues.grues.can.attack.hostile.mobs.tooltip":"If true, grues will attack hostile mobs",
+	
+	"pandora.config.menu.category.grues.grues.can.attack.boss.mobs":"Grues can attack boss mobs",
+	"pandora.config.menu.category.grues.grues.can.attack.boss.mobs.tooltip":"If true, grues will attack boss monsters",
+	
+	"pandora.config.menu.category.grues.grues.can.attack.in.water":"Can grues attack entities submerged in water",
+	"pandora.config.menu.category.grues.grues.can.attack.in.water.tooltip":"I highly recommend leaving this as false",
+	
+	"pandora.config.menu.category.grues.hardcore.affects.other.mobs":"Does hardcore affect other mobs",
+	"pandora.config.menu.category.grues.hardcore.affects.other.mobs.tooltip":"They will instantly die",
+	
+	"pandora.config.menu.category.grues.grue.attack.light.level.maximum":"Grue maximum light level",
+	"pandora.config.menu.category.grues.grue.attack.light.level.maximum.tooltip":"Maximum light level required to be safe from grues",
+	
+	"pandora.config.menu.category.grues.grue.wards":"Grue wards",
+	"pandora.config.menu.category.grues.grue.wards.tooltip":"Items you can hold to become mostly immune to grues",
+	
+	"pandora.config.menu.category.darkness.villagers.fear.darkness":"Should villagers fear darkness",
+	"pandora.config.menu.category.darkness.villagers.fear.darkness.tooltip":"They will run towards the nearest safe lightsource",
+	
+	
+	"pandora.config.menu.category.darkness.animals.fear.darkness":"Should animals fear darkness",
+	"pandora.config.menu.category.darkness.animals.fear.darkness.tooltip":"They will run towards the nearest safe lightsource",
+
+
+	"pandora.config.menu.category.darkness.hostile.mobs.fear.darkness":"Should hostile mobs fear darkness",
+	"pandora.config.menu.category.darkness.hostile.mobs.fear.darkness.tooltip":"They will run towards the nearest safe lightsource",
+	
+	"pandora.config.menu.category.gamma.reset.gamma":"Should gamma be reset to the next value after launch",
+	"pandora.config.menu.category.gamma.reset.gamma.tooltip":"I suggest leaving this set to true",
+	
+	"pandora.config.menu.category.gamma.default.gamma.value":"1.0",
+	"pandora.config.menu.category.gamma.default.gamma.value.tooltip":"This value will override the one in minecraft settings",
+	
+	"death.attack.pandora.darkness": "%1$s was eaten by a grue",
+	"death.attack.pandora.darkness.player": "%1$s was forced into the darkness by %2$s and eaten by a grue",
+	
+	"item.pandora.revenant_flint":"Flint and Soul",
+	
+	"pandora.menu.return": "Return",
+	"pandora.true":"True",
+	"pandora.false":"False"
+}
