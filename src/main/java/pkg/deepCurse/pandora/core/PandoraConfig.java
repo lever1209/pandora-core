@@ -2,6 +2,8 @@ package pkg.deepCurse.pandora.core;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.function.ToIntFunction;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.block.Blocks;
+import net.minecraft.block.BlockState;
 import net.minecraft.util.Identifier;
 
 public class PandoraConfig {
@@ -53,6 +55,8 @@ public class PandoraConfig {
 	public static boolean animalsFearDarkness;
 	public static boolean hostileMobsFearDarkness;
 	public static boolean bossMobsFearDarkness;
+	
+	public static HashMap<Identifier, ToIntFunction<BlockState>> lightLevelBlockPairs = new HashMap<>();
 	
 	// gamma
 	public static boolean resetGamma;

@@ -44,7 +44,7 @@ public class EndServerTickCallback {
 
 		if (entity != null) {
 			if (entity instanceof PlayerEntity
-					|| !PandoraConfig.gruesOnlyAttackPlayers) {
+					|| !PandoraConfig.gruesOnlyAttackPlayers()) {
 				if (PandoraConfig.isDynamicLightingEnabled()) {
 					Iterator<ItemStack> itemStack = entity.getItemsHand()
 							.iterator();
