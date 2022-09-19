@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.function.ToIntFunction;
 
 import org.slf4j.Logger;
@@ -18,6 +17,8 @@ import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Vec3d;
+import pkg.deepCurse.pandora.tools.CalculateFogFunction;
 
 public class PandoraConfig {
 
@@ -37,7 +38,8 @@ public class PandoraConfig {
 			.isModLoaded("lambdynlights");
 	// grondags darkness
 	public static boolean isEnabled;
-	public static List<Identifier> effectiveDimensions;
+	public static HashMap<Identifier, CalculateFogFunction> effectiveDimensions;
+	public static HashMap<Identifier, Float> dimensionFogFactors;
 
 	// grues
 	public static boolean gruesOnlyAttackPlayers() {
@@ -69,6 +71,34 @@ public class PandoraConfig {
 		lightLevelBlockPairs.put(new Identifier("minecraft:torch"), (state) -> 6);
 		lightLevelBlockPairs.put(new Identifier("minecraft:wall_torch"), (state) -> 6);
 
+		// boolean isNearLight = PandoraTools.isNearLight(world,
+		// MinecraftClient.getInstance().player.getBlockPos(), 5);
+		// TODO use to darken fog while not near light
+
+		dimensionFogFactors.put(new Identifier("minecraft:overworld"), 1.0F);
+		dimensionFogFactors.put(new Identifier("minecraft:the_nether"), 0.5F);
+		dimensionFogFactors.put(new Identifier("minecraft:the_end"), 0.0F);
+
+		effectiveDimensions.putIfAbsent(new Identifier("minecraft:overworld"),
+				(effects, color, f, oldValue, world, access, sunHeight, i, j, k) -> {
+					return oldValue;
+				});
+
+		effectiveDimensions.putIfAbsent(new Identifier("minecraft:the_nether"),
+				(effects, color, f, oldValue, world, access, sunHeight, i, j, k) -> {
+					float factor = dimensionFogFactors.getOrDefault(new Identifier("minecraft:the_nether"), 0.5F);
+					return new Vec3d(color.x * factor,
+							color.y * factor,
+							color.z * factor);
+				});
+
+		effectiveDimensions.putIfAbsent(new Identifier("minecraft:the_end"),
+				(effects, color, f, oldValue, world, access, sunHeight, i, j, k) -> {
+					float factor = dimensionFogFactors.getOrDefault(new Identifier("minecraft:the_end"), 0.0F);
+					return new Vec3d(color.x * factor,
+							color.y * factor,
+							color.z * factor);
+				});
 	}
 
 	// gamma
@@ -95,9 +125,10 @@ public class PandoraConfig {
 		config.load();
 
 		isEnabled = config.getOrElse("general.isEnabled", true);
-		effectiveDimensions = config.getOrElse("general.effectiveDimensions",
-				List.of(new Identifier("minecraft:overworld"), new Identifier("minecraft:the_nether"),
-						new Identifier("minecraft:the_end")));
+		// effectiveDimensions = config.getOrElse("general.effectiveDimensions",
+		// List.of(new Identifier("minecraft:overworld"), new
+		// Identifier("minecraft:the_nether"),
+		// new Identifier("minecraft:the_end")));
 
 	}
 
@@ -163,5 +194,18 @@ public class PandoraConfig {
 			return false;
 		}
 	}
+
+	// public static ArrayList<Pair<Identifier, CalculateFogFunction>>
+	// registerDimensionFog() { // example implementation
+	// ArrayList<Pair<Identifier, CalculateFogFunction>> arr = new ArrayList<>();
+
+	// arr.add(Pair.of(new Identifier("modID", "dimensionID"),
+	// (effects, color, f, oldValue, world, access, sunHeight, i, j, k) -> {
+	// return 4F;
+	// }));
+
+	// return arr;
+
+	// }
 
 }
