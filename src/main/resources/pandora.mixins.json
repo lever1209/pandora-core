@@ -4,7 +4,8 @@
 	"package": "pkg.deepCurse.pandora.core.mixins",
 	"compatibilityLevel": "JAVA_16",
 	"mixins": [
-		"shared.accessors.LuminanceOverride"
+		"shared.accessors.LuminanceOverride",
+		"client.BackgroundRendererMixin"
 	],
 	"client": [],
 	"server": [],

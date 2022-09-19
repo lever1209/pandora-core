@@ -34,7 +34,7 @@ public class PandoraConfig {
 
 	// integration
 	public static boolean lambDynLightsIsPresent = FabricLoader.getInstance()
-			.isModLoaded("lambdynlights"); // TODO smarter handling of dynamic torches
+			.isModLoaded("lambdynlights");
 	// grondags darkness
 	public static boolean isEnabled;
 	public static List<Identifier> effectiveDimensions;
@@ -63,6 +63,13 @@ public class PandoraConfig {
 	public static boolean bossMobsFearDarkness;
 
 	public static HashMap<Identifier, ToIntFunction<BlockState>> lightLevelBlockPairs = new HashMap<>();
+
+	static {
+
+		lightLevelBlockPairs.put(new Identifier("minecraft:torch"), (state) -> 6);
+		lightLevelBlockPairs.put(new Identifier("minecraft:wall_torch"), (state) -> 6);
+
+	}
 
 	// gamma
 	public static boolean resetGamma;
@@ -93,7 +100,7 @@ public class PandoraConfig {
 						new Identifier("minecraft:the_end")));
 
 	}
-	
+
 	public static void saveConfigs() {
 
 		config.set("general.isEnabled", isEnabled);
@@ -118,12 +125,8 @@ public class PandoraConfig {
 		config.set("fear.hostileMobsFearDarkness", hostileMobsFearDarkness);
 		config.set("fear.bossMobsFearDarkness", bossMobsFearDarkness);
 
-		// TODO Calculate to int functions
-
 		config.set("gamma.resetGammaOnLaunch", resetGamma);
 		config.set("gamma.resetValue", defaultGammaResetValue);
-
-		// TODO debug config for decay rate etc
 
 		config.set("grue.wards", grueWards);
 		config.set("grue.entityBlacklist", blacklistedEntityType);

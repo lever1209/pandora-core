@@ -145,14 +145,7 @@ public class EndServerTickCallback {
 
 					if (!(entity instanceof LivingEntity)
 							|| !((LivingEntity) entity).getActiveStatusEffects()
-									.containsKey(StatusEffects.NIGHT_VISION)) { // TODO
-																				// remove
-																				// night
-																				// vision
-																				// when
-																				// grues
-																				// are
-																				// entities
+									.containsKey(StatusEffects.NIGHT_VISION)) { // TODO remove night vision when grues are entities
 						if (!entity.isSubmergedInWater()
 								|| PandoraConfig.gruesCanAttackInWater) {
 							if (!PandoraConfig.blacklistedEntityType.contains(

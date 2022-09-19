@@ -18,6 +18,9 @@
 		"main": [
 			"pkg.deepCurse.pandora.core.Pandora"
 		],
+		"preLaunch": [
+			"pkg.deepCurse.pandora.core.Pandora"
+		],
 		"modmenu": [
 			"pkg.deepCurse.pandora.core.integrations.ModMenu"
 		]
