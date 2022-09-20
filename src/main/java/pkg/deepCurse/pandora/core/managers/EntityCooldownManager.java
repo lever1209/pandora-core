@@ -3,9 +3,6 @@ package pkg.deepCurse.pandora.core.managers;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.common.collect.Maps;
 
 import net.minecraft.entity.Entity;
@@ -16,8 +13,6 @@ public class EntityCooldownManager {
 	
 	private final Map<Entity, Entry> entries = Maps.newHashMap();
 	private int tick;
-	
-	Logger log = LoggerFactory.getLogger(EntityCooldownManager.class);
 
 	public boolean isCoolingDown(Entity entity) {
 		return this.getCooldownProgress(entity, 0.0f) > 0.0f;
@@ -34,7 +29,6 @@ public class EntityCooldownManager {
 	}
 
 	public void update() {
-		log.debug("Entries Size: {}", this.entries.size());
 		++this.tick;
 		if (!this.entries.isEmpty()) {
 			Iterator<Map.Entry<Entity, Entry>> iterator = this.entries

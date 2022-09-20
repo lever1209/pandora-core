@@ -14,7 +14,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import pkg.deepCurse.pandora.core.DarknessTools;
+import pkg.deepCurse.pandora.core.PandoraConfig;
 import pkg.deepCurse.pandora.core.TextureAccess;
+import pkg.deepCurse.pandora.core.PandoraConfig.PandoraConfigEnum;
 
 @Mixin(NativeImageBackedTexture.class)
 public class NativeImageBackedTextureMixin implements TextureAccess {
@@ -25,7 +27,7 @@ public class NativeImageBackedTextureMixin implements TextureAccess {
 
 	@Inject(method = "upload", at = @At(value = "HEAD"))
 	private void onUpload(CallbackInfo ci) {
-		if (enableHook && DarknessTools.enabled && image != null) {
+		if (enableHook && PandoraConfig.getBoolean(PandoraConfigEnum.isDarknessEnabled) && image != null) {
 			final NativeImage img = image;
 
 			for (int b = 0; b < 16; b++) {

@@ -16,6 +16,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import pkg.deepCurse.pandora.core.CustomDamageSources;
 import pkg.deepCurse.pandora.core.PandoraConfig;
+import pkg.deepCurse.pandora.core.PandoraConfig.PandoraConfigEnum;
 import pkg.deepCurse.pandora.core.managers.EntityCooldownManager;
 import pkg.deepCurse.pandora.tools.PandoraTools;
 
@@ -78,7 +79,7 @@ public class EndServerTickCallback {
 			}
 		}
 		float resetGrueAttackChance = world.getRandom().nextFloat();
-		if (PandoraConfig.resetGrueAttackChance) {
+		if (PandoraConfig.forceGruesAlwaysAttack) {
 			resetGrueAttackChance = 0.0F;
 		}
 
@@ -93,7 +94,7 @@ public class EndServerTickCallback {
 		} else {
 			boolean skipRaceDiscovery = false;
 			if (entity instanceof HostileEntity) {
-				if (!PandoraConfig.gruesCanAttackHostileMobs) {
+				if (!PandoraConfig.getBoolean(PandoraConfigEnum.gruesCanAttackHostileMobs)) {
 					return;
 				}
 				skipRaceDiscovery = true;
@@ -102,7 +103,7 @@ public class EndServerTickCallback {
 
 			if (!skipRaceDiscovery
 					&& entity instanceof VillagerEntity) {
-				if (!PandoraConfig.gruesCanAttackVillagers) {
+				if (!PandoraConfig.getBoolean(PandoraConfigEnum.gruesAttackVillagers)) {
 					return;
 				}
 				skipRaceDiscovery = true;
@@ -110,7 +111,7 @@ public class EndServerTickCallback {
 
 			if (!skipRaceDiscovery
 					&& entity instanceof AnimalEntity) {
-				if (!PandoraConfig.gruesCanAttackAnimals) {
+				if (!PandoraConfig.getBoolean(PandoraConfigEnum.gruesAttackAnimals)) {
 					return;
 				}
 
@@ -119,7 +120,7 @@ public class EndServerTickCallback {
 
 			if (entity.getType() == EntityType.ITEM) {
 				if (resetGrueAttackChance <= 0.00015D
-						&& PandoraConfig.gruesCanEatItems) {
+						&& PandoraConfig.getBoolean(PandoraConfigEnum.gruesEatItems)) {
 					entity.kill();
 					return;
 				}
@@ -137,14 +138,14 @@ public class EndServerTickCallback {
 				.containsKey(StatusEffects.NIGHT_VISION))
 			return; // TODO remove night vision when grues are entities
 
-		if (entity.isSubmergedInWater() && !PandoraConfig.gruesCanAttackInWater)
+		if (entity.isSubmergedInWater() && !PandoraConfig.getBoolean(PandoraConfigEnum.gruesAttackInWater))
 			return;
 
 		if (PandoraConfig.blacklistedEntityType.contains(Registry.ENTITY_TYPE.getId(entity.getType()).toString()))
 			return;
 
 		if (world.getServer().isHardcore()
-				&& (PandoraConfig.hardcoreAffectsOtherMobs
+				&& (PandoraConfig.getBoolean(PandoraConfigEnum.hardcoreAffectsOtherMobs)
 						|| entity instanceof PlayerEntity))
 			damageAmount = Float.MAX_VALUE;
 

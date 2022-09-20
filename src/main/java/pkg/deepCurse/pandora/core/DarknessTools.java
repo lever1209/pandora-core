@@ -15,6 +15,7 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
+import pkg.deepCurse.pandora.core.PandoraConfig.PandoraConfigEnum;
 
 public class DarknessTools {
 
@@ -64,13 +65,14 @@ public class DarknessTools {
 	}
 
 	private static float skyFactor(World world) {
-		if (!PandoraConfig.blockLightOnly && isDark(world)) {
+		if (!PandoraConfig.getBoolean(PandoraConfigEnum.blockLightOnly) && isDark(world)) {
 			if (world.getDimension().hasSkyLight()) {
 				final float angle = world.getSkyAngle(0);
 
 				if (angle > 0.25f && angle < 0.75f) {
 					final float oldWeight = Math.max(0, (Math.abs(angle - 0.5f) - 0.2f)) * 20;
-					final float moon = PandoraConfig.ignoreMoonPhase ? 0 : world.getMoonSize();
+					final float moon = PandoraConfig.getBoolean(PandoraConfigEnum.ignoreMoonPhase) ? 0
+							: world.getMoonSize();
 					return MathHelper.lerp(oldWeight * oldWeight * oldWeight, moon * moon, 1f);
 				} else {
 					return 1;
@@ -83,7 +85,6 @@ public class DarknessTools {
 		}
 	}
 
-	public static boolean enabled = false;
 	private static final float[][] LUMINANCE = new float[16][16];
 
 	public static int darken(int c, int blockIndex, int skyIndex) {
@@ -112,10 +113,10 @@ public class DarknessTools {
 					|| (client.player.hasStatusEffect(StatusEffects.CONDUIT_POWER)
 							&& client.player.getUnderwaterVisibility() > 0)
 					|| world.getLightningTicksLeft() > 0) {
-				enabled = false;
+				PandoraConfig.setBoolean(PandoraConfigEnum.isDarknessEnabled, false);
 				return;
 			} else {
-				enabled = true;
+				PandoraConfig.setBoolean(PandoraConfigEnum.isDarknessEnabled, true);
 			}
 
 			final float dimSkyFactor = skyFactor(world);

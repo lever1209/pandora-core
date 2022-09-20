@@ -1,5 +1,6 @@
 package pkg.deepCurse.pandora.core;
 
+import java.io.IOException;
 import java.util.Map.Entry;
 
 import org.slf4j.Logger;
@@ -19,7 +20,7 @@ import pkg.deepCurse.pandora.tools.PandoraTools;
 
 public class Pandora implements ModInitializer, PreLaunchEntrypoint {
 
-	Logger log = LoggerFactory.getLogger(Pandora.class);
+	private static Logger log = LoggerFactory.getLogger(Pandora.class);
 
 	@Override
 	public void onPreLaunch() {
@@ -44,6 +45,25 @@ public class Pandora implements ModInitializer, PreLaunchEntrypoint {
 			PandoraTools.overrideLuminance(id, block);
 		});
 
+		log.info("[Pandora] Loading and applying config. . .");
+		if (!PandoraConfig.getConfigFile().exists()) {
+			try {
+				log.info("[Pandora] Config not found, extracting sample config. . .");
+				PandoraConfig.unpackageConfig();
+				log.info("[Pandora] Example config extracted.");
+				PandoraConfig.loadConfig();
+				log.info("[Pandora] Loaded and applied config.");
+			} catch (IOException e) {
+				log.error("[Pandora] Failed to extract example config.");
+				e.printStackTrace();
+				log.error("[Pandora] using internal defaults for now, please look into this issue using the above stack trace.");
+				
+			}
+		} else {
+			PandoraConfig.loadConfig();
+			log.info("[Pandora] Loaded and applied config.");
+		}
+ 
 		log.info("[Pandora] Finished initializing mod.");
 
 	}

@@ -6,6 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.function.ToIntFunction;
 
@@ -22,53 +23,81 @@ import pkg.deepCurse.pandora.tools.CalculateFogFunction;
 
 public class PandoraConfig {
 
-	private static Logger log = LoggerFactory.getLogger(PandoraConfig.class);
-
-	public static File getConfigFile() {
-		return new File(FabricLoader.getInstance().getConfigDir().toFile(),
-				"pandora.toml");
+	public enum PandoraConfigEnum {
+		animalsFearDarkness,
+		blockLightOnly,
+		bossMobsFearDarkness,
+		defaultGammaResetValue,
+		dimensionFogFactors,
+		effectiveDimensions,
+		flameLightSourceDecayRate,
+		gruesAttackAnimals,
+		gruesAttackBossMobs,
+		gruesAttackInWater,
+		gruesAttackPlayers,
+		gruesAttackVillagers,
+		gruesCanAttackHostileMobs,
+		gruesEatItems,
+		hardcoreAffectsOtherMobs,
+		hostileMobsFearDarkness,
+		ignoreMoonPhase,
+		isEnabled,
+		minimumSafeLightLevel,
+		resetGammaOnLaunch,
+		villagersFearDarkness, isDarknessEnabled,
 	}
 
-	public static CommentedFileConfig config = CommentedFileConfig
+	private static Logger log = LoggerFactory.getLogger(PandoraConfig.class);
+	private static CommentedFileConfig config = CommentedFileConfig
 			.builder(getConfigFile()).autosave().preserveInsertionOrder()
 			.defaultResource("/assets/pandora/pandora.toml").build();
-
-	// integration
-	public static boolean lambDynLightsIsPresent = FabricLoader.getInstance()
-			.isModLoaded("lambdynlights");
-	// grondags darkness
-	public static boolean isEnabled;
+	private static EnumMap<PandoraConfigEnum, Object> pandoraConfigMap = new EnumMap<>(PandoraConfigEnum.class);
+	
+	public static ArrayList<String> blacklistedEntityType = new ArrayList<>();
+	public static ArrayList<String> grueWards = new ArrayList<>();
 	public static HashMap<Identifier, CalculateFogFunction> effectiveDimensions = new HashMap<>();
 	public static HashMap<Identifier, Float> dimensionFogFactors = new HashMap<>();
-
-	// grues
-	public static boolean gruesOnlyAttackPlayers() {
-		return !(gruesCanAttackAnimals && gruesCanAttackBossMobs && gruesCanAttackHostileMobs
-				&& gruesCanAttackVillagers) && gruesCanAttackPlayers;
-	}
-
-	public static boolean gruesCanAttackPlayers;
-	public static boolean gruesCanAttackAnimals;
-	public static boolean gruesCanAttackVillagers;
-	public static boolean gruesCanAttackHostileMobs;
-	public static boolean gruesCanAttackBossMobs;
-
-	public static boolean gruesCanEatItems;
-	public static boolean gruesCanAttackInWater;
-	public static boolean hardcoreAffectsOtherMobs;
-
-	public static int grueAttackLightLevelMaximum;
-	// darkness
-	public static boolean villagersFearDarkness;
-	public static boolean animalsFearDarkness;
-	public static boolean hostileMobsFearDarkness;
-	public static boolean bossMobsFearDarkness;
-
 	public static HashMap<Identifier, ToIntFunction<BlockState>> lightLevelBlockPairs = new HashMap<>();
 
+	// debug config
+	public static boolean forceGruesAlwaysAttack = false;
+
+	public static boolean getBoolean(PandoraConfigEnum enu) {
+		return (boolean) pandoraConfigMap.get(enu);
+	}
+
+	public static void setBoolean(PandoraConfigEnum key, boolean b) {
+		pandoraConfigMap.put(key, b);
+	}
+
+	public static String getString(PandoraConfigEnum enu) {
+		return (String) pandoraConfigMap.get(enu);
+	}
+
+	public static void setString(PandoraConfigEnum key, String s) {
+		pandoraConfigMap.put(key, s);
+	}
+
+	public static int getInt(PandoraConfigEnum enu) {
+		return (int) pandoraConfigMap.get(enu);
+	}
+
+	public static void setInt(PandoraConfigEnum key, int i) {
+		pandoraConfigMap.put(key, i);
+	}
+
+	public static float getFloat(PandoraConfigEnum enu) {
+		return (float) pandoraConfigMap.get(enu);
+	}
+
+	public static void setFloat(PandoraConfigEnum key, float f) {
+		pandoraConfigMap.put(key, f);
+	}
+
 	static {
-		
-		grueAttackLightLevelMaximum = 3;
+		// all values here are set for debug purposes only
+
+		pandoraConfigMap.put(PandoraConfigEnum.minimumSafeLightLevel, 3);
 
 		lightLevelBlockPairs.put(new Identifier("minecraft:torch"), (state) -> 6);
 		lightLevelBlockPairs.put(new Identifier("minecraft:wall_torch"), (state) -> 6);
@@ -108,68 +137,21 @@ public class PandoraConfig {
 				});
 	}
 
-	// gamma
-	public static boolean resetGamma = false;
-	public static double defaultGammaResetValue = config
-			.getOrElse("darkness.defaultGammaValue", 1.0);
-	// debug
-	public static float torchDecayRate = 1.0f;
-	public static boolean resetGrueAttackChance;
-
-	public static ArrayList<String> grueWards = new ArrayList<>();
-	public static ArrayList<String> blacklistedEntityType = new ArrayList<>();
-
-	public static boolean ignoreMoonPhase = false;
-
-	public static boolean blockLightOnly = false;
-
-	public static boolean isDynamicLightingEnabled() {
-		return lambDynLightsIsPresent;
+	public static File getConfigFile() {
+		return new File(FabricLoader.getInstance().getConfigDir().toFile(),
+				"pandora.toml");
 	}
 
 	public static void loadConfig() {
-
 		config.load();
 
-		isEnabled = config.getOrElse("general.isEnabled", true);
-		// effectiveDimensions = config.getOrElse("general.effectiveDimensions",
-		// List.of(new Identifier("minecraft:overworld"), new
-		// Identifier("minecraft:the_nether"),
-		// new Identifier("minecraft:the_end")));
+		// enabled = config.getOrElse("general.isEnabled", true);
 
-	}
+		for (PandoraConfigEnum i : PandoraConfigEnum.values()) {
+			// pandoraConfigMap.put(i, config.get(i.name()));
+			log.info("{}", i);
+		}
 
-	public static void saveConfigs() {
-
-		config.set("general.isEnabled", isEnabled);
-		config.set("general.effectiveDimensions", effectiveDimensions);
-		config.set("general.ignoreMoonPhase", ignoreMoonPhase);
-		config.set("general.blockLightOnly", blockLightOnly);
-
-		config.set("grues.canAttackPlayers", gruesCanAttackPlayers);
-		config.set("grues.canAttackAnimals", gruesCanAttackAnimals);
-		config.set("grues.canAttackVillagers", gruesCanAttackVillagers);
-		config.set("grues.canAttackHostileMobs", gruesCanAttackHostileMobs);
-		config.set("grues.canAttackBossMobs", gruesCanAttackBossMobs);
-
-		config.set("grues.canEatItems", gruesCanEatItems);
-		config.set("grues.canGetWet", gruesCanAttackInWater);
-		config.set("grues.hardcoreAffectsOtherMobs", hardcoreAffectsOtherMobs);
-
-		config.set("grues.attackLightLevelMaximum", grueAttackLightLevelMaximum);
-
-		config.set("fear.villagersFearDarkness", villagersFearDarkness);
-		config.set("fear.animalsFearDarkness", animalsFearDarkness);
-		config.set("fear.hostileMobsFearDarkness", hostileMobsFearDarkness);
-		config.set("fear.bossMobsFearDarkness", bossMobsFearDarkness);
-
-		config.set("gamma.resetGammaOnLaunch", resetGamma);
-		config.set("gamma.resetValue", defaultGammaResetValue);
-
-		config.set("grue.wards", grueWards);
-		config.set("grue.entityBlacklist", blacklistedEntityType);
-
-		config.save();
 	}
 
 	public static void newConfig() {
@@ -178,7 +160,6 @@ public class PandoraConfig {
 	}
 
 	public static void unpackageConfig() throws IOException {
-		log.info("upackaging config");
 
 		FileWriter writer = new FileWriter(getConfigFile());
 		BufferedReader reader = new BufferedReader(
@@ -193,30 +174,19 @@ public class PandoraConfig {
 		reader.close();
 	}
 
-	public static boolean deleteConfig() {
-		try {
-			getConfigFile().delete();
-			return true;
-		} catch (Exception e) {
-			return false;
-		}
+	public static void deleteConfig() {
+		getConfigFile().delete();
 	}
 
+	public static boolean gruesOnlyAttackPlayers() {
+		return !(getBoolean(PandoraConfigEnum.gruesAttackAnimals) && getBoolean(PandoraConfigEnum.gruesAttackBossMobs)
+				&& getBoolean(PandoraConfigEnum.hostileMobsFearDarkness)
+				&& getBoolean(PandoraConfigEnum.gruesAttackVillagers))
+				&& getBoolean(PandoraConfigEnum.gruesAttackPlayers);
+	}
+	
 	public static boolean wardsEnabled() {
-		return false;
+		return grueWards.size() > 0;
 	}
-
-	// public static ArrayList<Pair<Identifier, CalculateFogFunction>>
-	// registerDimensionFog() { // example implementation
-	// ArrayList<Pair<Identifier, CalculateFogFunction>> arr = new ArrayList<>();
-
-	// arr.add(Pair.of(new Identifier("modID", "dimensionID"),
-	// (effects, color, f, oldValue, world, access, sunHeight, i, j, k) -> {
-	// return 4F;
-	// }));
-
-	// return arr;
-
-	// }
 
 }
