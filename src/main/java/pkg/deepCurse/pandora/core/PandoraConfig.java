@@ -24,35 +24,65 @@ import pkg.deepCurse.pandora.tools.CalculateFogFunction;
 public class PandoraConfig {
 
 	public enum PandoraConfigEnum {
-		animalsFearDarkness,
-		blockLightOnly,
-		bossMobsFearDarkness,
-		defaultGammaResetValue,
-		dimensionFogFactors,
-		effectiveDimensions,
-		flameLightSourceDecayRate,
-		gruesAttackAnimals,
-		gruesAttackBossMobs,
-		gruesAttackInWater,
-		gruesAttackPlayers,
-		gruesAttackVillagers,
-		gruesCanAttackHostileMobs,
-		gruesEatItems,
-		hardcoreAffectsOtherMobs,
-		hostileMobsFearDarkness,
-		ignoreMoonPhase,
-		isEnabled,
-		minimumSafeLightLevel,
-		resetGammaOnLaunch,
-		villagersFearDarkness, isDarknessEnabled,
+		
+		animalsFearDarkness(false),
+		blockLightOnly(false),
+		bossMobsFearDarkness(false),
+		defaultGammaResetValue(1.0F),
+		// dimensionFogFactors,
+		// effectiveDimensions,
+		flameLightSourceDecayRate(1.0F),
+		gruesAttackAnimals(false),
+		gruesAttackBossMobs(false),
+		gruesAttackInWater(false),
+		gruesAttackPlayers(true),
+		gruesAttackVillagers(true),
+		gruesCanAttackHostileMobs(false),
+		gruesEatItems(true),
+		hardcoreAffectsOtherMobs(false),
+		hostileMobsFearDarkness(false),
+		ignoreMoonPhase(false),
+		isEnabled(true),
+		minimumSafeLightLevel(3),
+		resetGammaOnLaunch(true),
+		villagersFearDarkness(true),
+		isDarknessEnabled(true);
+		
+		private Object defaultValue;
+		
+		// public boolean getBoolean() {
+		// 	return (boolean) defaultValue;
+		// }
+		
+		// public String getString() {
+		// 	return (String) defaultValue;
+		// }
+		
+		// public int getInt() {
+		// 	return (int) defaultValue;
+		// }
+		
+		// public float getFloat() {
+		// 	return (float) defaultValue;
+		// }
+		
+		public Object getObject() {
+			return defaultValue;
+		}
+		
+		PandoraConfigEnum(Object defaultValue) {
+			this.defaultValue = defaultValue;
+		}
+		
 	}
 
 	private static Logger log = LoggerFactory.getLogger(PandoraConfig.class);
-	private static CommentedFileConfig config = CommentedFileConfig
+	private static CommentedFileConfig config = CommentedFileConfig // may change in future, is only used for serialization for now
 			.builder(getConfigFile()).autosave().preserveInsertionOrder()
-			.defaultResource("/assets/pandora/pandora.toml").build();
+			// .defaultResource("/assets/pandora/pandora.toml") // manual override for now
+			.build();
 	private static EnumMap<PandoraConfigEnum, Object> pandoraConfigMap = new EnumMap<>(PandoraConfigEnum.class);
-	
+
 	public static ArrayList<String> blacklistedEntityType = new ArrayList<>();
 	public static ArrayList<String> grueWards = new ArrayList<>();
 	public static HashMap<Identifier, CalculateFogFunction> effectiveDimensions = new HashMap<>();
@@ -95,10 +125,6 @@ public class PandoraConfig {
 	}
 
 	static {
-		// all values here are set for debug purposes only
-
-		pandoraConfigMap.put(PandoraConfigEnum.minimumSafeLightLevel, 3);
-
 		lightLevelBlockPairs.put(new Identifier("minecraft:torch"), (state) -> 6);
 		lightLevelBlockPairs.put(new Identifier("minecraft:wall_torch"), (state) -> 6);
 
@@ -148,16 +174,30 @@ public class PandoraConfig {
 		// enabled = config.getOrElse("general.isEnabled", true);
 
 		for (PandoraConfigEnum i : PandoraConfigEnum.values()) {
-			// pandoraConfigMap.put(i, config.get(i.name()));
-			log.info("{}", i);
+			var result = config.get(i.name());
+			if (result == null)
+				result = i.getObject();
+			pandoraConfigMap.put(i, result);
+			log.info("configEnum {}, value {}", i, result);
 		}
 
 	}
-
-	public static void newConfig() {
-		config = CommentedFileConfig.builder(getConfigFile()).autosave()
-				.preserveInsertionOrder().build();
+	
+	public static void saveConfigs() {
+		// for (PandoraConfigEnum i : PandoraConfigEnum.values()) {
+		// 	var result = config.get(i.name());
+		// 	if (result == null)
+		// 		result = i.getObject();
+		// 	pandoraConfigMap.put(i, result);
+		// 	log.info("configEnum {}, value {}", i, result);
+		// }
+		config.save();
 	}
+
+	// public static void newConfig() {
+	// 	config = CommentedFileConfig.builder(getConfigFile()).autosave()
+	// 			.preserveInsertionOrder().build();
+	// }
 
 	public static void unpackageConfig() throws IOException {
 
@@ -184,7 +224,7 @@ public class PandoraConfig {
 				&& getBoolean(PandoraConfigEnum.gruesAttackVillagers))
 				&& getBoolean(PandoraConfigEnum.gruesAttackPlayers);
 	}
-	
+
 	public static boolean wardsEnabled() {
 		return grueWards.size() > 0;
 	}

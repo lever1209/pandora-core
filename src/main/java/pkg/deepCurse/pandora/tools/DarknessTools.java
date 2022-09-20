@@ -5,7 +5,7 @@
  * This file has been heavily modified by me for integration with Pandora
  */
 
-package pkg.deepCurse.pandora.core;
+package pkg.deepCurse.pandora.tools;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.GameRenderer;
@@ -15,6 +15,7 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
+import pkg.deepCurse.pandora.core.PandoraConfig;
 import pkg.deepCurse.pandora.core.PandoraConfig.PandoraConfigEnum;
 
 public class DarknessTools {

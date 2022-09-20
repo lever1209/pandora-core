@@ -15,8 +15,8 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.util.math.MatrixStack;
-import pkg.deepCurse.pandora.core.DarknessTools;
-import pkg.deepCurse.pandora.core.LightmapAccess;
+import pkg.deepCurse.pandora.core.interfaces.LightmapAccess;
+import pkg.deepCurse.pandora.tools.DarknessTools;
 
 @Mixin(GameRenderer.class)
 public class GameRendererMixin {

@@ -42,16 +42,17 @@ public class PandoraTools {
 		}
 	}
 
-	public static void overrideLuminance(Identifier identifier, Block block) { // TODO rediscover the logic behind this method
-		// if (PandoraConfig.lightLevelBlockPairs.containsKey(identifier)) {
-		// log.info("[Pandora] Changing luminance of {} from {} to {}", identifier,
-		// block.getDefaultState().getLuminance(),
-		// PandoraConfig.lightLevelBlockPairs.get(identifier).applyAsInt(
-		// block.getDefaultState()));
-		for (BlockState state : block.getStateManager().getStates()) {
-			((LuminanceOverride) state)
-					.setLuminance(PandoraConfig.lightLevelBlockPairs.get(identifier).applyAsInt(state));
+	public static void overrideLuminance(Identifier identifier, Block block) { // TODO rediscover the logic behind this
+																				// method
+		if (PandoraConfig.lightLevelBlockPairs.containsKey(identifier)) {
+			// log.info("[Pandora] Changing luminance of {} from {} to {}", identifier,
+			// block.getDefaultState().getLuminance(),
+			// PandoraConfig.lightLevelBlockPairs.get(identifier).applyAsInt(
+			// block.getDefaultState()));
+			for (BlockState state : block.getStateManager().getStates()) {
+				((LuminanceOverride) state)
+						.setLuminance(PandoraConfig.lightLevelBlockPairs.get(identifier).applyAsInt(state));
+			}
 		}
-		// }
 	}
 }

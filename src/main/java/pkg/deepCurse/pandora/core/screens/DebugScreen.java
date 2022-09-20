@@ -36,7 +36,7 @@ public class DebugScreen extends Screen {
 		this.addDrawableChild(new ButtonWidget(0, 10, 79, 10,
 				Text.translatable("pandora.menu.debug.save.config"),
 				(buttonWidget) -> {
-					// PandoraConfig.saveConfigs();
+					PandoraConfig.saveConfigs();
 				}));
 		this.addDrawableChild(new ButtonWidget(0, 20, 59, 10,
 				Text.translatable("pandora.menu.debug.reload.config"),
