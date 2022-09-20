@@ -27,7 +27,7 @@ public class Pandora implements ModInitializer, PreLaunchEntrypoint {
 		MixinExtrasBootstrap.init();
 		log.info("[Pandora] Finished pre launch initializers.");
 	}
-	
+
 	@Override
 	public void onInitialize() {
 

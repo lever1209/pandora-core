@@ -42,9 +42,6 @@ public class EndServerTickCallback {
 	private static void doDarknessDamage(Entity entity, float damageAmount,
 			ServerWorld world) { // TODO optimize a bit more at some point
 
-		if (entity == null)
-			return;
-
 		if (!(entity instanceof PlayerEntity)
 				&& PandoraConfig.gruesOnlyAttackPlayers())
 			return;

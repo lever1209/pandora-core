@@ -27,33 +27,27 @@ public class DarknessTools {
 	// public static double darkNetherFogConfigured;
 	// public static double darkEndFogConfigured;
 
-	public static boolean blockLightOnly;
-	public static boolean ignoreMoonPhase;
-
 	// public static double darkNetherFogEffective;
 	// public static double darkEndFogEffective;
 
 	static {
 
-	// for (DimensionConfigInfoObject i : dimensionMap.values()) {
-	// try {
-	// dimensionMap.put(i.getIdentifier(),
-	// new DimensionConfigInfoObject(i.getId(), i.isEnabled(),
-	// MathHelper.clamp(i.getIntensity(), 0.0, 1.0)));
-	// } catch (final Exception e) {
-	// darkNetherFogConfigured = 0.5;
-	// LOG.warn(
-	// "[Darkness] Invalid configuration value for '{}'. Disabling dimension.
-	// Accepted values: 0.0 - 1.0, current value: {}",
-	// i.getId(), i.getIntensity());
-	// }
-	// }
+		// for (DimensionConfigInfoObject i : dimensionMap.values()) {
+		// try {
+		// dimensionMap.put(i.getIdentifier(),
+		// new DimensionConfigInfoObject(i.getId(), i.isEnabled(),
+		// MathHelper.clamp(i.getIntensity(), 0.0, 1.0)));
+		// } catch (final Exception e) {
+		// darkNetherFogConfigured = 0.5;
+		// LOG.warn(
+		// "[Darkness] Invalid configuration value for '{}'. Disabling dimension.
+		// Accepted values: 0.0 - 1.0, current value: {}",
+		// i.getId(), i.getIntensity());
+		// }
+		// }
 
-	// computeConfigValues();
-	
-	blockLightOnly = false;
-	ignoreMoonPhase = false;
-	
+		// computeConfigValues();
+
 	}
 
 	// private static void computeConfigValues() {
@@ -62,7 +56,7 @@ public class DarknessTools {
 	// }
 
 	// public static boolean blockLightOnly() {
-	// 	return blockLightOnly;
+	// return blockLightOnly;
 	// }
 
 	private static boolean isDark(World world) {
@@ -70,13 +64,13 @@ public class DarknessTools {
 	}
 
 	private static float skyFactor(World world) {
-		if (!blockLightOnly && isDark(world)) {
+		if (!PandoraConfig.blockLightOnly && isDark(world)) {
 			if (world.getDimension().hasSkyLight()) {
 				final float angle = world.getSkyAngle(0);
 
 				if (angle > 0.25f && angle < 0.75f) {
 					final float oldWeight = Math.max(0, (Math.abs(angle - 0.5f) - 0.2f)) * 20;
-					final float moon = ignoreMoonPhase ? 0 : world.getMoonSize();
+					final float moon = PandoraConfig.ignoreMoonPhase ? 0 : world.getMoonSize();
 					return MathHelper.lerp(oldWeight * oldWeight * oldWeight, moon * moon, 1f);
 				} else {
 					return 1;
@@ -100,13 +94,14 @@ public class DarknessTools {
 		final float l = luminance(r, g, b);
 		final float f = l > 0 ? Math.min(1, lTarget / l) : 0;
 
-		return f == 1f ? c : 0xFF000000 | Math.round(f * r * 255) | (Math.round(f * g * 255) << 8) | (Math.round(f * b * 255) << 16);
+		return f == 1f ? c
+				: 0xFF000000 | Math.round(f * r * 255) | (Math.round(f * g * 255) << 8)
+						| (Math.round(f * b * 255) << 16);
 	}
 
 	public static float luminance(float r, float g, float b) {
 		return r * 0.2126f + g * 0.7152f + b * 0.0722f;
 	}
-
 
 	public static void updateLuminance(float tickDelta, MinecraftClient client,
 			GameRenderer worldRenderer, float prevFlicker) {
@@ -114,7 +109,8 @@ public class DarknessTools {
 
 		if (world != null) {
 			if (!isDark(world) || client.player.hasStatusEffect(StatusEffects.NIGHT_VISION)
-					|| (client.player.hasStatusEffect(StatusEffects.CONDUIT_POWER) && client.player.getUnderwaterVisibility() > 0)
+					|| (client.player.hasStatusEffect(StatusEffects.CONDUIT_POWER)
+							&& client.player.getUnderwaterVisibility() > 0)
 					|| world.getLightningTicksLeft() > 0) {
 				enabled = false;
 				return;

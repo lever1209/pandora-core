@@ -67,6 +67,8 @@ public class PandoraConfig {
 	public static HashMap<Identifier, ToIntFunction<BlockState>> lightLevelBlockPairs = new HashMap<>();
 
 	static {
+		
+		grueAttackLightLevelMaximum = 3;
 
 		lightLevelBlockPairs.put(new Identifier("minecraft:torch"), (state) -> 6);
 		lightLevelBlockPairs.put(new Identifier("minecraft:wall_torch"), (state) -> 6);
@@ -107,19 +109,19 @@ public class PandoraConfig {
 	}
 
 	// gamma
-	public static boolean resetGamma;
+	public static boolean resetGamma = false;
 	public static double defaultGammaResetValue = config
 			.getOrElse("darkness.defaultGammaValue", 1.0);
 	// debug
-	public static float torchDecayRate;
+	public static float torchDecayRate = 1.0f;
 	public static boolean resetGrueAttackChance;
 
-	public static ArrayList<String> grueWards;
-	public static ArrayList<String> blacklistedEntityType;
+	public static ArrayList<String> grueWards = new ArrayList<>();
+	public static ArrayList<String> blacklistedEntityType = new ArrayList<>();
 
-	public static boolean ignoreMoonPhase;
+	public static boolean ignoreMoonPhase = false;
 
-	public static boolean blockLightOnly;
+	public static boolean blockLightOnly = false;
 
 	public static boolean isDynamicLightingEnabled() {
 		return lambDynLightsIsPresent;
@@ -198,6 +200,10 @@ public class PandoraConfig {
 		} catch (Exception e) {
 			return false;
 		}
+	}
+
+	public static boolean wardsEnabled() {
+		return false;
 	}
 
 	// public static ArrayList<Pair<Identifier, CalculateFogFunction>>
