@@ -38,8 +38,8 @@ public class PandoraConfig {
 			.isModLoaded("lambdynlights");
 	// grondags darkness
 	public static boolean isEnabled;
-	public static HashMap<Identifier, CalculateFogFunction> effectiveDimensions;
-	public static HashMap<Identifier, Float> dimensionFogFactors;
+	public static HashMap<Identifier, CalculateFogFunction> effectiveDimensions = new HashMap<>();
+	public static HashMap<Identifier, Float> dimensionFogFactors = new HashMap<>();
 
 	// grues
 	public static boolean gruesOnlyAttackPlayers() {
@@ -79,25 +79,30 @@ public class PandoraConfig {
 		dimensionFogFactors.put(new Identifier("minecraft:the_nether"), 0.5F);
 		dimensionFogFactors.put(new Identifier("minecraft:the_end"), 0.0F);
 
+		double MIN = 0.029999999329447746D; // minimum brightness in grondags darkness
+
 		effectiveDimensions.putIfAbsent(new Identifier("minecraft:overworld"),
 				(effects, color, f, oldValue, world, access, sunHeight, i, j, k) -> {
-					return oldValue;
+					float factor = dimensionFogFactors.getOrDefault(new Identifier("minecraft:overworld"), 1.0F);
+					return new Vec3d(Math.max(MIN, oldValue.x * factor),
+							Math.max(MIN, oldValue.y * factor),
+							Math.max(MIN, oldValue.z * factor));
 				});
 
 		effectiveDimensions.putIfAbsent(new Identifier("minecraft:the_nether"),
 				(effects, color, f, oldValue, world, access, sunHeight, i, j, k) -> {
 					float factor = dimensionFogFactors.getOrDefault(new Identifier("minecraft:the_nether"), 0.5F);
-					return new Vec3d(color.x * factor,
-							color.y * factor,
-							color.z * factor);
+					return new Vec3d(Math.max(MIN, oldValue.x * factor),
+							Math.max(MIN, oldValue.y * factor),
+							Math.max(MIN, oldValue.z * factor));
 				});
 
 		effectiveDimensions.putIfAbsent(new Identifier("minecraft:the_end"),
 				(effects, color, f, oldValue, world, access, sunHeight, i, j, k) -> {
 					float factor = dimensionFogFactors.getOrDefault(new Identifier("minecraft:the_end"), 0.0F);
-					return new Vec3d(color.x * factor,
-							color.y * factor,
-							color.z * factor);
+					return new Vec3d(Math.max(MIN, oldValue.x * factor),
+							Math.max(MIN, oldValue.y * factor),
+							Math.max(MIN, oldValue.z * factor));
 				});
 	}
 
