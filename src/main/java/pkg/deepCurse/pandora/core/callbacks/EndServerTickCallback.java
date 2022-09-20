@@ -40,131 +40,118 @@ public class EndServerTickCallback {
 	}
 
 	private static void doDarknessDamage(Entity entity, float damageAmount,
-			ServerWorld world) { // FATAL OPTOMIZE ME ASAP
+			ServerWorld world) { // TODO optimize a bit more at some point
 
-		if (entity != null) {
-			if (entity instanceof PlayerEntity
-					|| !PandoraConfig.gruesOnlyAttackPlayers()) {
-				if (PandoraConfig.isDynamicLightingEnabled()) {
-					Iterator<ItemStack> itemStack = entity.getItemsHand()
-							.iterator();
-					while (itemStack.hasNext()) {
-						if (PandoraConfig.grueWards.contains(
-								Registry.ITEM.getId(itemStack.next().getItem())
-										.toString())) {
-							return;
-						}
-					}
-				}
+		if (entity == null)
+			return;
 
-				float trueDamageAmount = damageAmount;
-				if (damageAmount <= 0.0F) {
-					switch (world.getDifficulty()) {
-						case HARD:
-							trueDamageAmount = 8.0F;
-							break;
-						case NORMAL:
-							trueDamageAmount = 4.0F;
-							break;
-						case EASY:
-							trueDamageAmount = 2.0F;
-							break;
-						case PEACEFUL:
-							trueDamageAmount = 1.0F;
-					}
-				}
+		if (!(entity instanceof PlayerEntity)
+				&& PandoraConfig.gruesOnlyAttackPlayers())
+			return;
 
-				float resetGrueAttackChance = world.getRandom().nextFloat();
-				if (PandoraConfig.resetGrueAttackChance) {
-					resetGrueAttackChance = 0.0F;
-				}
-
-				BlockPos entityLocation = entity.getBlockPos();
-				if (!world.getBlockState(entityLocation).isAir()) {
-					entityLocation = entityLocation.up();
-				}
-
-				if (!PandoraTools.isNearLight(world, entityLocation)) {
-					boolean isItem = false;
-					if (!(entity instanceof PlayerEntity)) {
-						boolean skipRaceDiscovery = false;
-						if (!skipRaceDiscovery
-								&& entity instanceof HostileEntity) {
-							if (!PandoraConfig.gruesCanAttackHostileMobs) {
-								return;
-							}
-
-							skipRaceDiscovery = true;
-							trueDamageAmount /= 2.0F;
-						}
-
-						if (!skipRaceDiscovery
-								&& entity instanceof VillagerEntity) {
-							if (!PandoraConfig.gruesCanAttackVillagers) {
-								return;
-							}
-
-							skipRaceDiscovery = true;
-						}
-
-						if (!skipRaceDiscovery
-								&& entity instanceof AnimalEntity) {
-							if (!PandoraConfig.gruesCanAttackAnimals) {
-								return;
-							}
-
-							skipRaceDiscovery = true;
-						}
-
-						if (entity.getType() == EntityType.ITEM) {
-							isItem = true;
-						}
-
-						if (!(entity instanceof LivingEntity) && !isItem) {
-							return;
-						}
-
-						if (isItem) {
-							if ((double) resetGrueAttackChance <= 0.00015D
-									&& PandoraConfig.gruesCanEatItems) {
-								entity.kill();
-								return;
-							}
-
-							return;
-						}
-
-						if ((double) resetGrueAttackChance > 0.045D) {
-							return;
-						}
-					} else if (entity instanceof PlayerEntity) {
-						if (((PlayerEntity) entity).isCreative()) {
-							return;
-						}
-					}
-
-					if (!(entity instanceof LivingEntity)
-							|| !((LivingEntity) entity).getActiveStatusEffects()
-									.containsKey(StatusEffects.NIGHT_VISION)) { // TODO remove night vision when grues are entities
-						if (!entity.isSubmergedInWater()
-								|| PandoraConfig.gruesCanAttackInWater) {
-							if (!PandoraConfig.blacklistedEntityType.contains(
-									Registry.ENTITY_TYPE.getId(entity.getType())
-											.toString())) {
-								if (world.getServer().isHardcore()
-										&& (PandoraConfig.hardcoreAffectsOtherMobs
-												|| entity instanceof PlayerEntity)) {
-									entity.damage(CustomDamageSources.GRUE,
-											Float.MAX_VALUE);
-								} else {
-									entity.damage(CustomDamageSources.GRUE,
-											trueDamageAmount);
-								}
-							}
-						}
-					}
+		if (PandoraConfig.wardsEnabled()) {
+			Iterator<ItemStack> itemStack = entity.getItemsHand().iterator();
+			while (itemStack.hasNext()) {
+				if (PandoraConfig.grueWards.contains(
+						Registry.ITEM.getId(itemStack.next().getItem())
+								.toString())) {
+					return;
 				}
 			}
+		} // if wards are enabled, and the player is holding a registered ward, return
+			// TODO add "low" chance to allow grue to attack anyway
+
+		BlockPos entityLocation = entity.getBlockPos();
+		if (PandoraTools.isNearLight(world, entityLocation))
+			return;
+
+		if (damageAmount <= 0.0F) {
+			switch (world.getDifficulty()) {
+				case HARD:
+					damageAmount = 8.0F;
+					break;
+				case NORMAL:
+					damageAmount = 4.0F;
+					break;
+				case EASY:
+					damageAmount = 2.0F;
+					break;
+				case PEACEFUL:
+					damageAmount = 1.0F;
+			}
 		}
+		float resetGrueAttackChance = world.getRandom().nextFloat();
+		if (PandoraConfig.resetGrueAttackChance) {
+			resetGrueAttackChance = 0.0F;
+		}
+
+		if (!world.getBlockState(entityLocation).isAir()) {
+			entityLocation = entityLocation.up();
+		} // patch for soul sand
+
+		if (entity instanceof PlayerEntity) {
+			if (((PlayerEntity) entity).isCreative()) {
+				return;
+			}
+		} else {
+			boolean skipRaceDiscovery = false;
+			if (entity instanceof HostileEntity) {
+				if (!PandoraConfig.gruesCanAttackHostileMobs) {
+					return;
+				}
+				skipRaceDiscovery = true;
+				damageAmount /= 2.0F;
+			}
+
+			if (!skipRaceDiscovery
+					&& entity instanceof VillagerEntity) {
+				if (!PandoraConfig.gruesCanAttackVillagers) {
+					return;
+				}
+				skipRaceDiscovery = true;
+			}
+
+			if (!skipRaceDiscovery
+					&& entity instanceof AnimalEntity) {
+				if (!PandoraConfig.gruesCanAttackAnimals) {
+					return;
+				}
+
+				skipRaceDiscovery = true;
+			}
+
+			if (entity.getType() == EntityType.ITEM) {
+				if (resetGrueAttackChance <= 0.00015D
+						&& PandoraConfig.gruesCanEatItems) {
+					entity.kill();
+					return;
+				}
+				return;
+			} else if (!(entity instanceof LivingEntity)) {
+				return;
+			}
+
+			if (resetGrueAttackChance > 0.045D) { // if not player, and chance is greater than 0.045, return
+				return;
+			}
+		}
+
+		if (((LivingEntity) entity).getActiveStatusEffects()
+				.containsKey(StatusEffects.NIGHT_VISION))
+			return; // TODO remove night vision when grues are entities
+
+		if (entity.isSubmergedInWater() && !PandoraConfig.gruesCanAttackInWater)
+			return;
+
+		if (PandoraConfig.blacklistedEntityType.contains(Registry.ENTITY_TYPE.getId(entity.getType()).toString()))
+			return;
+
+		if (world.getServer().isHardcore()
+				&& (PandoraConfig.hardcoreAffectsOtherMobs
+						|| entity instanceof PlayerEntity))
+			damageAmount = Float.MAX_VALUE;
+
+		entity.damage(CustomDamageSources.GRUE,
+				damageAmount);
 	}
 }
