@@ -1,5 +1,8 @@
 package pkg.deepCurse.pandora.core.screens;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.gui.screen.Screen;
@@ -20,7 +23,7 @@ public class DebugScreen extends Screen {
 
 	public static double factor;
 	private Screen parent;
-	// Logger log = LoggerFactory.getLogger(DebugScreen.class);
+	Logger log = LoggerFactory.getLogger(DebugScreen.class);
 
 	public DebugScreen(Screen parent) {
 		super(Text.translatable("pandora.menu.debug.title"));
@@ -57,11 +60,12 @@ public class DebugScreen extends Screen {
 						e.printStackTrace();
 					}
 				}));
-		// this.addDrawableChild(new ButtonWidget(101, 80, 20, 10,
-		// 		Text.translatable("print fog factor"),
-		// 		(buttonWidget) -> {
-		// 			log.info("fog factor: {}", factor);
-		// 		}));
+		this.addDrawableChild(new ButtonWidget(101, 100, 20, 10,
+				Text.translatable("print modified block lights"),
+				(buttonWidget) -> {
+					log.info("{}\n{}", PandoraConfig.lightLevelBlockPairs.entrySet(),
+							PandoraConfig.lightLevelBlockPairs.values());
+				}));
 		this.addDrawableChild(new SliderWidget(0, 80, 100, 20, Text.literal("fog factor: " + factor), 1.0D) {
 
 			@Override
@@ -106,7 +110,8 @@ public class DebugScreen extends Screen {
 		RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
 		RenderSystem.setShaderTexture(0,
 				new Identifier("minecraft",
-						PandoraConfig.getBoolean(PandoraConfigEnum.isEnabled) ? "textures/block/obsidian.png" : "textures/block/stone.png"));
+						PandoraConfig.getBoolean(PandoraConfigEnum.isEnabled) ? "textures/block/obsidian.png"
+								: "textures/block/stone.png"));
 		RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
 		bufferBuilder.begin(DrawMode.QUADS,
 				VertexFormats.POSITION_TEXTURE_COLOR);

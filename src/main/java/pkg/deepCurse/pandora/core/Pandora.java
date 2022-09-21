@@ -13,6 +13,7 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.registry.RegistryEntryAddedCallback;
 import net.fabricmc.loader.api.entrypoint.PreLaunchEntrypoint;
 import net.minecraft.block.Block;
+import net.minecraft.entity.EntityType;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import pkg.deepCurse.pandora.core.callbacks.EndServerTickCallback;
@@ -57,7 +58,6 @@ public class Pandora implements ModInitializer, PreLaunchEntrypoint {
 				log.error("[Pandora] Failed to extract example config.");
 				e.printStackTrace();
 				log.error("[Pandora] using internal defaults for now, please look into this issue using the above stack trace.");
-				
 			}
 		} else {
 			PandoraConfig.loadConfig();

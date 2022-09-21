@@ -4,7 +4,8 @@
 	"package": "pkg.deepCurse.pandora.core.mixins",
 	"compatibilityLevel": "JAVA_16",
 	"mixins": [
-		"shared.accessors.LuminanceOverride"
+		"shared.accessors.LuminanceOverride",
+		"shared.MobEntityMixin"
 	],
 	"client": [
 		"client.BackgroundRendererMixin",
@@ -12,7 +13,9 @@
 		"client.LightmapTextureManagerMixin",
 		"client.NativeImageBackedTextureMixin"
 	],
-	"server": [],
+	"server": [
+		
+	],
 	"injectors": {
 		"defaultRequire": 1
 	}

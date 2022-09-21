@@ -1,7 +1,11 @@
 package pkg.deepCurse.pandora.tools;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.LightType;
@@ -12,7 +16,7 @@ import pkg.deepCurse.pandora.core.mixins.shared.accessors.LuminanceOverride;
 
 public class PandoraTools {
 
-	// private static Logger log = LoggerFactory.getLogger(PandoraTools.class);
+	private static Logger log = LoggerFactory.getLogger(PandoraTools.class);
 
 	public static boolean isNearLight(World world, BlockPos pos) {
 		return isNearLight(world, pos, PandoraConfig.getInt(PandoraConfigEnum.minimumSafeLightLevel));
@@ -42,8 +46,7 @@ public class PandoraTools {
 		}
 	}
 
-	public static void overrideLuminance(Identifier identifier, Block block) { // TODO rediscover the logic behind this
-																				// method
+	public static void overrideLuminance(Identifier identifier, Block block) {
 		if (PandoraConfig.lightLevelBlockPairs.containsKey(identifier)) {
 			// log.info("[Pandora] Changing luminance of {} from {} to {}", identifier,
 			// block.getDefaultState().getLuminance(),
@@ -54,5 +57,9 @@ public class PandoraTools {
 						.setLuminance(PandoraConfig.lightLevelBlockPairs.get(identifier).applyAsInt(state));
 			}
 		}
+	}
+	
+	public static boolean shouldFearDarkness(MobEntity self) {
+		return true; // TODO fix
 	}
 }
