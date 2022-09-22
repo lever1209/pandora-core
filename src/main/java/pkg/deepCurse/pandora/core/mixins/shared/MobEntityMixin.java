@@ -20,6 +20,7 @@ import pkg.deepCurse.pandora.tools.PandoraTools;
 @Mixin(MobEntity.class) // TODO change to PathAwareEntity?
 public class MobEntityMixin {
 
+	@SuppressWarnings("unused")
 	private static Logger log = LoggerFactory.getLogger(MobEntityMixin.class);
 
 	@Shadow
@@ -37,7 +38,9 @@ public class MobEntityMixin {
 		}
 	}
 
-	// @Inject(method = "getPathfindingPenalty(Lnet/minecraft/entity/ai/pathing/PathNodeType;)F", at = @At(value = "RETURN")) FIXME bug where entities spin in place after moving one block
+	// This method was supposed to prevent entities from walking into the darkness unless absolutely necissary
+	// FIXME bug where entities spin in place after moving one block
+	// @Inject(method = "getPathfindingPenalty(Lnet/minecraft/entity/ai/pathing/PathNodeType;)F", at = @At(value = "RETURN"))
 	// private float getPathFindingPenaltyOverride(PathNodeType nodeType, CallbackInfoReturnable<Float> cir) {
 		
 	// 	if (PandoraTools.isNearLight(((Entity) (Object) this).world, positionTarget)) {

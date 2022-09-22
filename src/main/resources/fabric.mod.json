@@ -22,7 +22,7 @@
 			"pkg.deepCurse.pandora.core.Pandora"
 		],
 		"modmenu": [
-			"pkg.deepCurse.pandora.core.integrations.ModMenu"
+			"pkg.deepCurse.pandora.core.integrations.ModMenuIntegration"
 		]
 	},
 	"mixins": [

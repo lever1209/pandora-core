@@ -5,6 +5,8 @@
 
 package pkg.deepCurse.pandora.core.mixins.client;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -20,6 +22,10 @@ import pkg.deepCurse.pandora.core.interfaces.TextureAccess;
 
 @Mixin(LightmapTextureManager.class)
 public class LightmapTextureManagerMixin implements LightmapAccess {
+	
+	@SuppressWarnings("unused")
+	private static Logger log = LoggerFactory.getLogger(LightmapTextureManagerMixin.class);
+	
 	@Shadow
 	private NativeImageBackedTexture texture;
 	@Shadow

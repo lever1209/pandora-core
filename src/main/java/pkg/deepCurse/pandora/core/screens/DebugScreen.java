@@ -23,7 +23,9 @@ public class DebugScreen extends Screen {
 
 	public static double factor;
 	private Screen parent;
-	Logger log = LoggerFactory.getLogger(DebugScreen.class);
+	
+	@SuppressWarnings("unused")
+	private static Logger log = LoggerFactory.getLogger(DebugScreen.class);
 
 	public DebugScreen(Screen parent) {
 		super(Text.translatable("pandora.menu.debug.title"));

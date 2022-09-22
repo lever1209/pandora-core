@@ -16,6 +16,7 @@ import pkg.deepCurse.pandora.core.mixins.shared.accessors.LuminanceOverride;
 
 public class PandoraTools {
 
+	@SuppressWarnings("unused")
 	private static Logger log = LoggerFactory.getLogger(PandoraTools.class);
 
 	public static boolean isNearLight(World world, BlockPos pos) {

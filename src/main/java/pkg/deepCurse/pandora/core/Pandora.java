@@ -13,7 +13,6 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.registry.RegistryEntryAddedCallback;
 import net.fabricmc.loader.api.entrypoint.PreLaunchEntrypoint;
 import net.minecraft.block.Block;
-import net.minecraft.entity.EntityType;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import pkg.deepCurse.pandora.core.callbacks.EndServerTickCallback;
@@ -23,6 +22,22 @@ public class Pandora implements ModInitializer, PreLaunchEntrypoint {
 
 	private static Logger log = LoggerFactory.getLogger(Pandora.class);
 
+	// TODO hip lantern
+	
+	// TODO light enchantment
+	
+	// TODO torches burn out and can only be relit twice, after that they turn to ash
+	
+	// TODO refil lanterns with phantom membrane, and have 3x slower burn rate
+	
+	// TODO glowstone paste of some kind to augment equipment with light, vanishes on repair and grindstone
+	
+	/* TODO "tutorial" message
+	 * first time player gets "Its pitch black, you are likely to be eaten by a grue."
+	 * then cooldown, and 50% every time you enter darkness, until you get it, then cooldown
+	 * then chance reduces to 15%, until message has appeared 10 times, then disable message
+	 */
+	
 	@Override
 	public void onPreLaunch() {
 		log.info("[Pandora] Running pre launch initializers. . .");

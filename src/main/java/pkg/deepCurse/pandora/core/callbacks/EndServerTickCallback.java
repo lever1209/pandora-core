@@ -2,6 +2,9 @@ package pkg.deepCurse.pandora.core.callbacks;
 
 import java.util.Iterator;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -21,6 +24,9 @@ import pkg.deepCurse.pandora.core.managers.EntityCooldownManager;
 import pkg.deepCurse.pandora.tools.PandoraTools;
 
 public class EndServerTickCallback {
+	
+	@SuppressWarnings("unused")
+	private static Logger log = LoggerFactory.getLogger(EndServerTickCallback.class);
 
 	private static EntityCooldownManager cooldownManager = new EntityCooldownManager();
 

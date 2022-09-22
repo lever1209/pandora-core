@@ -1,13 +1,19 @@
 package pkg.deepCurse.pandora.core.integrations;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;
 
 import net.minecraft.client.gui.screen.Screen;
 import pkg.deepCurse.pandora.core.screens.DebugScreen;
 
-public class ModMenu implements ModMenuApi {
+public class ModMenuIntegration implements ModMenuApi {
 
+	@SuppressWarnings("unused")
+	private static Logger log = LoggerFactory.getLogger(ModMenuIntegration.class);
+	
 	@Override
 	public ConfigScreenFactory<?> getModConfigScreenFactory() {
 		return screen -> createNewConfigScreen(screen);

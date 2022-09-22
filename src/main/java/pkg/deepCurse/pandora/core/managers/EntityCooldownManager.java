@@ -3,6 +3,9 @@ package pkg.deepCurse.pandora.core.managers;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.common.collect.Maps;
 
 import net.minecraft.entity.Entity;
@@ -10,6 +13,9 @@ import net.minecraft.util.math.MathHelper;
 
 // stolen from mojang with <3
 public class EntityCooldownManager {
+	
+	@SuppressWarnings("unused")
+	private static Logger log = LoggerFactory.getLogger(EntityCooldownManager.class);
 	
 	private final Map<Entity, Entry> entries = Maps.newHashMap();
 	private int tick;

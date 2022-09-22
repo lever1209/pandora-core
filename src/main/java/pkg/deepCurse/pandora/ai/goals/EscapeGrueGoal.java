@@ -3,6 +3,8 @@ package pkg.deepCurse.pandora.ai.goals;
 import java.util.EnumSet;
 
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.mob.HostileEntity;
@@ -21,6 +23,9 @@ import pkg.deepCurse.pandora.tools.PandoraTools;
  * recovered from old pandora, 2021/10/21
  */
 public class EscapeGrueGoal extends Goal /* MoveToTargetPosGoal? */ {
+	
+	@SuppressWarnings("unused")
+	private static Logger log = LoggerFactory.getLogger(EscapeGrueGoal.class);
 	
 	protected final MobEntity mob;
 
