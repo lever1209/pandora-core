@@ -1,4 +1,4 @@
-package pkg.deepCurse.pandora.tools;
+package pkg.deepCurse.pandora.core.util.tools;
 
 import net.minecraft.client.render.DimensionEffects;
 import net.minecraft.client.world.ClientWorld;

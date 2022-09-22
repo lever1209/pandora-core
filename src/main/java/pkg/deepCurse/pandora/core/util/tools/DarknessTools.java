@@ -5,7 +5,7 @@
  * This file has been heavily modified by me for integration with Pandora
  */
 
-package pkg.deepCurse.pandora.tools;
+package pkg.deepCurse.pandora.core.util.tools;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.GameRenderer;

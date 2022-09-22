@@ -17,8 +17,8 @@ import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import pkg.deepCurse.pandora.core.PandoraConfig;
 import pkg.deepCurse.pandora.core.PandoraConfig.PandoraConfigEnum;
-import pkg.deepCurse.pandora.core.interfaces.TextureAccess;
-import pkg.deepCurse.pandora.tools.DarknessTools;
+import pkg.deepCurse.pandora.core.util.interfaces.TextureAccess;
+import pkg.deepCurse.pandora.core.util.tools.DarknessTools;
 
 @Mixin(NativeImageBackedTexture.class)
 public class NativeImageBackedTextureMixin implements TextureAccess {

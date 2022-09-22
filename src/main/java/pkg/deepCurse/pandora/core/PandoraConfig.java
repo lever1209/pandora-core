@@ -19,7 +19,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
-import pkg.deepCurse.pandora.tools.CalculateFogFunction;
+import pkg.deepCurse.pandora.core.util.tools.CalculateFogFunction;
 
 public class PandoraConfig {
 

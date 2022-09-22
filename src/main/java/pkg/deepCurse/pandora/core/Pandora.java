@@ -15,8 +15,8 @@ import net.fabricmc.loader.api.entrypoint.PreLaunchEntrypoint;
 import net.minecraft.block.Block;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
-import pkg.deepCurse.pandora.core.callbacks.EndServerTickCallback;
-import pkg.deepCurse.pandora.tools.PandoraTools;
+import pkg.deepCurse.pandora.core.util.callbacks.EndServerTickCallback;
+import pkg.deepCurse.pandora.core.util.tools.PandoraTools;
 
 public class Pandora implements ModInitializer, PreLaunchEntrypoint {
 

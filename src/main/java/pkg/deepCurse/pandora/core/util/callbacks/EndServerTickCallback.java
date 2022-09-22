@@ -1,4 +1,4 @@
-package pkg.deepCurse.pandora.core.callbacks;
+package pkg.deepCurse.pandora.core.util.callbacks;
 
 import java.util.Iterator;
 
@@ -20,8 +20,8 @@ import net.minecraft.util.registry.Registry;
 import pkg.deepCurse.pandora.core.CustomDamageSources;
 import pkg.deepCurse.pandora.core.PandoraConfig;
 import pkg.deepCurse.pandora.core.PandoraConfig.PandoraConfigEnum;
-import pkg.deepCurse.pandora.core.managers.EntityCooldownManager;
-import pkg.deepCurse.pandora.tools.PandoraTools;
+import pkg.deepCurse.pandora.core.util.managers.EntityCooldownManager;
+import pkg.deepCurse.pandora.core.util.tools.PandoraTools;
 
 public class EndServerTickCallback {
 	

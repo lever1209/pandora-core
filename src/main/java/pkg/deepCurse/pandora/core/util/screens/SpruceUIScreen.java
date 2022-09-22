@@ -1,4 +1,4 @@
-package pkg.deepCurse.pandora.core.screens;
+package pkg.deepCurse.pandora.core.util.screens;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

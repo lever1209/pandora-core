@@ -12,10 +12,10 @@ import net.minecraft.entity.ai.goal.GoalSelector;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.util.math.BlockPos;
-import pkg.deepCurse.pandora.ai.goals.EscapeGrueGoal;
 import pkg.deepCurse.pandora.core.PandoraConfig;
 import pkg.deepCurse.pandora.core.PandoraConfig.PandoraConfigEnum;
-import pkg.deepCurse.pandora.tools.PandoraTools;
+import pkg.deepCurse.pandora.core.util.ai.goals.EscapeGrueGoal;
+import pkg.deepCurse.pandora.core.util.tools.PandoraTools;
 
 @Mixin(MobEntity.class) // TODO change to PathAwareEntity?
 public class MobEntityMixin {
