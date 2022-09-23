@@ -128,10 +128,6 @@ public class PandoraConfig {
 		lightLevelBlockPairs.put(new Identifier("minecraft:torch"), (state) -> 6);
 		lightLevelBlockPairs.put(new Identifier("minecraft:wall_torch"), (state) -> 6);
 
-		// boolean isNearLight = PandoraTools.isNearLight(world,
-		// MinecraftClient.getInstance().player.getBlockPos(), 5);
-		// TODO use to darken fog while not near light
-
 		dimensionFogFactors.put(new Identifier("minecraft:overworld"), 1.0F);
 		dimensionFogFactors.put(new Identifier("minecraft:the_nether"), 0.5F);
 		dimensionFogFactors.put(new Identifier("minecraft:the_end"), 0.0F);

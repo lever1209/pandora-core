@@ -26,6 +26,10 @@ public class BackgroundRendererMixin {
 			ClientWorld world, BiomeAccess access,
 			float sunHeight, int i, int j, int k) {
 
+		// boolean isNearLight = PandoraTools.isNearLight(world,
+		// MinecraftClient.getInstance().player.getBlockPos(), 5);
+		// TODO use to darken fog while not near light
+				
 		return PandoraConfig.effectiveDimensions.getOrDefault(world.getDimensionKey().getValue(), (e, c, f2, o, w, a, s, i2, j2, k2) -> o).calculate(effects, color, f, operation.call(effects, color, f), world, access, sunHeight, i, j, k);
 	}
 }
