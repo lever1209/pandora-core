@@ -1,22 +1,19 @@
 package pkg.deepCurse.pandora.core;
 
-import java.io.IOException;
-import java.util.Map.Entry;
+import java.util.Map.*;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.slf4j.*;
 
-import com.llamalad7.mixinextras.MixinExtrasBootstrap;
+import com.llamalad7.mixinextras.*;
 
-import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
-import net.fabricmc.fabric.api.event.registry.RegistryEntryAddedCallback;
-import net.fabricmc.loader.api.entrypoint.PreLaunchEntrypoint;
-import net.minecraft.block.Block;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
-import pkg.deepCurse.pandora.core.util.callbacks.EndServerTickCallback;
-import pkg.deepCurse.pandora.core.util.tools.PandoraTools;
+import net.fabricmc.api.*;
+import net.fabricmc.fabric.api.event.lifecycle.v1.*;
+import net.fabricmc.fabric.api.event.registry.*;
+import net.fabricmc.loader.api.entrypoint.*;
+import net.minecraft.block.*;
+import net.minecraft.util.registry.*;
+import pkg.deepCurse.pandora.core.util.callbacks.*;
+import pkg.deepCurse.pandora.core.util.tools.*;
 
 public class Pandora implements ModInitializer, PreLaunchEntrypoint {
 
@@ -37,7 +34,13 @@ public class Pandora implements ModInitializer, PreLaunchEntrypoint {
 	 * then cooldown, and 50% every time you enter darkness, until you get it, then cooldown
 	 * then chance reduces to 15%, until message has appeared 10 times, then disable message
 	 */
+	
+	 // TODO setup gamerules for select config options
 
+	 // TODO fade light level
+	 
+	 // TODO fix readme, that last line is kinda cringe
+	 
 	@Override
 	public void onPreLaunch() {
 		log.info("[Pandora] Running pre launch initializers. . .");
@@ -54,22 +57,9 @@ public class Pandora implements ModInitializer, PreLaunchEntrypoint {
 
 		PandoraRegistry.init();
 
+		PandoraConfig.deleteConfig(); // FIXME remove before producton compile
 		log.info("[Pandora] Loading and applying config. . .");
-		if (!PandoraConfig.getConfigFile().exists()) {
-			try {
-				log.info("[Pandora] Config not found, extracting sample config. . .");
-				PandoraConfig.unpackageConfig();
-				log.info("[Pandora] Example config extracted.");
-				PandoraConfig.loadConfig();
-			} catch (IOException e) {
-				log.error("[Pandora] Failed to extract example config.");
-				e.printStackTrace();
-				log.error(
-						"[Pandora] using internal defaults for now, please look into this issue using the above stack trace.");
-			}
-		} else {
-			PandoraConfig.loadConfig();
-		}
+		PandoraConfig.loadConfig();
 		log.info("[Pandora] Loaded and applied config.");
 
 		log.info("[Pandora] Finished initializing mod.");

@@ -33,9 +33,6 @@ dependencies {
 		exclude(group: "net.fabricmc.fabric-api")
 	}
 	
-	include modApi("com.electronwill.night-config:core:${project.night_core}")
-	include modApi("com.electronwill.night-config:toml:${project.night_toml}")
-	
 	include modApi("me.shedaniel.cloth:cloth-config-fabric:${cloth_config_version}") { // one or the other, most likely spruce
 		exclude(group: "net.fabricmc.fabric-api")
 	}
@@ -44,8 +41,8 @@ dependencies {
 	include modApi("com.github.LlamaLad7:MixinExtras:0.1.0-rc5")
 	annotationProcessor "com.github.LlamaLad7:MixinExtras:0.1.0-rc5"
 	
-	
-	
+	implementation 'me.nullicorn:Nedit:2.2.0' // temporary unless proven useful
+	implementation("org.snakeyaml:snakeyaml-engine:${snakeyaml_engine_version}")
 }
 
 processResources {

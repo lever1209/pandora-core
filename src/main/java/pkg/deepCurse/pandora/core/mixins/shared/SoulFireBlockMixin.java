@@ -7,13 +7,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SoulFireBlock;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.WorldView;
 
 @Mixin(SoulFireBlock.class)
 public class SoulFireBlockMixin {
 
-	@Inject(method = "isSoulBase", at = @At(value = "RETURN"), cancellable = true)
-	private static void isSoulBaseOverride(BlockState state, CallbackInfoReturnable<Boolean> cir) {
-		cir.setReturnValue(true);
+	@Inject(method = "canPlaceAt", at = @At(value = "RETURN"), cancellable = true)
+	private void canPlaceAtOverride(BlockState state, WorldView world, BlockPos pos, CallbackInfoReturnable<Boolean> cir) {
 	}
 
 }

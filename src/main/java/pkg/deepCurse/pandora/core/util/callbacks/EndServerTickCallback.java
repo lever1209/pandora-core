@@ -1,30 +1,23 @@
 package pkg.deepCurse.pandora.core.util.callbacks;
 
-import java.util.Iterator;
+import java.util.*;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.slf4j.*;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.entity.mob.HostileEntity;
-import net.minecraft.entity.passive.AnimalEntity;
-import net.minecraft.entity.passive.VillagerEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
-import pkg.deepCurse.pandora.core.CustomDamageSources;
-import pkg.deepCurse.pandora.core.PandoraConfig;
-import pkg.deepCurse.pandora.core.PandoraConfig.PandoraConfigEnum;
-import pkg.deepCurse.pandora.core.util.managers.EntityCooldownManager;
-import pkg.deepCurse.pandora.core.util.tools.PandoraTools;
+import net.minecraft.entity.*;
+import net.minecraft.entity.effect.*;
+import net.minecraft.entity.player.*;
+import net.minecraft.item.*;
+import net.minecraft.server.world.*;
+import net.minecraft.util.*;
+import net.minecraft.util.math.*;
+import net.minecraft.util.registry.*;
+import pkg.deepCurse.pandora.core.*;
+import pkg.deepCurse.pandora.core.util.managers.*;
+import pkg.deepCurse.pandora.core.util.tools.*;
 
 public class EndServerTickCallback {
-	
+
 	@SuppressWarnings("unused")
 	private static Logger log = LoggerFactory.getLogger(EndServerTickCallback.class);
 
@@ -48,22 +41,33 @@ public class EndServerTickCallback {
 
 	private static void doDarknessDamage(Entity entity, float damageAmount,
 			ServerWorld world) { // TODO optimize a bit more at some point
+				// FIXME re test all values here because i heavily messed with some variables and changed logic
 
-		if (!(entity instanceof PlayerEntity)
-				&& PandoraConfig.gruesOnlyAttackPlayers())
+		if (!(entity instanceof LivingEntity)) {
 			return;
+		}
 
-		if (PandoraConfig.wardsEnabled()) {
-			Iterator<ItemStack> itemStack = entity.getItemsHand().iterator();
+		Double wardPotency = 0D;
+		float nonPlayerAttackChance = world.getRandom().nextFloat();
+
+		if (PandoraConfig.ENABLE_GRUE_WARDS) {
+			Iterator<ItemStack> itemStack = entity.getItemsEquipped().iterator();
+
 			while (itemStack.hasNext()) {
-				if (PandoraConfig.grueWards.contains(
-						Registry.ITEM.getId(itemStack.next().getItem())
-								.toString())) {
-					return;
+				for (Pair<ArrayList<Identifier>, Double> i : PandoraConfig.GRUE_WARDS) {
+					for (Identifier j : i.getLeft()) {
+						if (itemStack.next().getRegistryEntry().matchesId(j)) {
+							wardPotency = i.getRight();
+						}
+					}
 				}
 			}
-		} // if wards are enabled, and the player is holding a registered ward, return
-			// TODO add "low" chance to allow grue to attack anyway
+		}
+
+		if (PandoraConfig.FORCE_GRUES_ALWAYS_ATTACK) {
+			nonPlayerAttackChance = 1;
+			wardPotency = 0D;
+		}
 
 		BlockPos entityLocation = entity.getBlockPos();
 		if (PandoraTools.isNearLight(world, entityLocation))
@@ -84,10 +88,6 @@ public class EndServerTickCallback {
 					damageAmount = 1.0F;
 			}
 		}
-		float resetGrueAttackChance = world.getRandom().nextFloat();
-		if (PandoraConfig.forceGruesAlwaysAttack) {
-			resetGrueAttackChance = 0.0F;
-		}
 
 		if (!world.getBlockState(entityLocation).isAir()) {
 			entityLocation = entityLocation.up();
@@ -98,64 +98,53 @@ public class EndServerTickCallback {
 				return;
 			}
 		} else {
-			boolean skipRaceDiscovery = false;
-			if (entity instanceof HostileEntity) {
-				if (!PandoraConfig.getBoolean(PandoraConfigEnum.gruesCanAttackHostileMobs)) {
-					return;
-				}
-				skipRaceDiscovery = true;
+			if (PandoraConfig.ANIMALS.contains(Registry.ENTITY_TYPE.getId(entity.getType())) && !PandoraConfig.GRUES_ATTACK_HOSTILE_MOBS) {
 				damageAmount /= 2.0F;
+				return;
 			}
 
-			if (!skipRaceDiscovery
-					&& entity instanceof VillagerEntity) {
-				if (!PandoraConfig.getBoolean(PandoraConfigEnum.gruesAttackVillagers)) {
-					return;
-				}
-				skipRaceDiscovery = true;
+			if (PandoraConfig.ANIMALS.contains(Registry.ENTITY_TYPE.getId(entity.getType())) && !PandoraConfig.GRUES_ATTACK_VILLAGERS) {
+				return;
 			}
 
-			if (!skipRaceDiscovery
-					&& entity instanceof AnimalEntity) {
-				if (!PandoraConfig.getBoolean(PandoraConfigEnum.gruesAttackAnimals)) {
-					return;
-				}
-
-				skipRaceDiscovery = true;
+			if (PandoraConfig.ANIMALS.contains(Registry.ENTITY_TYPE.getId(entity.getType())) && !PandoraConfig.GRUES_ATTACK_ANIMALS) {
+				return;
 			}
 
 			if (entity.getType() == EntityType.ITEM) {
-				if (resetGrueAttackChance <= 0.00015D
-						&& PandoraConfig.getBoolean(PandoraConfigEnum.gruesEatItems)) {
+				if (nonPlayerAttackChance <= 0.003D // 0.3% chance
+						&& PandoraConfig.GRUES_EAT_ITEMS) {
 					entity.kill();
 					return;
 				}
 				return;
-			} else if (!(entity instanceof LivingEntity)) {
-				return;
 			}
 
-			if (resetGrueAttackChance > 0.045D) { // if not player, and chance is greater than 0.045, return
+			if (nonPlayerAttackChance < 0.90D) { // 90% chance
 				return;
 			}
 		}
 
 		if (((LivingEntity) entity).getActiveStatusEffects()
 				.containsKey(StatusEffects.NIGHT_VISION))
-			return; // TODO remove night vision when grues are entities
-
-		if (entity.isSubmergedInWater() && !PandoraConfig.getBoolean(PandoraConfigEnum.gruesAttackInWater))
 			return;
 
-		if (PandoraConfig.blacklistedEntityType.contains(Registry.ENTITY_TYPE.getId(entity.getType()).toString()))
+		if (entity.isSubmergedInWater() && !PandoraConfig.GRUES_ATTACK_IN_WATER)
+			return;
+
+		if (!PandoraConfig.moblistContains(Registry.ENTITY_TYPE.getId(entity.getType())))
 			return;
 
 		if (world.getServer().isHardcore()
-				&& (PandoraConfig.getBoolean(PandoraConfigEnum.hardcoreAffectsOtherMobs)
-						|| entity instanceof PlayerEntity))
+				&& (PandoraConfig.HARDCORE_AFFECTS_OTHER_MOBS
+						|| entity instanceof PlayerEntity)) {
 			damageAmount = Float.MAX_VALUE;
 
-		entity.damage(CustomDamageSources.GRUE,
-				damageAmount);
+		}
+
+		if (wardPotency == 0 || (world.random.nextFloat() > wardPotency)) {
+			entity.damage(CustomDamageSources.GRUE,
+					damageAmount);
+		}
 	}
 }

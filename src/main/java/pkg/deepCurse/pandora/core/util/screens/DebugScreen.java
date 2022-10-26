@@ -1,29 +1,23 @@
 package pkg.deepCurse.pandora.core.util.screens;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.slf4j.*;
 
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.systems.*;
 
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.SliderWidget;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormat.DrawMode;
-import net.minecraft.client.render.VertexFormats;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import pkg.deepCurse.pandora.core.PandoraConfig;
-import pkg.deepCurse.pandora.core.PandoraConfig.PandoraConfigEnum;
+import net.minecraft.client.gui.screen.*;
+import net.minecraft.client.gui.widget.*;
+import net.minecraft.client.render.*;
+import net.minecraft.client.render.VertexFormat.*;
+import net.minecraft.client.util.math.*;
+import net.minecraft.text.*;
+import net.minecraft.util.*;
+import pkg.deepCurse.pandora.core.*;
 
 public class DebugScreen extends Screen {
 
 	public static double factor;
 	private Screen parent;
-	
+
 	@SuppressWarnings("unused")
 	private static Logger log = LoggerFactory.getLogger(DebugScreen.class);
 
@@ -46,8 +40,18 @@ public class DebugScreen extends Screen {
 		this.addDrawableChild(new ButtonWidget(0, 20, 59, 10,
 				Text.translatable("pandora.menu.debug.reload.config"),
 				(buttonWidget) -> {
-					PandoraConfig.loadConfig();
+					try {
+						PandoraConfig.loadConfig();
+					} catch (RuntimeException e) {
+						e.printStackTrace();
+					}
 				}));
+
+		// this.addDrawableChild(new ButtonWidget(60, 20, 59, 10,
+		// 		Text.translatable("pandora.menu.debug.new.config"),
+		// 		(buttonWidget) -> {
+		// 			PandoraConfig.newConfig(); 
+		// 		})); LEGACY unset method
 		this.addDrawableChild(new ButtonWidget(0, 30, 69, 10,
 				Text.translatable("pandora.menu.debug.delete.config"),
 				(buttonWidget) -> {
@@ -65,8 +69,8 @@ public class DebugScreen extends Screen {
 		this.addDrawableChild(new ButtonWidget(101, 100, 20, 10,
 				Text.translatable("print modified block lights"),
 				(buttonWidget) -> {
-					log.info("{}\n{}", PandoraConfig.lightLevelBlockPairs.entrySet(),
-							PandoraConfig.lightLevelBlockPairs.values());
+					log.info("{}\n{}", PandoraConfig.BLOCK_LIGHT_LEVEL_FUNCTIONS.entrySet(),
+							PandoraConfig.BLOCK_LIGHT_LEVEL_FUNCTIONS.values());
 				}));
 		this.addDrawableChild(new SliderWidget(0, 80, 100, 20, Text.literal("fog factor: " + factor), 1.0D) {
 
@@ -111,9 +115,7 @@ public class DebugScreen extends Screen {
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
 		RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
 		RenderSystem.setShaderTexture(0,
-				new Identifier("minecraft",
-						PandoraConfig.getBoolean(PandoraConfigEnum.isEnabled) ? "textures/block/obsidian.png"
-								: "textures/block/stone.png"));
+				new Identifier("minecraft", "textures/block/deepslate.png"));
 		RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
 		bufferBuilder.begin(DrawMode.QUADS,
 				VertexFormats.POSITION_TEXTURE_COLOR);

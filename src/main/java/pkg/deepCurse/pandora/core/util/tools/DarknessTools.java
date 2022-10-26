@@ -7,16 +7,14 @@
 
 package pkg.deepCurse.pandora.core.util.tools;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.render.LightmapTextureManager;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
-import pkg.deepCurse.pandora.core.PandoraConfig;
-import pkg.deepCurse.pandora.core.PandoraConfig.PandoraConfigEnum;
+import net.minecraft.client.*;
+import net.minecraft.client.render.*;
+import net.minecraft.client.world.*;
+import net.minecraft.entity.effect.*;
+import net.minecraft.util.math.*;
+import net.minecraft.world.*;
+import net.minecraft.world.dimension.*;
+import pkg.deepCurse.pandora.core.*;
 
 public class DarknessTools {
 
@@ -62,17 +60,17 @@ public class DarknessTools {
 	// }
 
 	private static boolean isDark(World world) {
-		return PandoraConfig.effectiveDimensions.containsKey(world.getRegistryKey().getValue());
+		return PandoraConfig.DIMENSION_SETTINGS.containsKey(world.getRegistryKey().getValue());
 	}
 
 	private static float skyFactor(World world) {
-		if (!PandoraConfig.getBoolean(PandoraConfigEnum.blockLightOnly) && isDark(world)) {
+		if (!PandoraConfig.IGNORE_SKY_LIGHT && isDark(world)) {
 			if (world.getDimension().hasSkyLight()) {
 				final float angle = world.getSkyAngle(0);
 
 				if (angle > 0.25f && angle < 0.75f) {
 					final float oldWeight = Math.max(0, (Math.abs(angle - 0.5f) - 0.2f)) * 20;
-					final float moon = PandoraConfig.getBoolean(PandoraConfigEnum.ignoreMoonPhase) ? 0
+					final float moon = PandoraConfig.IGNORE_MOON_PHASE ? 0
 							: world.getMoonSize();
 					return MathHelper.lerp(oldWeight * oldWeight * oldWeight, moon * moon, 1f);
 				} else {
@@ -114,10 +112,10 @@ public class DarknessTools {
 					|| (client.player.hasStatusEffect(StatusEffects.CONDUIT_POWER)
 							&& client.player.getUnderwaterVisibility() > 0)
 					|| world.getLightningTicksLeft() > 0) {
-				PandoraConfig.setBoolean(PandoraConfigEnum.isDarknessEnabled, false);
+				PandoraConfig.ENABLE_CUSTOM_FOG = false;
 				return;
 			} else {
-				PandoraConfig.setBoolean(PandoraConfigEnum.isDarknessEnabled, true);
+				PandoraConfig.ENABLE_CUSTOM_FOG = true;
 			}
 
 			final float dimSkyFactor = skyFactor(world);
