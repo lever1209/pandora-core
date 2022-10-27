@@ -16,7 +16,7 @@ import pkg.deepCurse.pandora.core.util.callbacks.*;
 import pkg.deepCurse.pandora.core.util.tools.*;
 
 public class Pandora implements ModInitializer, PreLaunchEntrypoint {
-
+	
 	private static Logger log = LoggerFactory.getLogger(Pandora.class);
 
 	// TODO hip lantern
@@ -41,6 +41,8 @@ public class Pandora implements ModInitializer, PreLaunchEntrypoint {
 	 
 	 // TODO fix readme, that last line is kinda cringe
 	 
+	 // TODO add button on worlds menu to recalculate all blocks lighting, potentially dangerous with non vanilla, so throw up a warning, this "solves" the lighting artifacts when changing lighting values without needing too much cpu power in game, should only be used when editing these values or when converting world to pandora
+	 
 	@Override
 	public void onPreLaunch() {
 		log.info("[Pandora] Running pre launch initializers. . .");
@@ -53,8 +55,6 @@ public class Pandora implements ModInitializer, PreLaunchEntrypoint {
 
 		log.info("[Pandora] Initializing mod. . .");
 
-		registerHooks();
-
 		PandoraRegistry.init();
 
 		PandoraConfig.deleteConfig(); // FIXME remove before producton compile
@@ -62,11 +62,13 @@ public class Pandora implements ModInitializer, PreLaunchEntrypoint {
 		PandoraConfig.loadConfig();
 		log.info("[Pandora] Loaded and applied config.");
 
+		registerHooks();
+		
 		log.info("[Pandora] Finished initializing mod.");
 
 	}
 
-	private void registerHooks() {
+	public static void registerHooks() {
 		ServerTickEvents.END_WORLD_TICK.register((world) -> {
 			EndServerTickCallback.run(world);
 		});
@@ -77,5 +79,5 @@ public class Pandora implements ModInitializer, PreLaunchEntrypoint {
 			PandoraTools.overrideLuminance(id, block);
 		});
 	}
-
+	
 }

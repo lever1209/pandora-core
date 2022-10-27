@@ -46,6 +46,15 @@ public class DebugScreen extends Screen {
 						e.printStackTrace();
 					}
 				}));
+		this.addDrawableChild(new ButtonWidget(60, 20, 59, 10,
+				Text.translatable("pandora.menu.debug.register.hooks"),
+				(buttonWidget) -> {
+					try {
+						Pandora.registerHooks();
+					} catch (RuntimeException e) {
+						e.printStackTrace();
+					}
+				}));
 
 		// this.addDrawableChild(new ButtonWidget(60, 20, 59, 10,
 		// 		Text.translatable("pandora.menu.debug.new.config"),

@@ -41,8 +41,8 @@ dependencies {
 	include modApi("com.github.LlamaLad7:MixinExtras:0.1.0-rc5")
 	annotationProcessor "com.github.LlamaLad7:MixinExtras:0.1.0-rc5"
 	
-	implementation 'me.nullicorn:Nedit:2.2.0' // temporary unless proven useful
-	implementation("org.snakeyaml:snakeyaml-engine:${snakeyaml_engine_version}")
+	// implementation 'me.nullicorn:Nedit:2.2.0' // temporary unless proven useful
+	include modApi("org.snakeyaml:snakeyaml-engine:${snakeyaml_engine_version}")
 }
 
 processResources {

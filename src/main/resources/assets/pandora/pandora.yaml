@@ -42,9 +42,12 @@ general:
     - id: "minecraft:torch"
     # light level, from 0 to 15
       light level: 7
-
-    - id: "minecraft:sea_pickle"
-      state: ""
+    
+    - state:
+        name: "minecraft:sea_pickle"
+        properties:
+          pickles: 4
+          waterlogged: true
       light level: 7
   
   dimension settings:
@@ -66,11 +69,11 @@ general:
     # calculated as: if (random number between 0 and 1 > ward potency) do damage
     # items is an array of ids, Example: ["minecraft:torch", "minecraft:glowstone"]
     # supports armor as well
-    - potency: 0.5
+    - potency: 0.4
       items: ["minecraft:glowstone_dust"]
       
     - potency: 0.8
-      items: ["minecraft:torch"]
+      items: ["minecraft:torch", "minecraft:glowstone"]
   
   mob group settings:
     # Example: ["minecraft:sheep", "minecraft:cow"]

@@ -1,26 +1,21 @@
 package pkg.deepCurse.pandora.core.items;
 
-import java.io.*;
 import java.util.*;
 
 import org.slf4j.*;
 
 import com.mojang.brigadier.exceptions.*;
 
-import me.nullicorn.nedit.*;
 import net.minecraft.block.*;
-import net.minecraft.block.AbstractBlock.*;
 import net.minecraft.entity.player.*;
 import net.minecraft.item.*;
 import net.minecraft.nbt.*;
 import net.minecraft.network.message.*;
 import net.minecraft.server.network.*;
-import net.minecraft.state.*;
 import net.minecraft.state.property.*;
 import net.minecraft.text.*;
 import net.minecraft.util.*;
 import net.minecraft.util.math.*;
-import net.minecraft.util.registry.*;
 import net.minecraft.world.*;
 import pkg.deepCurse.pandora.core.util.exceptions.*;
 
@@ -74,6 +69,13 @@ public class PandoraDebugStickItem extends Item {
 		} catch (CommandSyntaxException e) {
 			throw new PandoraConfigParseException("Failed to parse config.", e);
 		}
+		Collection<Property<?>> props = state.getProperties();
+		log.info("props:\n{}", props);
+		
+		for (Property<?> prop : props) {
+			log.info("{}",prop.getName());
+		}
+		
 		
 		return true;
 	}

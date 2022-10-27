@@ -9,7 +9,10 @@ import org.snakeyaml.engine.v2.api.*;
 
 import net.fabricmc.loader.api.*;
 import net.minecraft.block.*;
+import net.minecraft.nbt.*;
+import net.minecraft.state.property.*;
 import net.minecraft.util.*;
+import net.minecraft.util.registry.*;
 import pkg.deepCurse.pandora.core.util.exceptions.*;
 import pkg.deepCurse.pandora.core.util.tools.*;
 
@@ -69,6 +72,8 @@ public class PandoraConfig {
 	private static LoadSettings settings = LoadSettings.builder().setLabel("Config Reader Settings").build();
 
 	public static void loadConfig() { // TODO test every cast
+
+		log.info("start");
 
 		GRUE_WARDS.clear();
 
@@ -178,11 +183,56 @@ public class PandoraConfig {
 
 		for (LinkedHashMap<?, ?> i : (ArrayList<LinkedHashMap<?, ?>>) blockLightSettings) {
 
-			// BLOCK_LIGHT_LEVEL_FUNCTIONS.put(null, null)
+			final Identifier id;
+			int lightLevel;
+			ToIntFunction<BlockState> tif;
 
+			if (!i.containsKey("light level")) {
+				throw new PandoraConfigParseException(
+						"Value for required key \"light level\" not found or invalid. type required: int, example key value pair: \"light level: 7\"");
+			}
+			lightLevel = (int) i.get("light level");
+
+			if (i.containsKey("id") && !i.containsKey("state")) {
+				id = new Identifier((String) i.get("id"));
+
+				tif = (state) -> {
+					return lightLevel;
+				};
+
+				if (BLOCK_LIGHT_LEVEL_FUNCTIONS.containsKey(id)) {
+					throw new PandoraConfigParseException("block light settings already contains key " + id);
+				}
+
+				BLOCK_LIGHT_LEVEL_FUNCTIONS.put(id, tif);
+
+			} else if (i.containsKey("state") && !i.containsKey("id")) {
+				final LinkedHashMap<?, ?> state = (LinkedHashMap<?, ?>) i.get("state");
+				final LinkedHashMap<?, ?> properties = (LinkedHashMap<?, ?>) state.get("properties");
+				id = new Identifier((String) state.get("name"));
+
+				tif = (blockstate) -> {
+
+					for (Property<?> prop : blockstate.getProperties()) {
+						if (!prop.getName().equals(id.getPath())) {
+							
+						}
+					}
+					
+					return 0;
+				};
+
+			} else if (i.containsKey("state") && i.containsKey("id")) {
+				throw new PandoraConfigParseException(
+						"Element contains two identifier keys, please remove either \"state\" or \"id\" from the element. ("
+								+ i + ")");
+			} else if (!i.containsKey("state") && !i.containsKey("id"))
+				throw new PandoraConfigParseException(
+						"Element contains no identifier keys, please add either \"state\" or \"id\" to the element. ("
+								+ i + ")");
 		}
 
-		log.info("BLLf: {}", BLOCK_LIGHT_LEVEL_FUNCTIONS);
+		log.info("block level light settings: {}", BLOCK_LIGHT_LEVEL_FUNCTIONS);
 
 		for (LinkedHashMap<?, ?> i : (ArrayList<LinkedHashMap<?, ?>>) grueWards) {
 
@@ -225,6 +275,8 @@ public class PandoraConfig {
 
 		FLAME_LIGHT_SOURCE_DECAY_RATE = (double) debug.get("flameLightSourceDecayRate");
 		FORCE_GRUES_ALWAYS_ATTACK = (boolean) debug.get("forceGruesAlwaysAttack");
+
+		log.info("end"); // TODO remove later
 
 	}
 
