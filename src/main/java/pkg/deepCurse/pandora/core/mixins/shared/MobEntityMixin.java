@@ -1,21 +1,16 @@
 package pkg.deepCurse.pandora.core.mixins.shared;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.slf4j.*;
+import org.spongepowered.asm.mixin.*;
+import org.spongepowered.asm.mixin.injection.*;
+import org.spongepowered.asm.mixin.injection.callback.*;
 
-import net.minecraft.entity.ai.goal.GoalSelector;
-import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.mob.PathAwareEntity;
-import net.minecraft.util.math.BlockPos;
-import pkg.deepCurse.pandora.ai.goals.EscapeGrueGoal;
-import pkg.deepCurse.pandora.core.PandoraConfig;
-import pkg.deepCurse.pandora.core.PandoraConfig.PandoraConfigEnum;
-import pkg.deepCurse.pandora.tools.PandoraTools;
+import net.minecraft.entity.ai.goal.*;
+import net.minecraft.entity.mob.*;
+import net.minecraft.util.math.*;
+import pkg.deepCurse.pandora.core.*;
+import pkg.deepCurse.pandora.core.util.ai.goals.*;
+import pkg.deepCurse.pandora.core.util.tools.*;
 
 @Mixin(MobEntity.class) // TODO change to PathAwareEntity?
 public class MobEntityMixin {
@@ -34,7 +29,7 @@ public class MobEntityMixin {
 		MobEntity self = (MobEntity) (Object) this;
 		if (self instanceof PathAwareEntity && PandoraTools.shouldFearDarkness(self)) {
 			goalSelector.add(0, new EscapeGrueGoal(self, 1.2D,
-					PandoraConfig.getInt(PandoraConfigEnum.minimumSafeLightLevel)));
+					PandoraConfig.MINIMUM_SAFE_LIGHT_LEVEL)); // TODO add support for prioritizing safe over fade, but allow fade
 		}
 	}
 

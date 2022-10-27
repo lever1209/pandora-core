@@ -1,4 +1,4 @@
-package pkg.deepCurse.pandora.core.integrations;
+package pkg.deepCurse.pandora.core.util.integrations;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -7,7 +7,7 @@ import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;
 
 import net.minecraft.client.gui.screen.Screen;
-import pkg.deepCurse.pandora.core.screens.DebugScreen;
+import pkg.deepCurse.pandora.core.util.screens.DebugScreen;
 
 public class ModMenuIntegration implements ModMenuApi {
 

@@ -17,8 +17,8 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.texture.NativeImageBackedTexture;
-import pkg.deepCurse.pandora.core.interfaces.LightmapAccess;
-import pkg.deepCurse.pandora.core.interfaces.TextureAccess;
+import pkg.deepCurse.pandora.core.util.interfaces.LightmapAccess;
+import pkg.deepCurse.pandora.core.util.interfaces.TextureAccess;
 
 @Mixin(LightmapTextureManager.class)
 public class LightmapTextureManagerMixin implements LightmapAccess {

@@ -1,0 +1,102 @@
+# To restore this config to its original values, simply delete this file
+# This config is very specific with what it needs for each key
+# But dont worry, the mod will tell you if something goes wrong while loading it
+# And the mod will even tell you what is wrong and how to fix it
+# You just need to look for a message marked [Pandora Help] in the logs (.minecraft/logs/latest.log)
+# You can hit <ctrl> F and notepad to find it for you
+# If you have any questions feel free to join my discord (https://discord.gg/T4kjkyZUw2)
+general:
+  
+  # Should pandora ignore all skylight (only torches or light blocks count)
+  ignore sky light: false
+  # Should pandora ignore what moon phase the moon is
+  ignore moon phase: false
+  
+  # If the current light level is greater or equal to this value, grues will not attack
+  minimum safe light level: 5
+  # If the current light level is greater or equal to this value and less than the above value, grues may still have interest
+  minimum fade light level: 3
+
+  # Should the extra logic for hardcore apply to more than just the player
+  hardcore affects other mobs: false
+
+  # should your gamma be reset, and what value it should be reset to
+  reset gamma: true
+  gamma value: 1.0
+  
+  # In testing this was revealed to be very unfair for the player, so it is left on false
+  grues attack in water: false
+  
+  # Should grues be able to eat items
+  grues eat items: true
+
+  # Should certain sections of this mod be enabled
+  enabled:
+    enable pandora: true
+    enable custom fog: true
+    enable pandora ai: true
+    enable light modifications: true # TODO
+    enable grue wards: true # TODO
+  
+  block light settings:
+    - id: "minecraft:torch"
+    # light level, from 0 to 15
+      light level: 7
+    
+    - state:
+        name: "minecraft:sea_pickle"
+        properties:
+          pickles: 4
+          waterlogged: true
+      light level: 7
+  
+  dimension settings:
+    # fog factor is the multiplier for the dimension, lower the number, darker the fog
+    # infested is if grues should be present in the dimension
+    # (modded dimensions like the aether are bright so much i figured grues wouldnt like it)
+    - fog factor: 0.5
+      id: "minecraft:the_nether"
+      infested: true
+    - fog factor: 1.0
+      id: "minecraft:overworld"
+      infested: true
+    - fog factor: 0.0
+      id: "minecraft:the_end"
+      infested: true
+  
+  grue wards:
+    # potency is how strong the grue wards are (0 is off, 1.0 is most powerful)
+    # calculated as: if (random number between 0 and 1 > ward potency) do damage
+    # items is an array of ids, Example: ["minecraft:torch", "minecraft:glowstone"]
+    # supports armor as well
+    - potency: 0.4
+      items: ["minecraft:glowstone_dust"]
+      
+    - potency: 0.8
+      items: ["minecraft:torch", "minecraft:glowstone"]
+  
+  mob group settings:
+    # Example: ["minecraft:sheep", "minecraft:cow"]
+    animals: ["minecraft:sheep"]
+    boss mobs: ["minecraft:ender_dragon", "minecraft:wither"]
+    villagers: ["minecraft:villager"]
+    hostile mobs: ["minecraft:creeper"]
+    misc: [] # used for mobs that cannot be categorized like above
+    
+    grues attack animals: false
+    grues attack boss mobs: false
+    grues attack villagers: true
+    grues attack hostile mobs: false
+    grues attack misc mobs: true
+    grues attack players: true # players dont have ids or ai, so they are present only here
+    
+    animals fear darkness: false
+    boss mobs fear darkness: false
+    villagers fear darkness: true
+    hostile mobs fear darkness: false
+    misc mobs fear darkness: true
+
+# Debug values should be left alone as they can either make the game unstable or unfair
+debug settings:
+  flameLightSourceDecayRate: 1.0
+  forceGruesAlwaysAttack: false

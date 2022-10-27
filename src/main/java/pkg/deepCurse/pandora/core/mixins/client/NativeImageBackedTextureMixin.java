@@ -5,20 +5,15 @@
 
 package pkg.deepCurse.pandora.core.mixins.client;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.slf4j.*;
+import org.spongepowered.asm.mixin.*;
+import org.spongepowered.asm.mixin.injection.*;
+import org.spongepowered.asm.mixin.injection.callback.*;
 
-import net.minecraft.client.texture.NativeImage;
-import net.minecraft.client.texture.NativeImageBackedTexture;
-import pkg.deepCurse.pandora.core.PandoraConfig;
-import pkg.deepCurse.pandora.core.PandoraConfig.PandoraConfigEnum;
-import pkg.deepCurse.pandora.core.interfaces.TextureAccess;
-import pkg.deepCurse.pandora.tools.DarknessTools;
+import net.minecraft.client.texture.*;
+import pkg.deepCurse.pandora.core.*;
+import pkg.deepCurse.pandora.core.util.interfaces.*;
+import pkg.deepCurse.pandora.core.util.tools.*;
 
 @Mixin(NativeImageBackedTexture.class)
 public class NativeImageBackedTextureMixin implements TextureAccess {
@@ -33,7 +28,7 @@ public class NativeImageBackedTextureMixin implements TextureAccess {
 
 	@Inject(method = "upload", at = @At(value = "HEAD"))
 	private void onUpload(CallbackInfo ci) {
-		if (enableHook && PandoraConfig.getBoolean(PandoraConfigEnum.isDarknessEnabled) && image != null) {
+		if (enableHook && PandoraConfig.ENABLE_CUSTOM_FOG && image != null) {
 			final NativeImage img = image;
 
 			for (int b = 0; b < 16; b++) {

@@ -1,4 +1,4 @@
-package pkg.deepCurse.pandora.core.managers;
+package pkg.deepCurse.pandora.core.util.managers;
 
 import java.util.Iterator;
 import java.util.Map;
