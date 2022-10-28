@@ -233,7 +233,13 @@ public class PandoraConfig {
 		}
 
 		log.info("block level light settings: {}", BLOCK_LIGHT_LEVEL_FUNCTIONS);
-
+		
+		for (LinkedHashMap<?, ?> i : (ArrayList<LinkedHashMap<?, ?>>) dimensionSettings) {
+			
+			
+			
+		}
+		
 		for (LinkedHashMap<?, ?> i : (ArrayList<LinkedHashMap<?, ?>>) grueWards) {
 
 			// String dep = (String) (i.get("depends") == null ? "minecraft" : i.get("depends")); // introduces questionable pairity for network sessions
