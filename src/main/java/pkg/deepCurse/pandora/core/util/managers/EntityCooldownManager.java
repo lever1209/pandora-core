@@ -13,12 +13,12 @@ import net.minecraft.util.math.MathHelper;
 
 // stolen from mojang with <3
 public class EntityCooldownManager {
-	
+
 	@SuppressWarnings("unused")
 	private static Logger log = LoggerFactory.getLogger(EntityCooldownManager.class);
-	
+
 	private final Map<Entity, Entry> entries = Maps.newHashMap();
-	private int tick;
+	private long tick;
 
 	public boolean isCoolingDown(Entity entity) {
 		return this.getCooldownProgress(entity, 0.0f) > 0.0f;
@@ -37,20 +37,22 @@ public class EntityCooldownManager {
 	public void update() {
 		++this.tick;
 		if (!this.entries.isEmpty()) {
-			Iterator<Map.Entry<Entity, Entry>> iterator = this.entries
-					.entrySet().iterator();
+			Iterator<Map.Entry<Entity, Entry>> iterator = this.entries.entrySet().iterator();
 			while (iterator.hasNext()) {
 				Map.Entry<Entity, Entry> entry = iterator.next();
-				if (entry.getValue().endTick > this.tick)
+//				log.info("entry: {}", entry.getKey());
+				if (entry.getValue().endTick > this.tick) {
 					continue;
+				}
 				iterator.remove();
+				this.remove(entry.getKey());
 				this.onCooldownUpdate(entry.getKey());
 			}
 		}
 	}
 
-	public void set(Entity entity, int i) {
-		this.entries.put(entity, new Entry(this.tick, this.tick + i));
+	public void set(Entity entity, long i) {
+		this.entries.putIfAbsent(entity, new Entry(this.tick, this.tick + i));
 		this.onCooldownUpdate(entity, i);
 	}
 
@@ -59,17 +61,17 @@ public class EntityCooldownManager {
 		this.onCooldownUpdate(entity);
 	}
 
-	protected void onCooldownUpdate(Entity entity, int i) {
+	protected void onCooldownUpdate(Entity entity, long i) {
 	}
 
 	protected void onCooldownUpdate(Entity entity) {
 	}
 
 	private static class Entry {
-		final int startTick;
-		final int endTick;
+		final long startTick;
+		final long endTick;
 
-		Entry(int i, int j) {
+		Entry(long i, long j) {
 			this.startTick = i;
 			this.endTick = j;
 		}

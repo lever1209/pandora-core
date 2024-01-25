@@ -2,9 +2,10 @@
 	"required": true,
 	"minVersion": "0.8",
 	"package": "pkg.deepCurse.pandora.core.mixins",
-	"compatibilityLevel": "JAVA_16",
+	"compatibilityLevel": "JAVA_17",
 	"mixins": [
 		"shared.accessors.LuminanceOverride",
+		"shared.StateMixin",
 		"shared.MobEntityMixin",
 		"shared.SoulFireBlockMixin"
 	],

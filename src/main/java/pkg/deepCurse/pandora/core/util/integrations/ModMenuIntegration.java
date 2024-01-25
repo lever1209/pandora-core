@@ -13,7 +13,7 @@ public class ModMenuIntegration implements ModMenuApi {
 
 	@SuppressWarnings("unused")
 	private static Logger log = LoggerFactory.getLogger(ModMenuIntegration.class);
-	
+
 	@Override
 	public ConfigScreenFactory<?> getModConfigScreenFactory() {
 		return screen -> createNewConfigScreen(screen);

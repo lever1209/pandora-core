@@ -22,10 +22,10 @@ import pkg.deepCurse.pandora.core.util.interfaces.TextureAccess;
 
 @Mixin(LightmapTextureManager.class)
 public class LightmapTextureManagerMixin implements LightmapAccess {
-	
+
 	@SuppressWarnings("unused")
 	private static Logger log = LoggerFactory.getLogger(LightmapTextureManagerMixin.class);
-	
+
 	@Shadow
 	private NativeImageBackedTexture texture;
 	@Shadow

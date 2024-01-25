@@ -12,24 +12,16 @@ import pkg.deepCurse.pandora.core.mixins.shared.accessors.*;
 
 public class PandoraTools {
 
-	@SuppressWarnings("unused")
 	private static Logger log = LoggerFactory.getLogger(PandoraTools.class);
 
-	public static boolean isNearLight(World world, BlockPos pos) {
-		return isNearLight(world, pos, PandoraConfig.MINIMUM_SAFE_LIGHT_LEVEL); // TODO fade support
-	}
-
-	public static boolean isNearLight(World world, BlockPos pos,
-			int minimumSafeLightLevel) {
+	public static boolean isNearLight(World world, BlockPos pos, int minimumSafeLightLevel) {
 		int blockLightLevel = world.getLightLevel(LightType.BLOCK, pos);
 		int skyLightLevel = world.getLightLevel(LightType.SKY, pos);
 		if (blockLightLevel >= minimumSafeLightLevel) {
 			return true;
 		} else {
-			if (world.getDimension().hasSkyLight()
-					&& skyLightLevel >= minimumSafeLightLevel) {
-				float angle = world.getDimension()
-						.getSkyAngle(world.getLunarTime());
+			if (world.getDimension().hasSkyLight() && skyLightLevel >= minimumSafeLightLevel) {
+				float angle = world.getDimension().getSkyAngle(world.getLunarTime());
 				if (angle < 0.26F || angle > 0.73F) {
 					return true;
 				}
@@ -44,19 +36,16 @@ public class PandoraTools {
 	}
 
 	public static void overrideLuminance(Identifier identifier, Block block) {
-		if (PandoraConfig.BLOCK_LIGHT_LEVEL_FUNCTIONS.containsKey(identifier)) {
-			// log.info("[Pandora] Changing luminance of {} from {} to {}", identifier,
-			// block.getDefaultState().getLuminance(),
-			// PandoraConfig.lightLevelBlockPairs.get(identifier).applyAsInt(
-			// block.getDefaultState()));
+		if (PandoraConfig.General.BlockLightLevelSettings.containsKey(identifier)) {
+//			log.info("[Pandora] Changing luminance of {} from {} to {}", identifier,
+//					block.getDefaultState().getLuminance(),
+//					PandoraConfig.General.BlockLightLevelSettings.get(identifier).LightLevel);
 			for (BlockState state : block.getStateManager().getStates()) {
 				((LuminanceOverride) state)
-						.setLuminance(PandoraConfig.BLOCK_LIGHT_LEVEL_FUNCTIONS.get(identifier).applyAsInt(state));
+						.setLuminance(PandoraConfig.General.BlockLightLevelSettings.get(identifier).LightLevel
+								.applyAsInt(state, state.getLuminance()));
 			}
-		}
+		} // Blocks
 	}
 
-	public static boolean shouldFearDarkness(MobEntity self) {
-		return true; // TODO fix
-	}
 }

@@ -14,7 +14,8 @@ import net.minecraft.world.WorldView;
 public class SoulFireBlockMixin {
 
 	@Inject(method = "canPlaceAt", at = @At(value = "RETURN"), cancellable = true)
-	private void canPlaceAtOverride(BlockState state, WorldView world, BlockPos pos, CallbackInfoReturnable<Boolean> cir) {
+	private void canPlaceAtOverride(BlockState state, WorldView world, BlockPos pos,
+			CallbackInfoReturnable<Boolean> cir) {
 	}
 
 }

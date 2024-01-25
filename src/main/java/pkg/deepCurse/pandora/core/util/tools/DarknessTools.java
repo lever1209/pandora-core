@@ -60,28 +60,30 @@ public class DarknessTools {
 	// }
 
 	private static boolean isDark(World world) {
-		return PandoraConfig.DIMENSION_SETTINGS.containsKey(world.getRegistryKey().getValue());
+		return PandoraConfig.General.DimensionSettings.containsKey(world.getRegistryKey().getValue());
 	}
 
 	private static float skyFactor(World world) {
-		if (!PandoraConfig.IGNORE_SKY_LIGHT && isDark(world)) {
-			if (world.getDimension().hasSkyLight()) {
-				final float angle = world.getSkyAngle(0);
 
-				if (angle > 0.25f && angle < 0.75f) {
-					final float oldWeight = Math.max(0, (Math.abs(angle - 0.5f) - 0.2f)) * 20;
-					final float moon = PandoraConfig.IGNORE_MOON_PHASE ? 0
-							: world.getMoonSize();
-					return MathHelper.lerp(oldWeight * oldWeight * oldWeight, moon * moon, 1f);
-				} else {
-					return 1;
-				}
-			} else {
-				return 0;
-			}
-		} else {
+//		var dimSettings = PandoraConfig.General.DimensionSettings.get(world.getRegistryKey().getValue());
+
+//		if (dimSettings.FogLevel!=1D) {
+//			
+//		}
+		
+		if (world.getDimension().hasSkyLight() && PandoraConfig.General.IgnoreSkyLight) {
 			return 1;
 		}
+
+		final float angle = world.getSkyAngle(0);
+
+		if (angle > 0.25f && angle < 0.75f) { // TODO fine tune these angles
+			final float oldWeight = Math.max(0, (Math.abs(angle - 0.5f) - 0.2f)) * 20;
+			final float moon = PandoraConfig.General.IgnoreMoonPhase ? 0 : world.getMoonSize();
+			return MathHelper.lerp(oldWeight * oldWeight * oldWeight, moon * moon, 1f);
+		}
+		
+		return 1;
 	}
 
 	private static final float[][] LUMINANCE = new float[16][16];
@@ -103,8 +105,10 @@ public class DarknessTools {
 		return r * 0.2126f + g * 0.7152f + b * 0.0722f;
 	}
 
-	public static void updateLuminance(float tickDelta, MinecraftClient client,
-			GameRenderer worldRenderer, float prevFlicker) {
+	public static boolean ENABLE_WORKSPACE_DARKNESS = true;
+
+	public static void updateLuminance(float tickDelta, MinecraftClient client, GameRenderer worldRenderer,
+			float prevFlicker) {
 		final ClientWorld world = client.world;
 
 		if (world != null) {
@@ -112,16 +116,16 @@ public class DarknessTools {
 					|| (client.player.hasStatusEffect(StatusEffects.CONDUIT_POWER)
 							&& client.player.getUnderwaterVisibility() > 0)
 					|| world.getLightningTicksLeft() > 0) {
-				PandoraConfig.ENABLE_CUSTOM_FOG = false;
+				ENABLE_WORKSPACE_DARKNESS = false;
 				return;
 			} else {
-				PandoraConfig.ENABLE_CUSTOM_FOG = true;
+				ENABLE_WORKSPACE_DARKNESS = true;
 			}
 
 			final float dimSkyFactor = skyFactor(world);
 			final float ambient = world.getStarBrightness(1.0F);
 			final DimensionType dim = world.getDimension();
-			final boolean blockAmbient = !isDark(world);
+			final boolean darkWorld = isDark(world);
 
 			for (int skyIndex = 0; skyIndex < 16; ++skyIndex) {
 				float skyFactor = 1f - skyIndex / 15f;
@@ -148,7 +152,7 @@ public class DarknessTools {
 				for (int blockIndex = 0; blockIndex < 16; ++blockIndex) {
 					float blockFactor = 1f;
 
-					if (!blockAmbient) {
+					if (darkWorld) {
 						blockFactor = 1f - blockIndex / 15f;
 						blockFactor = 1 - blockFactor * blockFactor * blockFactor * blockFactor;
 					}
@@ -169,11 +173,11 @@ public class DarknessTools {
 					green = green * (0.99F - min) + min;
 					blue = blue * (0.99F - min) + min;
 
-					if (world.getRegistryKey() == World.END) {
-						red = skyFactor * 0.22F + blockBase * 0.75f;
-						green = skyFactor * 0.28F + blockGreen * 0.75f;
-						blue = skyFactor * 0.25F + blockBlue * 0.75f;
-					}
+//					if (world.getRegistryKey() == World.END) {
+//						red = skyFactor * 0.22F + blockBase * 0.75f;
+//						green = skyFactor * 0.28F + blockGreen * 0.75f;
+//						blue = skyFactor * 0.25F + blockBlue * 0.75f;
+//					}
 
 					if (red > 1.0F) {
 						red = 1.0F;
@@ -202,32 +206,33 @@ public class DarknessTools {
 					red = red * (0.99F - min) + min;
 					green = green * (0.99F - min) + min;
 					blue = blue * (0.99F - min) + min;
+					
+//					if (red > 1.0F) {
+//						red = 1.0F;
+//					}
+//
+//					if (green > 1.0F) {
+//						green = 1.0F;
+//					}
+//
+//					if (blue > 1.0F) {
+//						blue = 1.0F;
+//					}
+//
+//					if (red < 0.0F) {
+//						red = 0.0F;
+//					}
+//
+//					if (green < 0.0F) {
+//						green = 0.0F;
+//					}
+//
+//					if (blue < 0.0F) {
+//						blue = 0.0F;
+//					}
 
-					if (red > 1.0F) {
-						red = 1.0F;
-					}
-
-					if (green > 1.0F) {
-						green = 1.0F;
-					}
-
-					if (blue > 1.0F) {
-						blue = 1.0F;
-					}
-
-					if (red < 0.0F) {
-						red = 0.0F;
-					}
-
-					if (green < 0.0F) {
-						green = 0.0F;
-					}
-
-					if (blue < 0.0F) {
-						blue = 0.0F;
-					}
-
-					LUMINANCE[blockIndex][skyIndex] = luminance(red, green, blue);
+					LUMINANCE[blockIndex][skyIndex] = luminance(Math.max(0f, Math.min(1f, red)), Math.max(0f, Math.min(1f, green)), Math.max(0f, Math.min(1f, blue)));
+//					LUMINANCE[blockIndex][skyIndex] = luminance(red, green, blue);
 				}
 			}
 		}

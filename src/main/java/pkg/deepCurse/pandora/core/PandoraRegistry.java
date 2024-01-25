@@ -20,9 +20,10 @@ public class PandoraRegistry {
 	private static boolean hasInitialized = false;
 	private static Logger log = LoggerFactory.getLogger(PandoraRegistry.class);
 
-	public static final ItemGroup PANDORA_ITEM_GROUP = FabricItemGroupBuilder.create(
-			new Identifier("pandora", "pandora.item.group.default"))
-			.icon(() -> new ItemStack(Items.REINFORCED_DEEPSLATE)) // TODO figure out how to set this to the revenant flint
+	public static final ItemGroup PANDORA_ITEM_GROUP = FabricItemGroupBuilder
+			.create(new Identifier("pandora", "pandora.item.group.default"))
+			.icon(() -> new ItemStack(Items.REINFORCED_DEEPSLATE)) // TODO figure out how to set this to the revenant
+																	// flint
 			.build();
 
 	public static final Item REVENANT_FLINT_AND_STEEL = new RevenantFlintAndSteelItem(
@@ -41,7 +42,8 @@ public class PandoraRegistry {
 		Registry.register(Registry.ITEM, new Identifier("pandora", "revenant_flint_and_steel"),
 				REVENANT_FLINT_AND_STEEL);
 		Registry.register(Registry.ITEM, new Identifier("pandora", "debug_stick"), DEBUG_STICK);
-		// Registry.register(Registry.BLOCK, new Identifier("pandora", "soul_fire"), SOUL_FIRE);
+		// Registry.register(Registry.BLOCK, new Identifier("pandora", "soul_fire"),
+		// SOUL_FIRE);
 
 		hasInitialized = true;
 

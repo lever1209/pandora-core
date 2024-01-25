@@ -21,8 +21,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
-public class RevenantFlintAndSteelItem
-		extends Item {
+public class RevenantFlintAndSteelItem extends Item {
 	public RevenantFlintAndSteelItem(Item.Settings settings) {
 		super(settings);
 	}
@@ -41,14 +40,12 @@ public class RevenantFlintAndSteelItem
 					Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD);
 			world.emitGameEvent((Entity) playerEntity, GameEvent.BLOCK_CHANGE, blockPos);
 			if (playerEntity != null) {
-				context.getStack().damage(1, playerEntity,
-						p -> p.sendToolBreakStatus(context.getHand()));
+				context.getStack().damage(1, playerEntity, p -> p.sendToolBreakStatus(context.getHand()));
 			}
 			return ActionResult.success(world.isClient());
 		}
 		BlockPos blockPos2 = blockPos.offset(context.getSide());
-		if (AbstractFireBlock.canPlaceAt(world, blockPos2,
-				context.getPlayerFacing())) {
+		if (AbstractFireBlock.canPlaceAt(world, blockPos2, context.getPlayerFacing())) {
 			world.playSound(playerEntity, blockPos2, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.BLOCKS, 1.0f,
 					world.getRandom().nextFloat() * 0.4f + 0.8f);
 			BlockState blockState2 = AbstractFireBlock.getState(world, blockPos2);

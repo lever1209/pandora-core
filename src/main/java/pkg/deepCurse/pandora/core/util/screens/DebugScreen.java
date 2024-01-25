@@ -28,17 +28,15 @@ public class DebugScreen extends Screen {
 
 	@Override
 	public void init() {
-		this.addDrawableChild(new ButtonWidget(0, 0, 49, 10,
-				Text.translatable("pandora.menu.return"), (buttonWidget) -> {
+		this.addDrawableChild(
+				new ButtonWidget(0, 0, 49, 10, Text.translatable("pandora.menu.return"), (buttonWidget) -> {
 					this.client.setScreen(this.parent);
 				}));
-		this.addDrawableChild(new ButtonWidget(0, 10, 79, 10,
-				Text.translatable("pandora.menu.debug.save.config"),
-				(buttonWidget) -> {
+		this.addDrawableChild(
+				new ButtonWidget(0, 10, 79, 10, Text.translatable("pandora.menu.debug.save.config"), (buttonWidget) -> {
 					PandoraConfig.saveConfigs();
 				}));
-		this.addDrawableChild(new ButtonWidget(0, 20, 59, 10,
-				Text.translatable("pandora.menu.debug.reload.config"),
+		this.addDrawableChild(new ButtonWidget(0, 20, 59, 10, Text.translatable("pandora.menu.debug.reload.config"),
 				(buttonWidget) -> {
 					try {
 						PandoraConfig.loadConfig();
@@ -46,8 +44,7 @@ public class DebugScreen extends Screen {
 						e.printStackTrace();
 					}
 				}));
-		this.addDrawableChild(new ButtonWidget(60, 20, 59, 10,
-				Text.translatable("pandora.menu.debug.register.hooks"),
+		this.addDrawableChild(new ButtonWidget(60, 20, 59, 10, Text.translatable("pandora.menu.debug.register.hooks"),
 				(buttonWidget) -> {
 					try {
 						Pandora.registerHooks();
@@ -57,17 +54,15 @@ public class DebugScreen extends Screen {
 				}));
 
 		// this.addDrawableChild(new ButtonWidget(60, 20, 59, 10,
-		// 		Text.translatable("pandora.menu.debug.new.config"),
-		// 		(buttonWidget) -> {
-		// 			PandoraConfig.newConfig(); 
-		// 		})); LEGACY unset method
-		this.addDrawableChild(new ButtonWidget(0, 30, 69, 10,
-				Text.translatable("pandora.menu.debug.delete.config"),
+		// Text.translatable("pandora.menu.debug.new.config"),
+		// (buttonWidget) -> {
+		// PandoraConfig.newConfig();
+		// })); LEGACY unset method
+		this.addDrawableChild(new ButtonWidget(0, 30, 69, 10, Text.translatable("pandora.menu.debug.delete.config"),
 				(buttonWidget) -> {
 					PandoraConfig.deleteConfig();
 				}));
-		this.addDrawableChild(new ButtonWidget(0, 40, 79, 10,
-				Text.translatable("pandora.menu.debug.unpack.config"),
+		this.addDrawableChild(new ButtonWidget(0, 40, 79, 10, Text.translatable("pandora.menu.debug.unpack.config"),
 				(buttonWidget) -> {
 					try {
 						PandoraConfig.unpackageConfig();
@@ -75,11 +70,10 @@ public class DebugScreen extends Screen {
 						e.printStackTrace();
 					}
 				}));
-		this.addDrawableChild(new ButtonWidget(101, 100, 20, 10,
-				Text.translatable("print modified block lights"),
-				(buttonWidget) -> {
-					log.info("{}\n{}", PandoraConfig.BLOCK_LIGHT_LEVEL_FUNCTIONS.entrySet(),
-							PandoraConfig.BLOCK_LIGHT_LEVEL_FUNCTIONS.values());
+		this.addDrawableChild(
+				new ButtonWidget(101, 100, 20, 10, Text.translatable("print modified block lights"), (buttonWidget) -> {
+					log.info("{}\n{}", PandoraConfig.General.BlockLightLevelSettings.entrySet(),
+							PandoraConfig.General.BlockLightLevelSettings.values());
 				}));
 		this.addDrawableChild(new SliderWidget(0, 80, 100, 20, Text.literal("fog factor: " + factor), 1.0D) {
 
@@ -116,33 +110,25 @@ public class DebugScreen extends Screen {
 	}
 
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY,
-			float delta) {
+	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		MatrixStack mats = new MatrixStack();
 		int vOffset = 0;
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
 		RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
-		RenderSystem.setShaderTexture(0,
-				new Identifier("minecraft", "textures/block/deepslate.png"));
+		RenderSystem.setShaderTexture(0, new Identifier("minecraft", "textures/block/deepslate.png"));
 		RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
-		bufferBuilder.begin(DrawMode.QUADS,
-				VertexFormats.POSITION_TEXTURE_COLOR);
+		bufferBuilder.begin(DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
 		bufferBuilder.vertex(0.0D, (double) this.height, 0.0D)
-				.texture(0.0F, (float) this.height / 32.0F + (float) vOffset)
-				.color(64, 64, 64, 255).next();
+				.texture(0.0F, (float) this.height / 32.0F + (float) vOffset).color(64, 64, 64, 255).next();
 		bufferBuilder.vertex((double) this.width, (double) this.height, 0.0D)
-				.texture((float) this.width / 32.0F,
-						(float) this.height / 32.0F + (float) vOffset)
+				.texture((float) this.width / 32.0F, (float) this.height / 32.0F + (float) vOffset)
 				.color(64, 64, 64, 255).next();
-		bufferBuilder.vertex((double) this.width, 0.0D, 0.0D)
-				.texture((float) this.width / 32.0F, (float) vOffset)
+		bufferBuilder.vertex((double) this.width, 0.0D, 0.0D).texture((float) this.width / 32.0F, (float) vOffset)
 				.color(64, 64, 64, 255).next();
-		bufferBuilder.vertex(0.0D, 0.0D, 0.0D).texture(0.0F, (float) vOffset)
-				.color(64, 64, 64, 255).next();
+		bufferBuilder.vertex(0.0D, 0.0D, 0.0D).texture(0.0F, (float) vOffset).color(64, 64, 64, 255).next();
 		tessellator.draw();
-		drawCenteredText(mats, this.textRenderer, this.title, this.width / 2,
-				15, 16777215);
+		drawCenteredText(mats, this.textRenderer, this.title, this.width / 2, 15, 16777215);
 		super.render(mats, mouseX, mouseY, delta);
 	}
 

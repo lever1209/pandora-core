@@ -1,288 +1,289 @@
 package pkg.deepCurse.pandora.core;
 
-import java.io.*;
-import java.util.*;
-import java.util.function.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.function.ToIntFunction;
+import java.util.stream.Collectors;
 
-import org.slf4j.*;
-import org.snakeyaml.engine.v2.api.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.snakeyaml.engine.v2.api.Load;
+import org.snakeyaml.engine.v2.api.LoadSettings;
 
-import net.fabricmc.loader.api.*;
-import net.minecraft.block.*;
-import net.minecraft.nbt.*;
-import net.minecraft.state.property.*;
-import net.minecraft.util.*;
-import net.minecraft.util.registry.*;
-import pkg.deepCurse.pandora.core.util.exceptions.*;
-import pkg.deepCurse.pandora.core.util.tools.*;
+import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.client.particle.BlockLeakParticle;
+import net.minecraft.state.property.Property;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.Pair;
+import net.minecraft.util.math.Vec3d;
+import pkg.deepCurse.pandora.core.PandoraConfig.General.BlockLightLevelSettings;
+import pkg.deepCurse.pandora.core.mixins.shared.StateMixin;
+import pkg.deepCurse.pandora.core.util.exceptions.PandoraConfigParseException;
+import pkg.deepCurse.pandora.core.util.interfaces.ConditionalToIntFunction;
+import pkg.deepCurse.pandora.core.util.interfaces.PropertyMapPrinterAccess;
+import pkg.deepCurse.pandora.core.util.tools.CalculateFogFunction;
 
 public class PandoraConfig {
+
+	public static class General {
+		public static class Enabled {
+			public static boolean EnablePandora = true;
+			public static boolean EnableCustomFog = true;
+			public static boolean EnableCustomAI = true;
+			public static boolean EnableCustomLightmap = true;
+			public static boolean EnableGrueWards = true;
+		}
+
+		public static boolean IgnoreSkyLight = false;
+		public static boolean IgnoreMoonPhase = false;
+
+		public static int MinimumSafeLightLevel = 5;
+		public static int MinimumFadeLightLevel = 3;
+
+		public static boolean HardcoreAffectsOtherMobs = true;
+
+		public static boolean ResetGamma = true;
+		public static double GammaValue = 1.0f;
+
+		public static boolean GruesAttackInWater = false;
+		public static boolean GruesEatItems = true;
+
+		public static HashMap<Identifier, BlockLightLevelSettings> BlockLightLevelSettings = null;
+
+		public static class BlockLightLevelSettings {
+
+			public BlockLightLevelSettings(ConditionalToIntFunction<BlockState> level) {
+				this.LightLevel = level;
+			}
+
+			public ConditionalToIntFunction<BlockState> LightLevel;
+		}
+
+		public static HashMap<Identifier, DimensionSettings> DimensionSettings = null;
+
+		public static class DimensionSettings {
+
+			public DimensionSettings(CalculateFogFunction fog, boolean infested) {
+				this.FogLevel = fog;
+				this.Infested = infested;
+			}
+
+			public CalculateFogFunction FogLevel;
+			public boolean Infested;
+		}
+
+		public static HashMap<Identifier, GrueWardSettings> GrueWards = null;
+
+		public static class GrueWardSettings {
+			public double Potency;
+
+			public GrueWardSettings(double potency) {
+				this.Potency = potency;
+			}
+		}
+
+		public static HashMap<Identifier, MobSettings> MobSettings = null;
+
+		public static class MobSettings {
+			public double DamageMultiplier;
+			public boolean FearDarkness; // TODO look into making this a float for the ai weight?
+
+			public MobSettings(double damageMultiplier, boolean fearsDarkness) {
+				this.DamageMultiplier = damageMultiplier;
+				this.FearDarkness = fearsDarkness;
+			}
+		}
+	}
+
+	public class Debug {
+		// TODO add support for configs that do not get added, or at least shuffled to
+		// the bottom
+		public static double FlameLightSourceDecayRate = 1.0f;
+		public static boolean ForceGruesAlwaysAttack = false;
+		public static int GrueAttackInterval = 1; // TODO finish this
+	}
 
 	private static Logger log = LoggerFactory.getLogger(PandoraConfig.class);
 
 	public static File getConfigFile() {
-		return new File(FabricLoader.getInstance().getConfigDir().toFile(),
-				"pandora.yaml");
+		return new File(FabricLoader.getInstance().getConfigDir().toFile(), "pandora.yaml");
 	}
-
-	public static boolean IGNORE_SKY_LIGHT = false;
-	public static boolean IGNORE_MOON_PHASE = false;
-	public static int MINIMUM_SAFE_LIGHT_LEVEL = 5;
-	public static int MINIMUM_FADE_LIGHT_LEVEL = 3;
-	public static boolean HARDCORE_AFFECTS_OTHER_MOBS = false;
-	public static boolean RESET_GAMMA = true;
-	public static double GAMMA_VALUE = 1.0F;
-	public static boolean GRUES_ATTACK_IN_WATER = false;
-	public static boolean GRUES_EAT_ITEMS = true;
-
-	public static boolean ENABLE_PANDORA = true;
-	public static boolean ENABLE_CUSTOM_FOG = true;
-	public static boolean ENABLE_PANDORA_AI = true;
-	public static boolean ENABLE_LIGHT_MODIFICATION = true;
-	public static boolean ENABLE_GRUE_WARDS = true;
-
-	public static HashMap<Identifier, ToIntFunction<BlockState>> BLOCK_LIGHT_LEVEL_FUNCTIONS = new HashMap<>();
-	public static HashMap<Identifier, CalculateFogFunction> DIMENSION_SETTINGS = new HashMap<>();
-
-	public static ArrayList<Pair<ArrayList<Identifier>, Double>> GRUE_WARDS = new ArrayList<>();
-
-	public static ArrayList<Identifier> ANIMALS = null;
-	public static ArrayList<Identifier> BOSS_MOBS = null;
-	public static ArrayList<Identifier> VILLAGERS = null;
-	public static ArrayList<Identifier> HOSTILE_MOBS = null;
-	public static ArrayList<Identifier> MISC_MOBS = null;
-
-	public static boolean GRUES_ATTACK_ANIMALS = false;
-	public static boolean GRUES_ATTACK_BOSS_MOBS = false;
-	public static boolean GRUES_ATTACK_VILLAGERS = true;
-	public static boolean GRUES_ATTACK_HOSTILE_MOBS = false;
-	public static boolean GRUES_ATTACK_MISC_MOBS = true;
-	public static boolean GRUES_ATTACK_PLAYERS = true; // players dont have ids or ai, so they are present only here
-
-	public static boolean ANIMALS_FEAR_DARKNESS = false;
-	public static boolean BOSS_MOBS_FEAR_DARKNESS = false;
-	public static boolean VILLAGERS_FEAR_DARKNESS = true;
-	public static boolean HOSTILE_MOBS_FEAR_DARKNESS = false;
-	public static boolean MISC_MOBS_FEAR_DARKNESS = true;
-
-	// TODO add support for configs that do not get added, or at least shuffled to the bottom
-	public static double FLAME_LIGHT_SOURCE_DECAY_RATE = 1.0F;
-	public static boolean FORCE_GRUES_ALWAYS_ATTACK = false;
 
 	private static LoadSettings settings = LoadSettings.builder().setLabel("Config Reader Settings").build();
 
-	public static void loadConfig() { // TODO test every cast
+	public static void loadConfig() { // TODO write yaml parser to get spans and line numbers, and to add more user
+										// friendly errors
 
 		log.info("start");
 
-		GRUE_WARDS.clear();
-
-		DIMENSION_SETTINGS.clear();
-		BLOCK_LIGHT_LEVEL_FUNCTIONS.clear();
+		General.DimensionSettings = new HashMap<>();
+		General.MobSettings = new HashMap<>();
+		General.BlockLightLevelSettings = new HashMap<>();
+		General.GrueWards = new HashMap<>();
 
 		Load load = new Load(settings);
-		LinkedHashMap<?, ?> yamlLinkedHashMap = null;
+		HashMap<?, ?> yamlHashMap;
 
 		try {
-
-			yamlLinkedHashMap = (LinkedHashMap<?, ?>) load
-					.loadFromInputStream(new FileInputStream(getConfigFile()));
-
+			yamlHashMap = (HashMap<?, ?>) load.loadFromInputStream(new FileInputStream(getConfigFile()));
 		} catch (FileNotFoundException e) {
 			try {
 				log.info("[Pandora] Config not found, extracting sample config. . .");
 				unpackageConfig();
 				log.info("[Pandora] Example config extracted.");
-
 				loadConfig();
 				return;
-
 			} catch (IOException e2) {
 				log.error("[Pandora] Failed to extract example config.");
 				e2.printStackTrace();
 				log.error(
 						"[Pandora] using internal defaults for now, please look into this issue using the above stack trace.");
-				yamlLinkedHashMap = (LinkedHashMap<?, ?>) load.loadFromInputStream(PandoraConfig.class
-						.getResourceAsStream("/assets/pandora/pandora.yaml"));
+				yamlHashMap = (HashMap<?, ?>) load
+						.loadFromInputStream(PandoraConfig.class.getResourceAsStream("/assets/pandora/pandora.yaml"));
 			}
 		}
 
-		LinkedHashMap<?, ?> general;
-		try {
-			general = (LinkedHashMap<?, ?>) yamlLinkedHashMap.get("general");
-		} catch (ClassCastException e) {
-			log.error("[Pandora Help] Incorrect data type for general in config file.");
-			throw new PandoraConfigParseException("Incorrect data type for general in config file", e);
-		}
+		HashMap<?, ?> general = (HashMap<?, ?>) yamlHashMap.get("general");
+		HashMap<?, ?> enabled = (HashMap<?, ?>) general.get("enabled");
+		ArrayList<?> blockLightSettings = (ArrayList<?>) general.get("block light settings");
+		ArrayList<?> dimensionSettings = (ArrayList<?>) general.get("dimension settings");
+		ArrayList<?> grueWards = (ArrayList<?>) general.get("grue wards");
+		ArrayList<?> mobGroups = (ArrayList<?>) general.get("mob group settings");
+		HashMap<?, ?> debug = (HashMap<?, ?>) yamlHashMap.get("debug settings");
 
-		LinkedHashMap<?, ?> enabled;
-		try {
-			enabled = (LinkedHashMap<?, ?>) general.get("enabled");
-		} catch (ClassCastException e) {
-			log.error("[Pandora Help] Incorrect data type for enabled in config file.");
-			throw new PandoraConfigParseException("Incorrect data type for enabled in config file", e);
-		}
+		General.Enabled.EnablePandora = (boolean) enabled.get("enable pandora");
+		General.Enabled.EnableCustomFog = (boolean) enabled.get("enable custom fog");
+		General.Enabled.EnableCustomAI = (boolean) enabled.get("enable pandora ai");
+		General.Enabled.EnableCustomLightmap = (boolean) enabled.get("enable light modifications");
+		General.Enabled.EnableGrueWards = (boolean) enabled.get("enable grue wards");
 
-		ArrayList<?> blockLightSettings;
-		try {
-			blockLightSettings = (ArrayList<?>) general.get("block light settings");
-		} catch (ClassCastException e) {
-			log.error("[Pandora Help] Incorrect data type for block light settings in config file.");
-			throw new PandoraConfigParseException("Incorrect data type for block light settings in config file", e);
-		}
+		General.IgnoreSkyLight = (boolean) general.get("ignore sky light");
+		General.IgnoreMoonPhase = (boolean) general.get("ignore moon phase");
+		General.MinimumSafeLightLevel = (int) general.get("minimum safe light level");
+		General.MinimumFadeLightLevel = (int) general.get("minimum fade light level");
+		General.HardcoreAffectsOtherMobs = (boolean) general.get("hardcore affects other mobs");
+		General.ResetGamma = (boolean) general.get("reset gamma");
+		General.GammaValue = (double) general.get("gamma value");
+		General.GruesAttackInWater = (boolean) general.get("grues attack in water");
+		General.GruesEatItems = (boolean) general.get("grues eat items");
 
-		ArrayList<?> dimensionSettings;
-		try {
-			dimensionSettings = (ArrayList<?>) general.get("dimension settings");
-		} catch (ClassCastException e) {
-			log.error("[Pandora Help] Incorrect data type for dimension settings in config file.");
-			throw new PandoraConfigParseException("Incorrect data type for dimension settings in config file", e);
-		}
-
-		ArrayList<?> grueWards;
-		try {
-			grueWards = (ArrayList<?>) general.get("grue wards");
-		} catch (ClassCastException e) {
-			log.error("[Pandora Help] Incorrect data type for grue wards in config file.");
-			throw new PandoraConfigParseException("Incorrect data type for grue wards in config file", e);
-		}
-
-		LinkedHashMap<?, ?> mobGroup;
-		try {
-			mobGroup = (LinkedHashMap<?, ?>) general.get("mob group settings");
-		} catch (ClassCastException e) {
-			log.error("[Pandora Help] Incorrect data type for mob group in config file.");
-			throw new PandoraConfigParseException("Incorrect data type for mob group in config file", e);
-		}
-
-		LinkedHashMap<?, ?> debug;
-		try {
-			debug = (LinkedHashMap<?, ?>) yamlLinkedHashMap.get("debug settings");
-		} catch (ClassCastException e) {
-			log.error("[Pandora Help] Incorrect data type for debug in config file.");
-			throw new PandoraConfigParseException("Incorrect data type for debug in config file", e);
-		}
-
-		IGNORE_SKY_LIGHT = (boolean) general.get("ignore sky light");
-		IGNORE_MOON_PHASE = (boolean) general.get("ignore moon phase");
-
-		MINIMUM_SAFE_LIGHT_LEVEL = (int) general.get("minimum safe light level");
-		MINIMUM_FADE_LIGHT_LEVEL = (int) general.get("minimum fade light level");
-
-		HARDCORE_AFFECTS_OTHER_MOBS = (boolean) general.get("hardcore affects other mobs");
-
-		RESET_GAMMA = (boolean) general.get("reset gamma");
-		GAMMA_VALUE = (double) general.get("gamma value");
-
-		GRUES_ATTACK_IN_WATER = (boolean) general.get("grues attack in water");
-		GRUES_EAT_ITEMS = (boolean) general.get("grues eat items");
-
-		ENABLE_PANDORA = (boolean) enabled.get("enable pandora");
-		ENABLE_CUSTOM_FOG = (boolean) enabled.get("enable custom fog");
-		ENABLE_PANDORA_AI = (boolean) enabled.get("enable pandora ai");
-
-		for (LinkedHashMap<?, ?> i : (ArrayList<LinkedHashMap<?, ?>>) blockLightSettings) {
-
-			final Identifier id;
-			int lightLevel;
-			ToIntFunction<BlockState> tif;
+		General.BlockLightLevelSettings = new HashMap<>();
+		for (HashMap<String, ?> i : (ArrayList<HashMap<String, ?>>) blockLightSettings) {
 
 			if (!i.containsKey("light level")) {
 				throw new PandoraConfigParseException(
 						"Value for required key \"light level\" not found or invalid. type required: int, example key value pair: \"light level: 7\"");
 			}
-			lightLevel = (int) i.get("light level");
 
-			if (i.containsKey("id") && !i.containsKey("state")) {
-				id = new Identifier((String) i.get("id"));
+			Identifier id = new Identifier((String) i.get("id"));
+			int lightLevel = (int) i.get("light level");
+			ConditionalToIntFunction<BlockState> conditional_to_int_function;
 
-				tif = (state) -> {
-					return lightLevel;
-				};
-
-				if (BLOCK_LIGHT_LEVEL_FUNCTIONS.containsKey(id)) {
-					throw new PandoraConfigParseException("block light settings already contains key " + id);
-				}
-
-				BLOCK_LIGHT_LEVEL_FUNCTIONS.put(id, tif);
-
-			} else if (i.containsKey("state") && !i.containsKey("id")) {
-				final LinkedHashMap<?, ?> state = (LinkedHashMap<?, ?>) i.get("state");
-				final LinkedHashMap<?, ?> properties = (LinkedHashMap<?, ?>) state.get("properties");
-				id = new Identifier((String) state.get("name"));
-
-				tif = (blockstate) -> {
-
-					for (Property<?> prop : blockstate.getProperties()) {
-						if (!prop.getName().equals(id.getPath())) {
-							
+			LinkedHashMap<String, ?> configPropertyHashMap = (LinkedHashMap<String, ?>) i.get("properties");
+			conditional_to_int_function = (argBlockstate, oldValue) -> {
+				if (!argBlockstate.getEntries().isEmpty() && configPropertyHashMap != null) {
+					var translatedBlockState = new HashMap<String, String>();
+					for (var ij : argBlockstate.getEntries().entrySet()) {
+						translatedBlockState.put(ij.getKey().getName(), ij.getValue().toString());
+					}
+					for (var config_property : configPropertyHashMap.entrySet()) {
+						if (!translatedBlockState.get(config_property.getKey())
+								.contentEquals(config_property.getValue().toString())) {
+							return oldValue;
 						}
 					}
-					
-					return 0;
-				};
+				}
+				return lightLevel;
+			};
 
-			} else if (i.containsKey("state") && i.containsKey("id")) {
+			General.BlockLightLevelSettings.put(id, new BlockLightLevelSettings(conditional_to_int_function));
+		}
+
+		for (HashMap<String, ?> dim : (ArrayList<HashMap<String, ?>>) dimensionSettings) {
+
+			var fogFactor = (double) dim.get("fog factor");
+			var identifiers = (ArrayList<String>) dim.get("ids");
+			var infested = (boolean) dim.get("infested");
+
+//			if (fogFactor == null) {
+//				throw new PandoraConfigParseException(
+//						"Element does not contain required key \"fog factor\", please add it to the element. (" + dim
+//								+ ")");
+//			}
+			if (identifiers == null) {
 				throw new PandoraConfigParseException(
-						"Element contains two identifier keys, please remove either \"state\" or \"id\" from the element. ("
-								+ i + ")");
-			} else if (!i.containsKey("state") && !i.containsKey("id"))
-				throw new PandoraConfigParseException(
-						"Element contains no identifier keys, please add either \"state\" or \"id\" to the element. ("
-								+ i + ")");
+						"Element does not contain required key \"ids\", please add it to the element. (" + dim + ")");
+			}
+//			if (infested == null) {
+//				throw new PandoraConfigParseException(
+//						"Element does not contain required key \"infested\", please add it to the element. (" + dim
+//								+ ")");
+//			}
+			for (var id : identifiers) {
+				General.DimensionSettings.put(new Identifier(id), new General.DimensionSettings(
+						(owner, color, sun_angle, oldValue, world, biome_access, sun_height, i, j, k) -> {
+							final double MIN = 0;
+							Vec3d result = oldValue;
+							result = new Vec3d(Math.max(MIN, result.x * fogFactor), Math.max(MIN, result.y * fogFactor),
+									Math.max(MIN, result.z * fogFactor));
+							return result;
+						}, infested));
+			}
 		}
 
-		log.info("block level light settings: {}", BLOCK_LIGHT_LEVEL_FUNCTIONS);
-		
-		for (LinkedHashMap<?, ?> i : (ArrayList<LinkedHashMap<?, ?>>) dimensionSettings) {
-			
-			
-			
-		}
-		
-		for (LinkedHashMap<?, ?> i : (ArrayList<LinkedHashMap<?, ?>>) grueWards) {
+//		General.DimensionSettings.put(new Identifier("minecraft:overworld"), new General.DimensionSettings(
+//				(owner, color, sun_angle, oldValue, world, biome_access, sun_height, i, j, k) -> {
+//					final double factor = 0.7d;
+//					final double MIN = 0;
+//
+//					{
+//						Vec3d result = oldValue;
+//						result = new Vec3d(Math.max(MIN, result.x * factor), Math.max(MIN, result.y * factor),
+//								Math.max(MIN, result.z * factor));
+//
+//						return result;
+//					}
+//				}, true));
 
-			// String dep = (String) (i.get("depends") == null ? "minecraft" : i.get("depends")); // introduces questionable pairity for network sessions
-
-			// if (FabricLoader.getInstance().isModLoaded(dep)) {
-
-			ArrayList<Identifier> items = new ArrayList<>();
-
-			for (String id : (ArrayList<String>) i.get("items"))
-				items.add(new Identifier(id));
-			GRUE_WARDS.add(new Pair(items, i.get("potency")));
-			// }
-		}
-
-		log.info("wards:");
-
-		for (Pair<ArrayList<Identifier>, Double> i : GRUE_WARDS) {
-			log.info("id[]: {}, double: {}", i.getLeft(), i.getRight());
+		for (HashMap<String, ?> i : (ArrayList<HashMap<String, ?>>) grueWards) {
+			var potency = (double) i.get("potency");
+			var ids = (ArrayList<String>) i.get("ids");
+			for (var id : ids) {
+				General.GrueWards.put(new Identifier(id), new General.GrueWardSettings(potency));
+			}
 		}
 
-		ANIMALS = (ArrayList<Identifier>) mobGroup.get("animals");
-		BOSS_MOBS = (ArrayList<Identifier>) mobGroup.get("boss mobs");
-		VILLAGERS = (ArrayList<Identifier>) mobGroup.get("villagers");
-		HOSTILE_MOBS = (ArrayList<Identifier>) mobGroup.get("hostile mobs");
-		MISC_MOBS = (ArrayList<Identifier>) mobGroup.get("misc");
+		for (HashMap<String, ?> i : (ArrayList<HashMap<String, ?>>) mobGroups) {
+			var ids = (ArrayList<String>) i.get("ids");
+			var damageMultiplier = (double) i.get("damage multiplier");
+			var fearsDarkness = (boolean) i.get("fears darkness");
 
-		GRUES_ATTACK_ANIMALS = (boolean) mobGroup.get("grues attack animals");
-		GRUES_ATTACK_BOSS_MOBS = (boolean) mobGroup.get("grues attack boss mobs");
-		GRUES_ATTACK_VILLAGERS = (boolean) mobGroup.get("grues attack villagers");
-		GRUES_ATTACK_HOSTILE_MOBS = (boolean) mobGroup.get("grues attack hostile mobs");
-		GRUES_ATTACK_MISC_MOBS = (boolean) mobGroup.get("grues attack misc mobs");
-		GRUES_ATTACK_PLAYERS = (boolean) mobGroup.get("grues attack players");
+			for (var id : ids) {
+				// log.info("{} {} {}", id, damageMultiplier, fearsDarkness);
+				General.MobSettings.put(new Identifier(id), new General.MobSettings(damageMultiplier, fearsDarkness));
+			}
+		}
 
-		ANIMALS_FEAR_DARKNESS = (boolean) mobGroup.get("animals fear darkness");
-		BOSS_MOBS_FEAR_DARKNESS = (boolean) mobGroup.get("boss mobs fear darkness");
-		VILLAGERS_FEAR_DARKNESS = (boolean) mobGroup.get("villagers fear darkness");
-		HOSTILE_MOBS_FEAR_DARKNESS = (boolean) mobGroup.get("hostile mobs fear darkness");
-		MISC_MOBS_FEAR_DARKNESS = (boolean) mobGroup.get("misc mobs fear darkness");
+		Debug.FlameLightSourceDecayRate = (double) debug.get("flameLightSourceDecayRate");
+		Debug.ForceGruesAlwaysAttack = (boolean) debug.get("forceGruesAlwaysAttack");
 
-		FLAME_LIGHT_SOURCE_DECAY_RATE = (double) debug.get("flameLightSourceDecayRate");
-		FORCE_GRUES_ALWAYS_ATTACK = (boolean) debug.get("forceGruesAlwaysAttack");
-
-		log.info("end"); // TODO remove later
+//		log.info("CONFIG:\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}",
+//				General.Enabled.EnablePandora, General.Enabled.EnableCustomFog, General.Enabled.EnableCustomAI,
+//				General.Enabled.EnableCustomLightmap, General.Enabled.EnableGrueWards, General.IgnoreSkyLight,
+//				General.IgnoreMoonPhase, General.MinimumSafeLightLevel, General.MinimumFadeLightLevel,
+//				General.HardcoreAffectsOtherMobs, General.ResetGamma, General.GammaValue, General.GruesAttackInWater,
+//				General.GruesEatItems, General.BlockLightLevelSettings, General.DimensionSettings, General.GrueWards,
+//				General.MobSettings, Debug.FlameLightSourceDecayRate, Debug.ForceGruesAlwaysAttack);
 
 	}
 
@@ -294,8 +295,7 @@ public class PandoraConfig {
 
 		FileWriter writer = new FileWriter(getConfigFile());
 		BufferedReader reader = new BufferedReader(
-				new InputStreamReader(PandoraConfig.class
-						.getResourceAsStream("/assets/pandora/pandora.yaml")));
+				new InputStreamReader(PandoraConfig.class.getResourceAsStream("/assets/pandora/pandora.yaml")));
 
 		for (int t; (t = reader.read()) != -1;) {
 			writer.write(t);
@@ -309,106 +309,130 @@ public class PandoraConfig {
 		getConfigFile().delete();
 	}
 
-	public static boolean moblistContains(Identifier identifier) {
-		return ANIMALS.contains(identifier) || BOSS_MOBS.contains(identifier) || VILLAGERS.contains(identifier)
-				|| HOSTILE_MOBS.contains(identifier) || MISC_MOBS.contains(identifier);
-	}
+	// public static boolean moblistContains(Identifier identifier) {
+	// return ANIMALS.contains(identifier) || VILLAGERS.contains(identifier)
+	// || HOSTILE_MOBS.contains(identifier) || BOSS_MOBS.contains(identifier)
+	// || MISC_MOBS.contains(identifier);
+	// }
+
+	// HashMap<?,?> load_linked_hashmap_from_config() {
+
+	// }
+
 }
 
 // public enum PandoraConfigEnum {
 
-// 	animalsFearDarkness(false, "Should animals avoid staying in the dark too long"),
-// 	blockLightOnly(false,
-// 			"Should the calculation for whether you are in darkness or not only use block light, ignoring sky light"),
-// 	bossMobsFearDarkness(false, "Should boss mobs avoid staying in the dark too long"),
-// 	defaultGammaResetValue(1.0F,
-// 			"The value pandora will reset your gamma to on boot, resetting your gamma can be disabled too"),
+// animalsFearDarkness(false, "Should animals avoid staying in the dark too
+// long"),
+// blockLightOnly(false,
+// "Should the calculation for whether you are in darkness or not only use block
+// light, ignoring sky light"),
+// bossMobsFearDarkness(false, "Should boss mobs avoid staying in the dark too
+// long"),
+// defaultGammaResetValue(1.0F,
+// "The value pandora will reset your gamma to on boot, resetting your gamma can
+// be disabled too"),
 
-// 
-// 	dimensionFogFactors(0, "What fog factor should a dimension use"),
-// 	effectiveDimensions(0, "What dimensions should be afflicted by grues"),
-// 	lightLevelBlockPairs(0,
-// 			"What blocks should have what light levels, supports block states (API NOTE: an api is available for this value)"),
+//
+// dimensionFogFactors(0, "What fog factor should a dimension use"),
+// effectiveDimensions(0, "What dimensions should be afflicted by grues"),
+// lightLevelBlockPairs(0,
+// "What blocks should have what light levels, supports block states (API NOTE:
+// an api is available for this value)"),
 
-// 	flameLightSourceDecayRate(1.0F,
-// 			"The decay rate of torches and similar, 1.0 is 1x the decay rate, 2.0 is 2x, 0.5 is half the decay rate, any value can be entered"),
-// 	gruesAttackAnimals(false, "Should grues eat animals"),
-// 	gruesAttackBossMobs(false, "Should grues eat boss monsters"),
-// 	gruesAttackInWater(false, "Should grues eat mobs in dark water"),
-// 	gruesAttackPlayers(true, "Should grues eat players"),
-// 	gruesAttackVillagers(true, "Should grues eat villagers"),
-// 	gruesCanAttackHostileMobs(false, "Should grues attack hostile mobs"),
-// 	gruesEatItems(true, "Should grues eat items (since items do not have health, the grue can eat it in one go)"),
-// 	hardcoreAffectsOtherMobs(false,
-// 			"Does being in hardcore mode affect other mobs, in hardcore mode grues will 1 hit ko"),
-// 	hostileMobsFearDarkness(false, "Should hostile mobs avoid staying in the dark too long"),
-// 	ignoreMoonPhase(false,
-// 			"Should the calculation for whether you are in darkness or not use the moon phases, full moon you are safe under the moonlight"),
-// 	isEnabled(true, "Is the whole mod enabled"),
-// 	minimumSafeLightLevel(3, "The minimum light level you need to be in to stay safe from grues"),
-// 	resetGammaOnLaunch(true, "Should pandora reset your gamma value at launch"),
-// 	villagersFearDarkness(true, "Should villagers avoid staying in the dark too long"),
-// 	grueWardsEnabled(true, "Should grue wards be enabled (items you can hold to be mostly immune to grues)"),
-// 	isDarknessEnabled(true, "Should the world darken significantly (client side only)"),
+// flameLightSourceDecayRate(1.0F,
+// "The decay rate of torches and similar, 1.0 is 1x the decay rate, 2.0 is 2x,
+// 0.5 is half the decay rate, any value can be entered"),
+// gruesAttackAnimals(false, "Should grues eat animals"),
+// gruesAttackBossMobs(false, "Should grues eat boss monsters"),
+// gruesAttackInWater(false, "Should grues eat mobs in dark water"),
+// gruesAttackPlayers(true, "Should grues eat players"),
+// gruesAttackVillagers(true, "Should grues eat villagers"),
+// gruesCanAttackHostileMobs(false, "Should grues attack hostile mobs"),
+// gruesEatItems(true, "Should grues eat items (since items do not have health,
+// the grue can eat it in one go)"),
+// hardcoreAffectsOtherMobs(false,
+// "Does being in hardcore mode affect other mobs, in hardcore mode grues will 1
+// hit ko"),
+// hostileMobsFearDarkness(false, "Should hostile mobs avoid staying in the dark
+// too long"),
+// ignoreMoonPhase(false,
+// "Should the calculation for whether you are in darkness or not use the moon
+// phases, full moon you are safe under the moonlight"),
+// isEnabled(true, "Is the whole mod enabled"),
+// minimumSafeLightLevel(3, "The minimum light level you need to be in to stay
+// safe from grues"),
+// resetGammaOnLaunch(true, "Should pandora reset your gamma value at launch"),
+// villagersFearDarkness(true, "Should villagers avoid staying in the dark too
+// long"),
+// grueWardsEnabled(true, "Should grue wards be enabled (items you can hold to
+// be mostly immune to grues)"),
+// isDarknessEnabled(true, "Should the world darken significantly (client side
+// only)"),
 
-// 	// Debug options ahead, will not be stored in config, but will always be available in config
+// // Debug options ahead, will not be stored in config, but will always be
+// available in config
 
-// 	forceGruesAlwaysAttack(false, false);
+// forceGruesAlwaysAttack(false, false);
 
-// 	public Object object;
-// 	public String comment;
-// 	public boolean canPutInConfig = true;
+// public Object object;
+// public String comment;
+// public boolean canPutInConfig = true;
 
-// 	PandoraConfigEnum(Object defaultValue, boolean canPutInConfig) {
-// 		this.object = defaultValue;
-// 		this.canPutInConfig = canPutInConfig;
-// 	}
+// PandoraConfigEnum(Object defaultValue, boolean canPutInConfig) {
+// this.object = defaultValue;
+// this.canPutInConfig = canPutInConfig;
+// }
 
-// 	PandoraConfigEnum(Object defaultValue, String comment) {
-// 		this.object = defaultValue;
-// 		this.comment = comment;
-// 	}
+// PandoraConfigEnum(Object defaultValue, String comment) {
+// this.object = defaultValue;
+// this.comment = comment;
+// }
 // }
 
 // public static ArrayList<String> blacklistedEntityType = new ArrayList<>();
 // public static ArrayList<String> grueWards = new ArrayList<>();
-// public static HashMap<Identifier, CalculateFogFunction> effectiveDimensions = new HashMap<>();
-// public static HashMap<Identifier, Float> dimensionFogFactors = new HashMap<>();
-// public static HashMap<Identifier, ToIntFunction<BlockState>> lightLevelBlockPairs = new HashMap<>();
+// public static HashMap<Identifier, CalculateFogFunction> effectiveDimensions =
+// new HashMap<>();
+// public static HashMap<Identifier, Float> dimensionFogFactors = new
+// HashMap<>();
+// public static HashMap<Identifier, ToIntFunction<BlockState>>
+// lightLevelBlockPairs = new HashMap<>();
 
 // static {
 
 // data values i have yet to figure out how to serialize
 
-/* 		dimensionFogFactors.put(new Identifier("minecraft:overworld"), 1.0F);
-		dimensionFogFactors.put(new Identifier("minecraft:the_nether"), 0.5F);
-		dimensionFogFactors.put(new Identifier("minecraft:the_end"), 0.0F);
-
-		double MIN = 0.029999999329447746D; // minimum brightness in grondags darkness
-
-		effectiveDimensions.putIfAbsent(new Identifier("minecraft:overworld"),
-				(effects, color, f, oldValue, world, access, sunHeight, i, j, k) -> {
-					float factor = dimensionFogFactors.getOrDefault(new Identifier("minecraft:overworld"), 1.0F);
-					return new Vec3d(Math.max(MIN, oldValue.x * factor),
-							Math.max(MIN, oldValue.y * factor),
-							Math.max(MIN, oldValue.z * factor));
-				});
-
-		effectiveDimensions.putIfAbsent(new Identifier("minecraft:the_nether"),
-				(effects, color, f, oldValue, world, access, sunHeight, i, j, k) -> {
-					float factor = dimensionFogFactors.getOrDefault(new Identifier("minecraft:the_nether"), 0.5F);
-					return new Vec3d(Math.max(MIN, oldValue.x * factor),
-							Math.max(MIN, oldValue.y * factor),
-							Math.max(MIN, oldValue.z * factor));
-				});
-
-		effectiveDimensions.putIfAbsent(new Identifier("minecraft:the_end"),
-				(effects, color, f, oldValue, world, access, sunHeight, i, j, k) -> {
-					float factor = dimensionFogFactors.getOrDefault(new Identifier("minecraft:the_end"), 0.0F);
-					return new Vec3d(Math.max(MIN, oldValue.x * factor),
-							Math.max(MIN, oldValue.y * factor),
-							Math.max(MIN, oldValue.z * factor));
-				}); */
+/*
+ * dimensionFogFactors.put(new Identifier("minecraft:overworld"), 1.0F);
+ * dimensionFogFactors.put(new Identifier("minecraft:the_nether"), 0.5F);
+ * dimensionFogFactors.put(new Identifier("minecraft:the_end"), 0.0F);
+ * 
+ * double MIN = 0.029999999329447746D; // minimum brightness in grondags
+ * darkness
+ * 
+ * effectiveDimensions.putIfAbsent(new Identifier("minecraft:overworld"),
+ * (effects, color, f, oldValue, world, access, sunHeight, i, j, k) -> { float
+ * factor = dimensionFogFactors.getOrDefault(new
+ * Identifier("minecraft:overworld"), 1.0F); return new Vec3d(Math.max(MIN,
+ * oldValue.x * factor), Math.max(MIN, oldValue.y * factor), Math.max(MIN,
+ * oldValue.z * factor)); });
+ * 
+ * effectiveDimensions.putIfAbsent(new Identifier("minecraft:the_nether"),
+ * (effects, color, f, oldValue, world, access, sunHeight, i, j, k) -> { float
+ * factor = dimensionFogFactors.getOrDefault(new
+ * Identifier("minecraft:the_nether"), 0.5F); return new Vec3d(Math.max(MIN,
+ * oldValue.x * factor), Math.max(MIN, oldValue.y * factor), Math.max(MIN,
+ * oldValue.z * factor)); });
+ * 
+ * effectiveDimensions.putIfAbsent(new Identifier("minecraft:the_end"),
+ * (effects, color, f, oldValue, world, access, sunHeight, i, j, k) -> { float
+ * factor = dimensionFogFactors.getOrDefault(new
+ * Identifier("minecraft:the_end"), 0.0F); return new Vec3d(Math.max(MIN,
+ * oldValue.x * factor), Math.max(MIN, oldValue.y * factor), Math.max(MIN,
+ * oldValue.z * factor)); });
+ */
 // }
 
 // public static void saveConfigs() {
@@ -416,9 +440,9 @@ public class PandoraConfig {
 // config.commentMap().clear();
 
 // for (PandoraConfigEnum i : PandoraConfigEnum.values()) {
-// 	if (i.canPutInConfig) {
-// 		config.setComment(i.name(), i.comment);
-// 	}
+// if (i.canPutInConfig) {
+// config.setComment(i.name(), i.comment);
+// }
 // }
 
 // config.save();

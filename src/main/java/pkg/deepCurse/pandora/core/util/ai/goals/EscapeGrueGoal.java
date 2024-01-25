@@ -16,17 +16,19 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
+import pkg.deepCurse.pandora.core.PandoraConfig;
 import pkg.deepCurse.pandora.core.util.tools.PandoraTools;
 
 /**
  * recovered from old pandora, 2021/10/21
  */
 public class EscapeGrueGoal extends Goal /* MoveToTargetPosGoal? */ {
-	
+
 	@SuppressWarnings("unused")
 	private static Logger log = LoggerFactory.getLogger(EscapeGrueGoal.class);
-	
+
 	protected final MobEntity mob;
 
 	private double targetX;
@@ -50,19 +52,23 @@ public class EscapeGrueGoal extends Goal /* MoveToTargetPosGoal? */ {
 	}
 
 	public boolean canStart() {
-		if (!(this.mob instanceof HostileEntity) && !(this.mob instanceof AnimalEntity)
-				&& !(this.mob instanceof VillagerEntity)) {
+		if (!PandoraConfig.General.MobSettings.get(Registry.ENTITY_TYPE.getId(this.mob.getType())).FearDarkness) {
+//			log.info("MobSettings {}", this.mob);
 			return false;
 		}
 		if (this.mob.getTarget() != null) {
+//			log.info("hasTarget {}", this.mob);
 			return false;
 		}
 		if (PandoraTools.isNearLight(this.world, this.mob.getBlockPos(), this.minimumLightLevel)) {
+//			log.info("isNearLight {}", this.mob);
 			return false;
 		}
 		if (targetLightPos()) {
+//			log.info("noValidPos {}", this.mob);
 			return false;
 		}
+//		log.info("validPos {}", this.mob);
 		return true;
 	}
 
@@ -93,7 +99,8 @@ public class EscapeGrueGoal extends Goal /* MoveToTargetPosGoal? */ {
 			BlockPos blockPos2 = blockPos.add(random.nextInt(20) - 10, random.nextInt(6) - 3, random.nextInt(20) - 10);
 			if (PandoraTools.isNearLight(this.world, blockPos2, this.minimumLightLevel)) {
 				if (this.mob instanceof PathAwareEntity) {
-					if (((PathAwareEntity) this.mob).getPathfindingFavor(blockPos2) < 0.0F);
+					if (((PathAwareEntity) this.mob).getPathfindingFavor(blockPos2) < 0.0F)
+						;
 					return Vec3d.ofBottomCenter((Vec3i) blockPos2);
 				}
 			}

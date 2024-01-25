@@ -4,8 +4,7 @@ import net.minecraft.entity.damage.DamageSource;
 
 public class CustomDamageSources extends DamageSource {
 	protected boolean fire;
-	public static final DamageSource GRUE = new CustomDamageSources(
-			"pandora.darkness");
+	public static final DamageSource GRUE = new CustomDamageSources("pandora.darkness");
 
 	protected CustomDamageSources(String name) {
 		super(name);

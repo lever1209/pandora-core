@@ -22,10 +22,10 @@ import pkg.deepCurse.pandora.core.util.tools.DarknessTools;
 
 @Mixin(GameRenderer.class)
 public class GameRendererMixin {
-	
+
 	@SuppressWarnings("unused")
 	private static Logger log = LoggerFactory.getLogger(GameRendererMixin.class);
-	
+
 	@Shadow
 	private MinecraftClient client;
 	@Shadow
