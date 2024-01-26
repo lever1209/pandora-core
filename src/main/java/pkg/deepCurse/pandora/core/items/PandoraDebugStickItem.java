@@ -17,7 +17,6 @@ import net.minecraft.text.*;
 import net.minecraft.util.*;
 import net.minecraft.util.math.*;
 import net.minecraft.world.*;
-import pkg.deepCurse.pandora.core.util.exceptions.*;
 
 public class PandoraDebugStickItem extends Item {
 
@@ -65,10 +64,10 @@ public class PandoraDebugStickItem extends Item {
 		try {
 			NbtCompound compound = NbtHelper.fromNbtProviderString(nbtState.asString());
 			log.info("Compound: {}", compound);
-
 		} catch (CommandSyntaxException e) {
-			throw new PandoraConfigParseException("Failed to parse config.", e);
+			log.info("Could not log compund, {}", e.getMessage());
 		}
+
 		Collection<Property<?>> props = state.getProperties();
 		log.info("props:\n{}", props);
 

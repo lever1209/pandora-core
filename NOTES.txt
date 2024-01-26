@@ -1,0 +1,40 @@
+
+
+
+hip lantern?
+
+light enchantment? glowstone ash and ghast tear paste to become an armor trim instead?
+
+torches burn out and can only be relit twice, after that they turn to ash
+
+ash
+
+glowing armor trim
+
+refil lanterns with phantom membrane, and have 3x slower burn rate
+
+glowstone paste of some kind to augment equipment with light, vanishes on repair and grindstone
+
+render a grue face just out of lantern light range staring at the camera, with the lantern just inside view to the left for the mod icon
+
+option to use entity vs nothing per dimension in config
+
+"tutorial" message first time player gets "Its pitch black, you are likely to be eaten by a grue." then cooldown, and 50% every time you enter darkness, until you get it, then cooldown then chance reduces to 15%, until message has appeared 10 times, then disable message
+
+setup gamerules for select config options
+
+fade light level
+
+particle eyeball monster that lurks in the darkness, multiple floating eye segments? eye stalks?
+
+fix readme, that last line is kinda cringe
+
+add button on worlds menu to recalculate all blocks lighting, potentially dangerous with non vanilla, so throw up a warning, this "solves" the lighting artifacts when changing lighting values without needing too much cpu power in game, should only be used when editing these values or when converting world to pandora since all lighting values are cached
+
+spawn a light generating whisp when respawning, it lasts 2 minutes and follows the player, or until the player enters the light
+
+so, i just make a block entity, make it extend the block its replacing, and
+slip that into the original registry call?
+
+effectively, but you have to redirect the original call (or wrap it) since if
+it calls the original constructor, an intrusive holder is created

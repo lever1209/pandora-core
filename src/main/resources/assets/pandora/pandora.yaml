@@ -13,11 +13,11 @@ general:
     # custom dimension fog, the fog that cuts off the edge of the render distance
     enable custom fog: true
     # Allows entities to run towards light and stay within the light, as well as use grue wards
-    enable pandora ai: true # TODO
+    enable pandora ai: true
     # Change block brightness depending on the darkness level of the world
-    enable light modifications: true # TODO
+    enable light modifications: true
     # Should certian glowing items scare away grues
-    enable grue wards: true # TODO
+    enable grue wards: true
 
   # Should pandora ignore all skylight (only torches or light blocks count)
   ignore sky light: false
@@ -41,8 +41,8 @@ general:
 
   # Should grues be able to eat items
   grues eat items: true
-# TODO ash
-  block light settings: # TODO glowing armor trim
+  
+  block light settings:
     # Fire based lights
     - id: "minecraft:lava"
       light level: 15
@@ -274,5 +274,9 @@ general:
 
 # Debug values should be left alone as they can either make the game unstable or unfair
 debug settings:
-  flameLightSourceDecayRate: 1.0
-  forceGruesAlwaysAttack: false
+  FlameLightSourceDecayRate: 1.0
+  ForceGruesAlwaysAttack: false
+  
+  GrueMaximumTickWait: 160
+  GrueMinimumTickWait: 60
+

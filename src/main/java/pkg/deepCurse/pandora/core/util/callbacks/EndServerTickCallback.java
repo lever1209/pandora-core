@@ -12,6 +12,7 @@ import net.minecraft.server.world.*;
 import net.minecraft.util.math.*;
 import net.minecraft.util.registry.Registry;
 import pkg.deepCurse.pandora.core.*;
+import pkg.deepCurse.pandora.core.PandoraConfig.Debug;
 import pkg.deepCurse.pandora.core.PandoraConfig.General;
 import pkg.deepCurse.pandora.core.util.managers.*;
 import pkg.deepCurse.pandora.core.util.tools.*;
@@ -20,32 +21,99 @@ public class EndServerTickCallback {
 
 	private static Logger log = LoggerFactory.getLogger(EndServerTickCallback.class);
 
-	private static EntityCooldownManager cooldownManager = new EntityCooldownManager();
+	private static HashMap<ServerWorld, EntityCooldownManager> dimensionalCooldownManagerHashMap = new HashMap<>();
 
 	public static void run(ServerWorld world) {
+		var dimensionalCooldownManager = dimensionalCooldownManagerHashMap.get(world);
+
+		if (dimensionalCooldownManager == null) {
+			dimensionalCooldownManagerHashMap.put(world, new EntityCooldownManager());
+			return;
+		}
+
 		Iterator<Entity> entities = world.iterateEntities().iterator();
 		while (entities.hasNext()) {
 			Entity entity = entities.next();
-			
-			// log.info("{} {}", Registry.ENTITY_TYPE.getId(entity.getType()), cooldownManager.getCooldownProgress(entity, 0));
-			
-			if (!cooldownManager.isCoolingDown(entity)) {
-				doDarknessDamage(entity, 0.0F, world);
-				cooldownManager.set(entity, world.getRandom().nextInt(100) + 40);
-			}
 
-			cooldownManager.update(); // ASAP COOLDOWN MANAGER BROKEY
+			if (shouldDoDamage(entity, world)) {
+				if (!dimensionalCooldownManager.isCoolingDown(entity)) {
+
+					var rand = PandoraConfig.Debug.GrueMaximumTickWait - Debug.GrueMinimumTickWait;
+
+					var wait = (rand == 0 ? 0 : world.getRandom().nextInt(rand))
+							+ PandoraConfig.Debug.GrueMinimumTickWait;
+
+					if (entity instanceof PlayerEntity) {
+						log.info("{} in {} for {}", entity.getEntityName(), entity.getWorld().getDimensionKey(), ((float) wait) / 20f);
+					}
+					doDarknessDamage(entity, 0.0F, world);
+					dimensionalCooldownManager.set(entity, wait);
+				}
+
+				dimensionalCooldownManager.update(entity);
+			}
+//			if (entity instanceof PlayerEntity) {
+//			log.info("{}", dimensionalCooldownManager.getCooldownProgress(entity, 0));
+//			}
 		}
 	}
 
-	private static void doDarknessDamage(Entity entity, float damageAmount, ServerWorld world) { // TODO optimize a bit
-																									// more at some
-																									// point
-		// FIXME re test all values here because i heavily messed with some variables
-		// and changed logic
-
+	private static boolean shouldDoDamage(Entity entity, ServerWorld world) {
 		if (!(entity instanceof LivingEntity)) {
-			return;
+			return false;
+		}
+
+		if (!General.DimensionSettings.get(world.getRegistryKey().getValue()).Infested) {
+			return false;
+		}
+
+		if (entity instanceof PlayerEntity) {
+			if (((PlayerEntity) entity).isCreative())
+				return false;
+		}
+
+		if (entity.isSubmergedInWater() && !PandoraConfig.General.GruesAttackInWater)
+			return false;
+
+		if (((LivingEntity) entity).getActiveStatusEffects().containsKey(StatusEffects.NIGHT_VISION)) // TODO make this
+			// configurable
+			return false;
+
+		BlockPos entityLocation = entity.getBlockPos();
+
+		if (!world.getBlockState(entityLocation).isAir()) { // TODO prevent villagers from walking into the darkness
+															// willingly, optimize their pathfinding for light
+			entityLocation = entityLocation.up();
+		} // patch for soul sand since the poll location is the center of the feet, which
+			// sinks into the soul sand, meaning if you stand on soul sand you are always in
+			// 0 light
+
+		if (PandoraTools.isNearLight(world, entityLocation, PandoraConfig.General.MinimumSafeLightLevel))
+			return false;
+
+		if (PandoraTools.isNearLight(world, entityLocation, PandoraConfig.General.MinimumFadeLightLevel)
+				&& world.random.nextFloat() > 0.85f) { // TODO use cooldown manager here
+			return false;
+		}
+
+		return true;
+	}
+
+	private static void doDarknessDamage(Entity entity, float damageAmount, ServerWorld world) {
+		if (damageAmount <= 0.0F) {
+			switch (world.getDifficulty()) {
+			case HARD:
+				damageAmount = 8.0F;
+				break;
+			case NORMAL:
+				damageAmount = 4.0F;
+				break;
+			case EASY:
+				damageAmount = 2.0F;
+				break;
+			case PEACEFUL:
+				damageAmount = 1.0F;
+			}
 		}
 
 		Double wardPotency = 0D;
@@ -67,83 +135,29 @@ public class EndServerTickCallback {
 			nonPlayerAttackChance = 1;
 			wardPotency = 0D;
 		}
-		
-		if (!General.DimensionSettings.get(world.getRegistryKey().getValue()).Infested) {
-			return;
-		}
-		
-		BlockPos entityLocation = entity.getBlockPos();
-		if (PandoraTools.isNearLight(world, entityLocation, PandoraConfig.General.MinimumSafeLightLevel))
-			return;
-		if (PandoraTools.isNearLight(world, entityLocation, PandoraConfig.General.MinimumFadeLightLevel)
-				&& world.random.nextFloat() > 0.85f) { // TODO use cooldown manager here
-			return;
-		}
-
-		if (damageAmount <= 0.0F) {
-			switch (world.getDifficulty()) {
-			case HARD:
-				damageAmount = 8.0F;
-				break;
-			case NORMAL:
-				damageAmount = 4.0F;
-				break;
-			case EASY:
-				damageAmount = 2.0F;
-				break;
-			case PEACEFUL:
-				damageAmount = 1.0F;
-			}
-		}
-
-		if (!world.getBlockState(entityLocation).isAir()) { // TODO prevent villagers from walking into the darkness
-															// willingly, optimize their pathfinding for light
-			entityLocation = entityLocation.up();
-		} // patch for soul sand since the poll location is the center of the feet, which
-			// sinks into the soul sand, meaning if you stand on soul sand you are always in
-			// 0 light
 
 		// TODO bottle o ghast tears
 
-		if (entity instanceof PlayerEntity) {
-			if (((PlayerEntity) entity).isCreative())
-				return;
-		} else {
-			if (entity.getType() == EntityType.ITEM) {
-				if (nonPlayerAttackChance <= 0.003D // 0.3% chance
-						&& PandoraConfig.General.GruesEatItems) {
-					entity.kill();
-					return;
-				}
-
-			} else {
-				var mob_settings = PandoraConfig.General.MobSettings.get(Registry.ENTITY_TYPE.getId(entity.getType()));
-
-				if (mob_settings == null)
-					return;
-
-				damageAmount *= mob_settings.DamageMultiplier;
-
-			}
-			
+		if (entity.getType() == EntityType.ITEM && (nonPlayerAttackChance <= 0.003D // 0.3% chance
+				&& PandoraConfig.General.GruesEatItems)) {
+			entity.kill();
+			return;
+		} else if (!(entity instanceof PlayerEntity)) {
 			if (nonPlayerAttackChance < 0.90D) { // 90% chance
 				return;
 			}
+			var mob_settings = PandoraConfig.General.MobSettings.get(Registry.ENTITY_TYPE.getId(entity.getType()));
+			if (mob_settings == null)
+				return;
+			damageAmount *= mob_settings.DamageMultiplier;
 		}
-
-		if (((LivingEntity) entity).getActiveStatusEffects().containsKey(StatusEffects.NIGHT_VISION)) // TODO make this
-																										// configurable
-			return;
-
-		if (entity.isSubmergedInWater() && !PandoraConfig.General.GruesAttackInWater)
-			return;
 
 		if (world.getServer().isHardcore()
 				&& (PandoraConfig.General.HardcoreAffectsOtherMobs || entity instanceof PlayerEntity))
 			damageAmount = Float.MAX_VALUE;
 
 		if (world.random.nextFloat() > wardPotency && damageAmount != 0f) {
-			entity.damage(CustomDamageSources.GRUE, damageAmount); // TODO glow squids
+			entity.damage(GrueDamageSource.GRUE, damageAmount); // TODO glow squids
 		}
 	}
 }
