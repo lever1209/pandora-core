@@ -42,12 +42,16 @@ general:
   # Should grues be able to eat items
   grues eat items: true
   
+  # TODO difficulty settings, move grue tick waits to here per difficulty, add damage things, include hardcore mode
+  # TODO gamerules for grues and stuff instead of a config, since gamerules sync
+  
+  # if a block id is not included, the mod simply ignores that block
   block light settings:
     # Fire based lights
     - id: "minecraft:lava"
-      light level: 15
+      light level: 12
     - id: "minecraft:lava_cauldron"
-      light level: 12 # lava - 3
+      light level: 9 # lava - 3
     - id: "minecraft:fire"
       light level: 10
     - id: "minecraft:torch"
@@ -215,6 +219,7 @@ general:
     - id: "minecraft:sculk"
       light level: 5
 
+  # if a dimension id is not included, the mod simply ignores that dimension
   dimension settings:
     # fog factor is the multiplier for the dimension, lower the number, darker the fog
     # infested is if grues should be present in the dimension
@@ -238,6 +243,7 @@ general:
     # supports armor as well
     - potency: 0.4
       ids: ["minecraft:glowstone_dust"]
+      # TODO light generation value here
 
     - potency: 1.0
       ids: ["minecraft:torch", "minecraft:glowstone"]

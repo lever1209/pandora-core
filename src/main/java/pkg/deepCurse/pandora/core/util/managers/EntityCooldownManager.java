@@ -1,6 +1,5 @@
 package pkg.deepCurse.pandora.core.util.managers;
 
-import java.util.Iterator;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -22,7 +21,8 @@ public class EntityCooldownManager {
 		return this.getCooldownProgress(entity, 0.0f) > 0.0f;
 	}
 
-	public float getCooldownProgress(Entity entity, float f) {
+	public float getCooldownProgress(Entity entity, float f) { // TODO use this for a screen effect when winding down to
+																// 0
 		Entry entry = this.entries.get(entity);
 		if (entry != null) {
 			float g = entry.endTick - entry.startTick;

@@ -7,14 +7,15 @@
 
 package pkg.deepCurse.pandora.core.util.tools;
 
-import net.minecraft.client.*;
-import net.minecraft.client.render.*;
-import net.minecraft.client.world.*;
-import net.minecraft.entity.effect.*;
-import net.minecraft.util.math.*;
-import net.minecraft.world.*;
-import net.minecraft.world.dimension.*;
-import pkg.deepCurse.pandora.core.*;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.render.LightmapTextureManager;
+import net.minecraft.client.world.ClientWorld;
+import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.World;
+import net.minecraft.world.dimension.DimensionType;
+import pkg.deepCurse.pandora.core.PandoraConfig;
 
 public class DarknessTools {
 
@@ -70,7 +71,7 @@ public class DarknessTools {
 //		if (dimSettings.FogLevel!=1D) {
 //			
 //		}
-		
+
 		if (world.getDimension().hasSkyLight() && PandoraConfig.General.IgnoreSkyLight) {
 			return 1;
 		}
@@ -82,7 +83,7 @@ public class DarknessTools {
 			final float moon = PandoraConfig.General.IgnoreMoonPhase ? 0 : world.getMoonSize();
 			return MathHelper.lerp(oldWeight * oldWeight * oldWeight, moon * moon, 1f);
 		}
-		
+
 		return 1;
 	}
 
@@ -206,7 +207,7 @@ public class DarknessTools {
 					red = red * (0.99F - min) + min;
 					green = green * (0.99F - min) + min;
 					blue = blue * (0.99F - min) + min;
-					
+
 //					if (red > 1.0F) {
 //						red = 1.0F;
 //					}
@@ -231,7 +232,8 @@ public class DarknessTools {
 //						blue = 0.0F;
 //					}
 
-					LUMINANCE[blockIndex][skyIndex] = luminance(Math.max(0f, Math.min(1f, red)), Math.max(0f, Math.min(1f, green)), Math.max(0f, Math.min(1f, blue)));
+					LUMINANCE[blockIndex][skyIndex] = luminance(Math.max(0f, Math.min(1f, red)),
+							Math.max(0f, Math.min(1f, green)), Math.max(0f, Math.min(1f, blue)));
 //					LUMINANCE[blockIndex][skyIndex] = luminance(red, green, blue);
 				}
 			}

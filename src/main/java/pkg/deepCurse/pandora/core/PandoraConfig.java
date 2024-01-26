@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.snakeyaml.engine.v2.api.Load;
@@ -114,7 +115,7 @@ public class PandoraConfig {
 	public static void loadConfig() { // TODO write yaml parser to get spans and line numbers, and to add more user
 										// friendly errors
 
-		log.info("start");
+//		log.info("start");
 
 		General.DimensionSettings = new HashMap<>();
 		General.MobSettings = new HashMap<>();

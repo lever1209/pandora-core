@@ -1,22 +1,28 @@
 package pkg.deepCurse.pandora.core.items;
 
-import java.util.*;
+import java.util.Collection;
 
-import org.slf4j.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.mojang.brigadier.exceptions.*;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
-import net.minecraft.block.*;
-import net.minecraft.entity.player.*;
-import net.minecraft.item.*;
-import net.minecraft.nbt.*;
-import net.minecraft.network.message.*;
-import net.minecraft.server.network.*;
-import net.minecraft.state.property.*;
-import net.minecraft.text.*;
-import net.minecraft.util.*;
-import net.minecraft.util.math.*;
-import net.minecraft.world.*;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUsageContext;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtHelper;
+import net.minecraft.network.message.MessageType;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.state.property.Property;
+import net.minecraft.text.Text;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 
 public class PandoraDebugStickItem extends Item {
 

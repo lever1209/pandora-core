@@ -7,7 +7,8 @@
 		"shared.accessors.LuminanceOverride",
 		"shared.StateMixin",
 		"shared.MobEntityMixin",
-		"shared.SoulFireBlockMixin"
+		"shared.SoulFireBlockMixin",
+		"shared.PlayerEntityMixin"
 	],
 	"client": [
 		"client.BackgroundRendererMixin",

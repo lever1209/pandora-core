@@ -5,14 +5,18 @@
 
 package pkg.deepCurse.pandora.core.mixins.client;
 
-import org.slf4j.*;
-import org.spongepowered.asm.mixin.*;
-import org.spongepowered.asm.mixin.injection.*;
-import org.spongepowered.asm.mixin.injection.callback.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import net.minecraft.client.texture.*;
-import pkg.deepCurse.pandora.core.util.interfaces.*;
-import pkg.deepCurse.pandora.core.util.tools.*;
+import net.minecraft.client.texture.NativeImage;
+import net.minecraft.client.texture.NativeImageBackedTexture;
+import pkg.deepCurse.pandora.core.util.interfaces.TextureAccess;
+import pkg.deepCurse.pandora.core.util.tools.DarknessTools;
 
 @Mixin(NativeImageBackedTexture.class)
 public class NativeImageBackedTextureMixin implements TextureAccess {

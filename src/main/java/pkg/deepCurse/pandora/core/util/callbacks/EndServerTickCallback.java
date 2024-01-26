@@ -1,21 +1,27 @@
 package pkg.deepCurse.pandora.core.util.callbacks;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
 
-import org.slf4j.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import net.minecraft.entity.*;
-import net.minecraft.entity.effect.*;
-import net.minecraft.entity.player.*;
-import net.minecraft.item.*;
-import net.minecraft.server.world.*;
-import net.minecraft.util.math.*;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
-import pkg.deepCurse.pandora.core.*;
+import pkg.deepCurse.pandora.core.GrueDamageSource;
+import pkg.deepCurse.pandora.core.PandoraConfig;
 import pkg.deepCurse.pandora.core.PandoraConfig.Debug;
 import pkg.deepCurse.pandora.core.PandoraConfig.General;
-import pkg.deepCurse.pandora.core.util.managers.*;
-import pkg.deepCurse.pandora.core.util.tools.*;
+import pkg.deepCurse.pandora.core.util.interfaces.PlayerGrueDataInterface;
+import pkg.deepCurse.pandora.core.util.managers.EntityCooldownManager;
+import pkg.deepCurse.pandora.core.util.tools.PandoraTools;
 
 public class EndServerTickCallback {
 
@@ -37,14 +43,16 @@ public class EndServerTickCallback {
 
 			if (shouldDoDamage(entity, world)) {
 				if (!dimensionalCooldownManager.isCoolingDown(entity)) {
-
 					var rand = PandoraConfig.Debug.GrueMaximumTickWait - Debug.GrueMinimumTickWait;
 
 					var wait = (rand == 0 ? 0 : world.getRandom().nextInt(rand))
 							+ PandoraConfig.Debug.GrueMinimumTickWait;
 
 					if (entity instanceof PlayerEntity) {
-						log.info("{} in {} for {}", entity.getEntityName(), entity.getWorld().getDimensionKey(), ((float) wait) / 20f);
+						PlayerEntity player = (PlayerEntity) entity;
+						log.info("{}, {}", ((PlayerGrueDataInterface) player).getLastEncounterTime(),
+								((PlayerGrueDataInterface) player).getTrainingWheelEncountersLeft());
+//						log.info("{} in {} for {}", entity.getEntityName(), entity.getWorld().getDimensionKey(), ((float) wait) / 20f);
 					}
 					doDarknessDamage(entity, 0.0F, world);
 					dimensionalCooldownManager.set(entity, wait);
@@ -96,12 +104,33 @@ public class EndServerTickCallback {
 			return false;
 		}
 
+		boolean blockFound = false;
+		for (BlockPos location : new BlockPos[] { entityLocation.north().east(), entityLocation.north(),
+				entityLocation.north().west(), entityLocation.east(), entityLocation, entityLocation.west(),
+				entityLocation.south().east(), entityLocation.south(), entityLocation.south().west(), }) {
+			for (short i = 5 /* TODO config value "height immunity" or something */; --i > 0;) {
+				location = location.down();
+				if (!world.getBlockState(location).isAir()) {
+					blockFound = true;
+					break;
+				}
+			}
+			if (blockFound)
+				break;
+		}
+
+		if (!blockFound) {
+			// dont deal damage
+			return false;
+		}
+
+		// deal damage
 		return true;
 	}
 
 	private static void doDarknessDamage(Entity entity, float damageAmount, ServerWorld world) {
 		if (damageAmount <= 0.0F) {
-			switch (world.getDifficulty()) {
+			switch (world.getDifficulty()) { // TODO add difficulty settings to the config
 			case HARD:
 				damageAmount = 8.0F;
 				break;
@@ -154,7 +183,7 @@ public class EndServerTickCallback {
 
 		if (world.getServer().isHardcore()
 				&& (PandoraConfig.General.HardcoreAffectsOtherMobs || entity instanceof PlayerEntity))
-			damageAmount = Float.MAX_VALUE;
+			damageAmount = Float.MAX_VALUE; // TODO make this configurable
 
 		if (world.random.nextFloat() > wardPotency && damageAmount != 0f) {
 			entity.damage(GrueDamageSource.GRUE, damageAmount); // TODO glow squids

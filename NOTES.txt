@@ -1,5 +1,11 @@
 
+create a utility to load all chunks within a world, update all block luminance values with the ones stored in configs
 
+persistent states to store grue interactions with a player
+
+awaiting testing: the world is dark enough that lava can probably be dimmed without issue
+
+low torch light makes indoor farms harder to do early game, i feel this side effect should be left as is, or made into a config
 
 hip lantern?
 

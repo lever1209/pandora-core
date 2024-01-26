@@ -1,17 +1,23 @@
 package pkg.deepCurse.pandora.core.util.screens;
 
-import org.slf4j.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.mojang.blaze3d.systems.*;
+import com.mojang.blaze3d.systems.RenderSystem;
 
-import net.minecraft.client.gui.screen.*;
-import net.minecraft.client.gui.widget.*;
-import net.minecraft.client.render.*;
-import net.minecraft.client.render.VertexFormat.*;
-import net.minecraft.client.util.math.*;
-import net.minecraft.text.*;
-import net.minecraft.util.*;
-import pkg.deepCurse.pandora.core.*;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.SliderWidget;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexFormat.DrawMode;
+import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
+import pkg.deepCurse.pandora.core.Pandora;
+import pkg.deepCurse.pandora.core.PandoraConfig;
 
 public class DebugScreen extends Screen {
 
