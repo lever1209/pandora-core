@@ -36,8 +36,7 @@ public class EntityCooldownManager {
 		var entry = this.entries.get(entity);
 
 		if (entry != null && entry.endTick < ++entry.currentTick) {
-			this.entries.remove(entity);
-			this.onCooldownUpdate(entity);
+			this.remove(entity);
 		}
 
 	}

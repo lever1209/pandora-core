@@ -5,24 +5,16 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import com.mojang.authlib.GameProfile;
-
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
-import net.minecraft.network.encryption.PlayerPublicKey;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import pkg.deepCurse.pandora.core.util.interfaces.PlayerGrueDataInterface;
 
 //import net.minecraft.nbt.NbtCompound;
 //import net.minecraft.world.PersistentState;
 
 @Mixin(PlayerEntity.class)
-public abstract class PlayerEntityMixin extends PlayerEntity implements PlayerGrueDataInterface {
-	public PlayerEntityMixin(World world, BlockPos pos, float yaw, GameProfile gameProfile, PlayerPublicKey publicKey) {
-		super(world, pos, yaw, gameProfile, publicKey);
-	}
+public class PlayerEntityMixin implements PlayerGrueDataInterface {
 
 	private long lastEncounterTime; // PandoraGrueLastEncounterTime
 	private short trainingWheelEncountersLeft; // PandoraGrueTrainingWheelEncountersLeft

@@ -49,12 +49,15 @@ public class EndServerTickCallback {
 							+ PandoraConfig.Debug.GrueMinimumTickWait;
 
 					if (entity instanceof PlayerEntity) {
-						PlayerEntity player = (PlayerEntity) entity;
-						log.info("{}, {}", ((PlayerGrueDataInterface) player).getLastEncounterTime(),
-								((PlayerGrueDataInterface) player).getTrainingWheelEncountersLeft());
-//						log.info("{} in {} for {}", entity.getEntityName(), entity.getWorld().getDimensionKey(), ((float) wait) / 20f);
+						PlayerGrueDataInterface player = (PlayerGrueDataInterface) (PlayerEntity) entity;
+						log.info("{}, {}, {}", player.getLastEncounterTime(),
+								player.getTrainingWheelEncountersLeft());
+						
+						
+						
 					}
 					doDarknessDamage(entity, 0.0F, world);
+//					dimensionalCooldownManager.remove(entity);
 					dimensionalCooldownManager.set(entity, wait);
 				}
 
