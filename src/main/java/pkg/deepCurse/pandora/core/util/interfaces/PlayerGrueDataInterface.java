@@ -1,11 +1,11 @@
 package pkg.deepCurse.pandora.core.util.interfaces;
 
 public interface PlayerGrueDataInterface {
-	short getTrainingWheelEncountersLeft();
+	short getTutorialEncountersLeft();
 
-	void setTrainingWheelEncountersLeft(short trainingWheelEncountersLeft);
+	void setTutorialEncountersLeft(short tutorialEncountersLeft);
 
-	long getLastEncounterTime();
+	long getLastTutorialEncounterTime();
 
-	void setLastEncounterTime(long lastEncounterTime);
+	void setLastTutorialEncounterTime(long lastTutorialEncounterTime);
 }

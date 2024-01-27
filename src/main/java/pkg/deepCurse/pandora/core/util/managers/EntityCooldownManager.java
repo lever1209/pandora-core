@@ -18,7 +18,7 @@ public class EntityCooldownManager {
 	private final Map<Entity, Entry> entries = Maps.newHashMap();
 
 	public boolean isCoolingDown(Entity entity) {
-		return this.getCooldownProgress(entity, 0.0f) > 0.0f;
+		return this.entries.containsKey(entity);
 	}
 
 	public float getCooldownProgress(Entity entity, float f) { // TODO use this for a screen effect when winding down to

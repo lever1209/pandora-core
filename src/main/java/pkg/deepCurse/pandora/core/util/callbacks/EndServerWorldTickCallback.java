@@ -6,6 +6,7 @@ import java.util.Iterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents.EndWorldTick;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -13,6 +14,7 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import pkg.deepCurse.pandora.core.GrueDamageSource;
@@ -23,51 +25,11 @@ import pkg.deepCurse.pandora.core.util.interfaces.PlayerGrueDataInterface;
 import pkg.deepCurse.pandora.core.util.managers.EntityCooldownManager;
 import pkg.deepCurse.pandora.core.util.tools.PandoraTools;
 
-public class EndServerTickCallback {
+public class EndServerWorldTickCallback implements EndWorldTick {
 
-	private static Logger log = LoggerFactory.getLogger(EndServerTickCallback.class);
+	private static Logger log = LoggerFactory.getLogger(EndServerWorldTickCallback.class);
 
 	private static HashMap<ServerWorld, EntityCooldownManager> dimensionalCooldownManagerHashMap = new HashMap<>();
-
-	public static void run(ServerWorld world) {
-		var dimensionalCooldownManager = dimensionalCooldownManagerHashMap.get(world);
-
-		if (dimensionalCooldownManager == null) {
-			dimensionalCooldownManagerHashMap.put(world, new EntityCooldownManager());
-			return;
-		}
-
-		Iterator<Entity> entities = world.iterateEntities().iterator();
-		while (entities.hasNext()) {
-			Entity entity = entities.next();
-
-			if (shouldDoDamage(entity, world)) {
-				if (!dimensionalCooldownManager.isCoolingDown(entity)) {
-					var rand = PandoraConfig.Debug.GrueMaximumTickWait - Debug.GrueMinimumTickWait;
-
-					var wait = (rand == 0 ? 0 : world.getRandom().nextInt(rand))
-							+ PandoraConfig.Debug.GrueMinimumTickWait;
-
-					if (entity instanceof PlayerEntity) {
-						PlayerGrueDataInterface player = (PlayerGrueDataInterface) (PlayerEntity) entity;
-						log.info("{}, {}, {}", player.getLastEncounterTime(),
-								player.getTrainingWheelEncountersLeft());
-						
-						
-						
-					}
-					doDarknessDamage(entity, 0.0F, world);
-//					dimensionalCooldownManager.remove(entity);
-					dimensionalCooldownManager.set(entity, wait);
-				}
-
-				dimensionalCooldownManager.update(entity);
-			}
-//			if (entity instanceof PlayerEntity) {
-//			log.info("{}", dimensionalCooldownManager.getCooldownProgress(entity, 0));
-//			}
-		}
-	}
 
 	private static boolean shouldDoDamage(Entity entity, ServerWorld world) {
 		if (!(entity instanceof LivingEntity)) {
@@ -190,6 +152,65 @@ public class EndServerTickCallback {
 
 		if (world.random.nextFloat() > wardPotency && damageAmount != 0f) {
 			entity.damage(GrueDamageSource.GRUE, damageAmount); // TODO glow squids
+		}
+	}
+
+	@Override
+	public void onEndTick(ServerWorld world) {
+		var dimensionalCooldownManager = dimensionalCooldownManagerHashMap.get(world);
+
+		if (dimensionalCooldownManager == null) {
+			dimensionalCooldownManagerHashMap.put(world, new EntityCooldownManager());
+			return;
+		}
+
+		Iterator<Entity> entities = world.iterateEntities().iterator();
+		while (entities.hasNext()) {
+			Entity entity = entities.next();
+
+			if (shouldDoDamage(entity, world)) {
+				if (!dimensionalCooldownManager.isCoolingDown(entity)) {
+					var rand = PandoraConfig.Debug.GrueMaximumTickWait - Debug.GrueMinimumTickWait;
+
+					var wait = (rand == 0 ? 0 : world.getRandom().nextInt(rand))
+							+ PandoraConfig.Debug.GrueMinimumTickWait;
+
+					boolean tutorial = false;
+
+					if (entity instanceof PlayerEntity) {
+						var playerEntity = (PlayerEntity) entity;
+						PlayerGrueDataInterface playerDataInterface = (PlayerGrueDataInterface) playerEntity;
+
+//						playerDataInterface.setTutorialEncountersLeft((short) 7);
+//						playerDataInterface.setLastTutorialEncounterTime(0l);
+
+						log.info("{}, {}, {}", playerDataInterface.getLastTutorialEncounterTime(),
+								playerDataInterface.getTutorialEncountersLeft());
+
+						if (playerDataInterface.getTutorialEncountersLeft() > 0
+								&& playerDataInterface.getLastTutorialEncounterTime() + 24000 /* a day */ < world
+										.getTime()) { // TODO gamerule for grue tutorials
+							tutorial = true;
+							playerDataInterface.setTutorialEncountersLeft(
+									(short) (playerDataInterface.getTutorialEncountersLeft() - 1));
+							playerDataInterface.setLastTutorialEncounterTime(world.getTime());
+							playerEntity.sendMessage(Text.translatable("pandora.grue.tutorial"));
+							dimensionalCooldownManager.set(entity, wait + 200/* TODO make this configurable */);
+						}
+
+					}
+					if (!tutorial) {
+						doDarknessDamage(entity, 0.0F, world);
+						dimensionalCooldownManager.set(entity, wait);
+					}
+
+				}
+
+				dimensionalCooldownManager.update(entity);
+			}
+//			if (entity instanceof PlayerEntity) {
+//			log.info("{}", dimensionalCooldownManager.getCooldownProgress(entity, 0));
+//			}
 		}
 	}
 }
