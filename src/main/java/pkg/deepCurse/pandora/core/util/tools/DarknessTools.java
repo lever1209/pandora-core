@@ -61,7 +61,7 @@ public class DarknessTools {
 	// }
 
 	private static boolean isDark(World world) {
-		return PandoraConfig.General.DimensionSettings.containsKey(world.getRegistryKey().getValue());
+		return PandoraConfig.General.DimensionSettings.CONFIG.containsKey(world.getRegistryKey().getValue());
 	}
 
 	private static float skyFactor(World world) {

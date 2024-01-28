@@ -3,14 +3,9 @@ package pkg.deepCurse.pandora.core.util.tools;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
-import pkg.deepCurse.pandora.core.PandoraConfig;
-import pkg.deepCurse.pandora.core.mixins.shared.accessors.LuminanceOverride;
 
 public class PandoraTools {
 
@@ -35,19 +30,6 @@ public class PandoraTools {
 
 			return false;
 		}
-	}
-
-	public static void overrideLuminance(Identifier identifier, Block block) {
-		if (PandoraConfig.General.BlockLightLevelSettings.containsKey(identifier)) {
-//			log.info("[Pandora] Changing luminance of {} from {} to {}", identifier,
-//					block.getDefaultState().getLuminance(),
-//					PandoraConfig.General.BlockLightLevelSettings.get(identifier).LightLevel);
-			for (BlockState state : block.getStateManager().getStates()) {
-				((LuminanceOverride) state)
-						.setLuminance(PandoraConfig.General.BlockLightLevelSettings.get(identifier).LightLevel
-								.applyAsInt(state, state.getLuminance()));
-			}
-		} // Blocks
 	}
 
 }

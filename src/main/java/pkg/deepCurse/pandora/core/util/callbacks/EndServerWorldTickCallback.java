@@ -36,7 +36,7 @@ public class EndServerWorldTickCallback implements EndWorldTick {
 			return false;
 		}
 
-		if (!General.DimensionSettings.get(world.getRegistryKey().getValue()).Infested) {
+		if (!General.DimensionSettings.CONFIG.get(world.getRegistryKey().getValue()).Infested) {
 			return false;
 		}
 
@@ -97,27 +97,27 @@ public class EndServerWorldTickCallback implements EndWorldTick {
 		if (damageAmount <= 0.0F) {
 			switch (world.getDifficulty()) { // TODO add difficulty settings to the config
 			case HARD:
-				damageAmount = 8.0F;
+				damageAmount = PandoraConfig.General.DifficultySettings.Hard.DamageAmount;
 				break;
 			case NORMAL:
-				damageAmount = 4.0F;
+				damageAmount = PandoraConfig.General.DifficultySettings.Normal.DamageAmount;
 				break;
 			case EASY:
-				damageAmount = 2.0F;
+				damageAmount = PandoraConfig.General.DifficultySettings.Easy.DamageAmount;
 				break;
 			case PEACEFUL:
-				damageAmount = 1.0F;
+				damageAmount = PandoraConfig.General.DifficultySettings.Peaceful.DamageAmount;
 			}
 		}
 
 		Double wardPotency = 0D;
 		float nonPlayerAttackChance = world.getRandom().nextFloat();
 
-		if (PandoraConfig.General.Enabled.EnableGrueWards) {
+		if (PandoraConfig.Enabled.EnableGrueWards) {
 			Iterator<ItemStack> itemStack = entity.getItemsEquipped().iterator();
 
 			while (itemStack.hasNext()) {
-				for (var i : PandoraConfig.General.GrueWards.entrySet()) { //
+				for (var i : PandoraConfig.General.GrueWardSettings.CONFIG.entrySet()) { //
 					if (itemStack.next().getRegistryEntry().matchesId(i.getKey())) {
 						wardPotency = i.getValue().Potency;
 					}
@@ -140,15 +140,15 @@ public class EndServerWorldTickCallback implements EndWorldTick {
 			if (nonPlayerAttackChance < 0.90D) { // 90% chance
 				return;
 			}
-			var mob_settings = PandoraConfig.General.MobSettings.get(Registry.ENTITY_TYPE.getId(entity.getType()));
+			var mob_settings = PandoraConfig.General.MobSettings.CONFIG.get(Registry.ENTITY_TYPE.getId(entity.getType()));
 			if (mob_settings == null)
 				return;
 			damageAmount *= mob_settings.DamageMultiplier;
-		}
 
-		if (world.getServer().isHardcore()
-				&& (PandoraConfig.General.HardcoreAffectsOtherMobs || entity instanceof PlayerEntity))
-			damageAmount = Float.MAX_VALUE; // TODO make this configurable
+			if (world.getServer().isHardcore() && (mob_settings.IsHardcore || entity instanceof PlayerEntity))
+				damageAmount = Float.MAX_VALUE; // TODO make this configurable
+			// ASAP the above check does not work for players, while adding the player config make it register under minecraft:player and fix up `instanceof player` stuff
+		}
 
 		if (world.random.nextFloat() > wardPotency && damageAmount != 0f) {
 			entity.damage(GrueDamageSource.GRUE, damageAmount); // TODO glow squids
@@ -168,7 +168,7 @@ public class EndServerWorldTickCallback implements EndWorldTick {
 		while (entities.hasNext()) {
 			Entity entity = entities.next();
 
-			if (shouldDoDamage(entity, world)) {
+			if (shouldDoDamage(entity, world)) { // TODO skip all checks if dimension doesnt have it and difficulty damage is 0
 				if (!dimensionalCooldownManager.isCoolingDown(entity)) {
 					var rand = PandoraConfig.Debug.GrueMaximumTickWait - Debug.GrueMinimumTickWait;
 

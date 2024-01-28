@@ -9,10 +9,10 @@ import net.minecraft.server.network.ServerPlayerEntity;
 public class AfterServerPlayerRespawnCallback implements AfterRespawn {
 
 	private static Logger log = LoggerFactory.getLogger(AfterServerPlayerRespawnCallback.class);
-	
+
 	@Override
 	public void afterRespawn(ServerPlayerEntity oldPlayer, ServerPlayerEntity newPlayer, boolean alive) {
-		log.info("{} {} {}", oldPlayer,newPlayer,alive);
+		log.info("{} {} {}", oldPlayer, newPlayer, alive);
 	}
-	
+
 }

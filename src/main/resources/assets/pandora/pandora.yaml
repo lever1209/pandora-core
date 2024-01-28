@@ -29,9 +29,6 @@ general:
   # If the current light level is greater or equal to this value and less than the above value, grues may still have interest
   minimum fade light level: 3
 
-  # Should the extra logic for hardcore apply to more than just the player
-  hardcore affects other mobs: false
-
   # should your gamma be reset, and what value it should be reset to
   reset gamma: true
   gamma value: 1.0
@@ -44,6 +41,34 @@ general:
   
   # TODO difficulty settings, move grue tick waits to here per difficulty, add damage things, include hardcore mode
   # TODO gamerules for grues and stuff instead of a config, since gamerules sync
+  
+  difficulty settings:
+    hardcore:
+      damage amount: 999.0
+      grue tutorial grace period: 200
+      grue maximum tick wait: 160 # make harder
+      grue minimum tick wait: 60
+    hard:
+      damage amount: 8.0
+      grue tutorial grace period: 6000
+      grue maximum tick wait: 160 # make slightly harder
+      grue minimum tick wait: 60
+    normal:
+      damage amount: 4.0
+      grue tutorial grace period: 12000
+      grue maximum tick wait: 160 # stays as is
+      grue minimum tick wait: 60
+    easy:
+      damage amount: 2.0
+      grue tutorial grace period: 24000
+      grue maximum tick wait: 160 # make easier
+      grue minimum tick wait: 60
+    peaceful:
+      # if left at 0, grue damage is skipped entirely # NYI
+      damage amount: 0.0
+      grue tutorial grace period: 24000
+      grue maximum tick wait: 160
+      grue minimum tick wait: 60
   
   # if a block id is not included, the mod simply ignores that block
   block light settings:
@@ -254,35 +279,38 @@ general:
     - ids: ["minecraft:axolotl", "minecraft:bat", "minecraft:bee", "minecraft:cat","minecraft:chicken", "minecraft:cod","minecraft:cow","minecraft:dolphin", "minecraft:donkey", "minecraft:fox", "minecraft:frog", "minecraft:glow_squid", "minecraft:goat", "minecraft:horse", "minecraft:llama", "minecraft:mooshroom", "minecraft:mule", "minecraft:ocelot", "minecraft:panda", "minecraft:parrot", "minecraft:pig", "minecraft:polar_bear", "minecraft:pufferfish", "minecraft:rabbit", "minecraft:salmon", "minecraft:sheep","minecraft:skeleton_horse", "minecraft:squid", "minecraft:strider", "minecraft:tadpole", "minecraft:trader_llama", "minecraft:tropical_fish", "minecraft:turtle", "minecraft:zombie_horse"]
       damage multiplier: 0.0
       fears darkness: false
+      is hardcore: false
     # golom types
     - ids: ["minecraft:iron_golem", "minecraft:snow_golem", "minecraft:wolf"]
       damage multiplier: 0.0
       fears darkness: false
+      is hardcore: false
     # boss mob types
     - ids: ["minecraft:elder_guardian", "minecraft:ender_dragon", "minecraft:wither", "minecraft:warden"]
       damage multiplier: 0.0
       fears darkness: false
+      is hardcore: false
     # villager types
     - ids: ["minecraft:villager", "minecraft:wandering_trader"]
       damage multiplier: 0.6
       fears darkness: true
+      is hardcore: false
     # hostile mob types
     - ids: ["minecraft:blaze", "minecraft:cave_spider","minecraft:creeper", "minecraft:drowned", "minecraft:enderman", "minecraft:endermite", "minecraft:ghast", "minecraft:giant", "minecraft:guardian", "minecraft:hoglin", "minecraft:husk", "minecraft:magma_cube", "minecraft:phantom", "minecraft:piglin", "minecraft:piglin_brute", "minecraft:ravager", "minecraft:shulker", "minecraft:silverfish", "minecraft:skeleton", "minecraft:slime", "minecraft:spider", "minecraft:stray", "minecraft:vex", "minecraft:witch", "minecraft:wither_skeleton", "minecraft:zoglin", "minecraft:zombie", "minecraft:zombie_villager", "minecraft:zombified_piglin"]
       damage multiplier: 0.0
       fears darkness: false
+      is hardcore: false
     - ids: ["minecraft:evoker", "minecraft:illusioner", "minecraft:pillager", "minecraft:vindicator"]
       damage multiplier: 0.0
       fears darkness: false
-    # whatever else, just add another category for each different set of settings
+      is hardcore: false
+    # whatever else, just add another category for each different set of settings, you can organize them however you like
     - ids: []
       damage multiplier: 1.0
       fears darkness: true
+      is hardcore: false
 
 # Debug values should be left alone as they can either make the game unstable or unfair
 debug settings:
   FlameLightSourceDecayRate: 1.0
   ForceGruesAlwaysAttack: false
-  
-  GrueMaximumTickWait: 160
-  GrueMinimumTickWait: 60
-

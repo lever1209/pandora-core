@@ -5,7 +5,8 @@
 	"name": "Pandora",
 	"description": "",
 	"authors": [
-		"deepCurse"
+		"deepCurse",
+		"grondag"
 	],
 	"contact": {
 		"homepage": "https://github.com/lever1209/pandora",
@@ -36,6 +37,6 @@
 	},
 	"suggests": {
 		"modmenu": "*",
-		"lambdynlights":">=2.1.0"
+		"lambdynlights": ">=2.1.0"
 	}
 }

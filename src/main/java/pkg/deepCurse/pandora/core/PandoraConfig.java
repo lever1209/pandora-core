@@ -20,28 +20,19 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
-import pkg.deepCurse.pandora.core.PandoraConfig.General.BlockLightLevelSettings;
 import pkg.deepCurse.pandora.core.util.interfaces.ConditionalToIntFunction;
 import pkg.deepCurse.pandora.core.util.tools.CalculateFogFunction;
 
 public class PandoraConfig {
 
 	public static class General {
-		public static class Enabled {
-			public static boolean EnablePandora = true;
-			public static boolean EnableCustomFog = true;
-			public static boolean EnableCustomAI = true;
-			public static boolean EnableCustomLightmap = true;
-			public static boolean EnableGrueWards = true;
-		}
-
 		public static boolean IgnoreSkyLight = false;
 		public static boolean IgnoreMoonPhase = false;
 
 		public static int MinimumSafeLightLevel = 5;
 		public static int MinimumFadeLightLevel = 3;
 
-		public static boolean HardcoreAffectsOtherMobs = true;
+//		public static boolean HardcoreAffectsOtherMobs = true;
 
 		public static boolean ResetGamma = true;
 		public static double GammaValue = 1.0f;
@@ -49,9 +40,50 @@ public class PandoraConfig {
 		public static boolean GruesAttackInWater = false;
 		public static boolean GruesEatItems = true;
 
-		public static HashMap<Identifier, BlockLightLevelSettings> BlockLightLevelSettings = null;
+		public static class DifficultySettings {
+			public static class HardCore {
+				public static float DamageAmount;
+				public static short tutorialCount;
+				public static short tutorialGracePeriod;
+				public static short GrueMaxTickWait;
+				public static short GrueMinTickWait;
+			}
+
+			public static class Hard {
+				public static float DamageAmount;
+				public static short tutorialCount;
+				public static short tutorialGracePeriod;
+				public static short GrueMaxTickWait;
+				public static short GrueMinTickWait;
+			}
+
+			public static class Normal {
+				public static float DamageAmount;
+				public static short tutorialCount;
+				public static short tutorialGracePeriod;
+				public static short GrueMaxTickWait;
+				public static short GrueMinTickWait;
+			}
+
+			public static class Easy {
+				public static float DamageAmount;
+				public static short tutorialCount;
+				public static short tutorialGracePeriod;
+				public static short GrueMaxTickWait;
+				public static short GrueMinTickWait;
+			}
+
+			public static class Peaceful {
+				public static float DamageAmount;
+				public static short tutorialCount;
+				public static short tutorialGracePeriod;
+				public static short GrueMaxTickWait;
+				public static short GrueMinTickWait;
+			}
+		}
 
 		public static class BlockLightLevelSettings {
+			public static HashMap<Identifier, General.BlockLightLevelSettings> CONFIG = null;
 
 			public BlockLightLevelSettings(ConditionalToIntFunction<BlockState> level) {
 				this.LightLevel = level;
@@ -60,9 +92,8 @@ public class PandoraConfig {
 			public ConditionalToIntFunction<BlockState> LightLevel;
 		}
 
-		public static HashMap<Identifier, DimensionSettings> DimensionSettings = null;
-
 		public static class DimensionSettings {
+			public static HashMap<Identifier, DimensionSettings> CONFIG = null;
 
 			public DimensionSettings(CalculateFogFunction fog, boolean infested) {
 				this.FogLevel = fog;
@@ -73,9 +104,9 @@ public class PandoraConfig {
 			public boolean Infested;
 		}
 
-		public static HashMap<Identifier, GrueWardSettings> GrueWards = null;
-
 		public static class GrueWardSettings {
+			public static HashMap<Identifier, GrueWardSettings> CONFIG = null;
+
 			public double Potency;
 
 			public GrueWardSettings(double potency) {
@@ -83,17 +114,27 @@ public class PandoraConfig {
 			}
 		}
 
-		public static HashMap<Identifier, MobSettings> MobSettings = null;
-
 		public static class MobSettings {
+			public static HashMap<Identifier, MobSettings> CONFIG = null;
+
 			public double DamageMultiplier;
 			public boolean FearDarkness; // TODO look into making this a float for the ai weight?
+			public boolean IsHardcore;
 
-			public MobSettings(double damageMultiplier, boolean fearsDarkness) {
+			public MobSettings(double damageMultiplier, boolean fearsDarkness, boolean isHardcore) {
 				this.DamageMultiplier = damageMultiplier;
 				this.FearDarkness = fearsDarkness;
+				this.IsHardcore = isHardcore;
 			}
 		}
+	}
+
+	public static class Enabled {
+		public static boolean EnablePandora = true;
+		public static boolean EnableCustomFog = true;
+		public static boolean EnableCustomAI = true;
+		public static boolean EnableCustomLightmap = true;
+		public static boolean EnableGrueWards = true;
 	}
 
 	public class Debug {
@@ -115,12 +156,14 @@ public class PandoraConfig {
 	public static void loadConfig() { // TODO write yaml parser to get spans and line numbers, and to add more user
 										// friendly errors
 
-//		log.info("start");
+		// ASAP stop casting and start parsing!
 
-		General.DimensionSettings = new HashMap<>();
-		General.MobSettings = new HashMap<>();
-		General.BlockLightLevelSettings = new HashMap<>();
-		General.GrueWards = new HashMap<>();
+		log.info("[Pandora] Loading and applying config. . .");
+
+		General.DimensionSettings.CONFIG = new HashMap<>();
+		General.MobSettings.CONFIG = new HashMap<>();
+		General.BlockLightLevelSettings.CONFIG = new HashMap<>();
+		General.GrueWardSettings.CONFIG = new HashMap<>();
 
 		Load load = new Load(settings);
 		HashMap<?, ?> yamlHashMap;
@@ -152,23 +195,23 @@ public class PandoraConfig {
 		ArrayList<?> mobGroups = (ArrayList<?>) general.get("mob group settings");
 		HashMap<?, ?> debug = (HashMap<?, ?>) yamlHashMap.get("debug settings");
 
-		General.Enabled.EnablePandora = (boolean) enabled.get("enable pandora");
-		General.Enabled.EnableCustomFog = (boolean) enabled.get("enable custom fog");
-		General.Enabled.EnableCustomAI = (boolean) enabled.get("enable pandora ai");
-		General.Enabled.EnableCustomLightmap = (boolean) enabled.get("enable light modifications");
-		General.Enabled.EnableGrueWards = (boolean) enabled.get("enable grue wards");
+		PandoraConfig.Enabled.EnablePandora = (boolean) enabled.get("enable pandora");
+		PandoraConfig.Enabled.EnableCustomFog = (boolean) enabled.get("enable custom fog");
+		PandoraConfig.Enabled.EnableCustomAI = (boolean) enabled.get("enable pandora ai");
+		PandoraConfig.Enabled.EnableCustomLightmap = (boolean) enabled.get("enable light modifications");
+		PandoraConfig.Enabled.EnableGrueWards = (boolean) enabled.get("enable grue wards");
 
 		General.IgnoreSkyLight = (boolean) general.get("ignore sky light");
 		General.IgnoreMoonPhase = (boolean) general.get("ignore moon phase");
 		General.MinimumSafeLightLevel = (int) general.get("minimum safe light level");
 		General.MinimumFadeLightLevel = (int) general.get("minimum fade light level");
-		General.HardcoreAffectsOtherMobs = (boolean) general.get("hardcore affects other mobs");
+//		General.HardcoreAffectsOtherMobs = (boolean) general.get("hardcore affects other mobs");
 		General.ResetGamma = (boolean) general.get("reset gamma");
 		General.GammaValue = (double) general.get("gamma value");
 		General.GruesAttackInWater = (boolean) general.get("grues attack in water");
 		General.GruesEatItems = (boolean) general.get("grues eat items");
 
-		General.BlockLightLevelSettings = new HashMap<>();
+		General.BlockLightLevelSettings.CONFIG = new HashMap<>();
 		for (HashMap<String, ?> i : (ArrayList<HashMap<String, ?>>) blockLightSettings) {
 
 			if (!i.containsKey("light level")) {
@@ -197,7 +240,7 @@ public class PandoraConfig {
 				return lightLevel;
 			};
 
-			General.BlockLightLevelSettings.put(id, new BlockLightLevelSettings(conditional_to_int_function));
+			General.BlockLightLevelSettings.CONFIG.put(id, new General.BlockLightLevelSettings(conditional_to_int_function));
 		}
 
 		for (HashMap<String, ?> dim : (ArrayList<HashMap<String, ?>>) dimensionSettings) {
@@ -221,7 +264,7 @@ public class PandoraConfig {
 //								+ ")");
 //			}
 			for (var id : identifiers) {
-				General.DimensionSettings.put(new Identifier(id), new General.DimensionSettings(
+				General.DimensionSettings.CONFIG.put(new Identifier(id), new General.DimensionSettings(
 						(owner, color, sun_angle, oldValue, world, biome_access, sun_height, i, j, k) -> {
 							final double MIN = 0;
 							Vec3d result = oldValue;
@@ -250,7 +293,7 @@ public class PandoraConfig {
 			var potency = (double) i.get("potency");
 			var ids = (ArrayList<String>) i.get("ids");
 			for (var id : ids) {
-				General.GrueWards.put(new Identifier(id), new General.GrueWardSettings(potency));
+				General.GrueWardSettings.CONFIG.put(new Identifier(id), new General.GrueWardSettings(potency));
 			}
 		}
 
@@ -258,10 +301,12 @@ public class PandoraConfig {
 			var ids = (ArrayList<String>) i.get("ids");
 			var damageMultiplier = (double) i.get("damage multiplier");
 			var fearsDarkness = (boolean) i.get("fears darkness");
+			var isHardcore = (boolean) i.get("is hardcore");
 
 			for (var id : ids) {
 				// log.info("{} {} {}", id, damageMultiplier, fearsDarkness);
-				General.MobSettings.put(new Identifier(id), new General.MobSettings(damageMultiplier, fearsDarkness));
+				General.MobSettings.CONFIG.put(new Identifier(id),
+						new General.MobSettings(damageMultiplier, fearsDarkness, isHardcore));
 			}
 		}
 
@@ -285,6 +330,8 @@ public class PandoraConfig {
 		if (Debug.GrueMinimumTickWait <= 0) {
 			throw new IllegalArgumentException("Key \"GrueMinimumTickWait\" must be larger than 0");
 		}
+
+		log.info("[Pandora] Loaded and applied config.");
 	}
 
 	public static void saveConfigs() { // TODO finish save configs

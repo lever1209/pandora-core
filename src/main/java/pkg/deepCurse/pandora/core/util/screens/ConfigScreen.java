@@ -3,22 +3,14 @@ package pkg.deepCurse.pandora.core.util.screens;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import dev.lambdaurora.spruceui.screen.SpruceScreen;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.text.Text;
-
-public class SpruceUIScreen extends SpruceScreen {
+public class ConfigScreen {
 
 	@SuppressWarnings("unused")
-	private static Logger log = LoggerFactory.getLogger(SpruceUIScreen.class);
+	private static Logger log = LoggerFactory.getLogger(ConfigScreen.class);
 
-	@SuppressWarnings("unused")
-	private Screen parent;
+//	private Screen parent;
 
-	public SpruceUIScreen(Screen parent) {
-		super(Text.translatable("E"));
-		this.parent = parent;
-	}
+
 
 	// private SpruceOptionListWidget list;
 

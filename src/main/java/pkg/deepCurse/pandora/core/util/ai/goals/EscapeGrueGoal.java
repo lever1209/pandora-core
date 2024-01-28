@@ -49,7 +49,7 @@ public class EscapeGrueGoal extends Goal /* MoveToTargetPosGoal? */ {
 	}
 
 	public boolean canStart() {
-		if (!PandoraConfig.General.MobSettings.get(Registry.ENTITY_TYPE.getId(this.mob.getType())).FearDarkness) {
+		if (!PandoraConfig.General.MobSettings.CONFIG.get(Registry.ENTITY_TYPE.getId(this.mob.getType())).FearDarkness) {
 //			log.info("MobSettings {}", this.mob);
 			return false;
 		}

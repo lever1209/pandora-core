@@ -28,7 +28,7 @@ public class BackgroundRendererMixin {
 	private static Vec3d overrideFog(DimensionEffects effects, Vec3d color, float f, Operation<Vec3d> operation,
 			ClientWorld world, BiomeAccess access, float sunHeight, int i, int j, int k) {
 
-		var settings = PandoraConfig.General.DimensionSettings.get(world.getDimensionKey().getValue());
+		var settings = PandoraConfig.General.DimensionSettings.CONFIG.get(world.getDimensionKey().getValue());
 
 		var result = operation.call(effects, color, f);
 

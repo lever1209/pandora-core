@@ -53,7 +53,7 @@ public class DebugScreen extends Screen {
 		this.addDrawableChild(new ButtonWidget(60, 20, 59, 10, Text.translatable("pandora.menu.debug.register.hooks"),
 				(buttonWidget) -> {
 					try {
-						Pandora.registerHooks();
+						Pandora.registerCallbacks();
 					} catch (RuntimeException e) {
 						e.printStackTrace();
 					}
@@ -78,8 +78,8 @@ public class DebugScreen extends Screen {
 				}));
 		this.addDrawableChild(
 				new ButtonWidget(101, 100, 20, 10, Text.translatable("print modified block lights"), (buttonWidget) -> {
-					log.info("{}\n{}", PandoraConfig.General.BlockLightLevelSettings.entrySet(),
-							PandoraConfig.General.BlockLightLevelSettings.values());
+					log.info("{}\n{}", PandoraConfig.General.BlockLightLevelSettings.CONFIG.entrySet(),
+							PandoraConfig.General.BlockLightLevelSettings.CONFIG.values());
 				}));
 		this.addDrawableChild(new SliderWidget(0, 80, 100, 20, Text.literal("fog factor: " + factor), 1.0D) {
 

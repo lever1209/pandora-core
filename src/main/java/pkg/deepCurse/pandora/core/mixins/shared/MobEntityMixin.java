@@ -41,7 +41,7 @@ public class MobEntityMixin {
 		// TODO give a slight regen effect when near light?
 		var type = self.getType();
 		var identifier = Registry.ENTITY_TYPE.getId(type);
-		var mobSettings = PandoraConfig.General.MobSettings.get(identifier);
+		var mobSettings = PandoraConfig.General.MobSettings.CONFIG.get(identifier);
 
 //		log.info("initGoals: {} {} {}", type, identifier, mobSettings);
 
