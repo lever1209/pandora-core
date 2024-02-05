@@ -75,7 +75,7 @@ public class Pandora implements ModInitializer, PreLaunchEntrypoint {
 		RegistryEntryAddedCallback.event(Registry.BLOCK).register(BlockRegisterCallback::onEntryAdded);
 
 		callbacksRegistered = true;
-		
+
 		log.info("[Pandora] Finished registering callbacks.");
 	}
 

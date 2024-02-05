@@ -98,7 +98,7 @@ public class EndServerWorldTickCallback {
 					log.info("on fire");
 					continue;
 				}
-				
+
 				// if uses fully submerged it can get annoying while swimming
 				if (livingEntity.isTouchingWater() && !dimensionSettings.gruesAttackInWater) {
 					continue;

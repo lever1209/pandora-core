@@ -151,7 +151,8 @@ public class DebugScreen extends Screen {
 
 		this.addDrawableChild(
 				new ButtonWidget(buttonPosX * buttonWidth - buttonWidthPadding + centerOffsetHorizontalPosition,
-						Math.min(buttonPosY++ * buttonHeight - buttonHeightPadding + centerOffsetVerticalPosition, height-buttonHeight),
+						Math.min(buttonPosY++ * buttonHeight - buttonHeightPadding + centerOffsetVerticalPosition,
+								height - buttonHeight),
 						buttonWidth - (buttonWidthPadding * 2), buttonHeight - (buttonHeightPadding * 2),
 						Text.translatable("pandora.menu.return"), (ButtonWidget var1) -> {
 							this.client.setScreen(this.parent);

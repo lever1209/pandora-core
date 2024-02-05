@@ -19,7 +19,8 @@ import pkg.deepCurse.pandora.common.PandoraConfig;
 import pkg.deepCurse.pandora.common.PandoraConfig.Client;
 
 /**
- * I dont know how or why, but whenever i touch anything in this entire class it breaks silently
+ * I dont know how or why, but whenever i touch anything in this entire class it
+ * breaks silently
  * 
  * so far ive wasted 12 hours debugging it and trying to fix it
  */
@@ -31,29 +32,29 @@ public class DarknessTools {
 //	}
 
 	private static float skyFactor(World world) {
-	var dimSettings = PandoraConfig.Server.SERVER.DimensionSettings.get(world.getRegistryKey().getValue());
+		var dimSettings = PandoraConfig.Server.SERVER.DimensionSettings.get(world.getRegistryKey().getValue());
 
-	if (!world.getDimension().hasSkyLight()) {
-		return 0;
-	}
+		if (!world.getDimension().hasSkyLight()) {
+			return 0;
+		}
 
-	if (world.getDimension().hasSkyLight() && dimSettings.ignoreSkyLight) {
+		if (world.getDimension().hasSkyLight() && dimSettings.ignoreSkyLight) {
+			return 1;
+		}
+
+		final float angle = world.getSkyAngle(0);
+
+		if (angle > 0.25f && angle < 0.75f) { // TODO fine tune these angles
+			final float oldWeight = Math.max(0, (Math.abs(angle - 0.5f) - 0.2f)) * 20;
+			// {1.0f, 0.75f, 0.5f, 0.25f, 0.0f, 0.25f, 0.5f, 0.75f}
+			final float moon = DimensionType.MOON_SIZES[dimSettings.lockMoonPhase ? dimSettings.targetMoonPhase
+					: world.getDimension().getMoonPhase(world.getLunarTime())];
+
+			return MathHelper.lerp(oldWeight * oldWeight * oldWeight, moon * moon, 1f);
+		}
+
 		return 1;
 	}
-
-	final float angle = world.getSkyAngle(0);
-
-	if (angle > 0.25f && angle < 0.75f) { // TODO fine tune these angles
-		final float oldWeight = Math.max(0, (Math.abs(angle - 0.5f) - 0.2f)) * 20;
-		// {1.0f, 0.75f, 0.5f, 0.25f, 0.0f, 0.25f, 0.5f, 0.75f}
-		final float moon = DimensionType.MOON_SIZES[dimSettings.lockMoonPhase ? dimSettings.targetMoonPhase
-				: world.getDimension().getMoonPhase(world.getLunarTime())];
-		
-		return MathHelper.lerp(oldWeight * oldWeight * oldWeight, moon * moon, 1f);
-	}
-
-	return 1;
-}
 
 	private static final float[][] LUMINANCE = new float[16][16];
 
@@ -73,17 +74,17 @@ public class DarknessTools {
 	public static float luminance(float r, float g, float b) {
 		return r * 0.2126f + g * 0.7152f + b * 0.0722f;
 	}
-	
+
 	public static boolean ENABLE_WORKSPACE_DARKNESS = true;
-	
-	public static void updateLuminance(float tickDelta, MinecraftClient client,
-			GameRenderer worldRenderer, float prevFlicker) { // TODO fix this up
+
+	public static void updateLuminance(float tickDelta, MinecraftClient client, GameRenderer worldRenderer,
+			float prevFlicker) { // TODO fix this up
 		final ClientWorld world = client.world;
 
 		final boolean isDark = Client.CLIENT.DimensionSettings.get(world.getRegistryKey().getValue()).isDark;
-		
+
 //		Pandora.log.info("{}", isDark);
-		
+
 		if (world != null) {
 			if (!isDark || client.player.hasStatusEffect(StatusEffects.NIGHT_VISION)
 					|| (client.player.hasStatusEffect(StatusEffects.CONDUIT_POWER)

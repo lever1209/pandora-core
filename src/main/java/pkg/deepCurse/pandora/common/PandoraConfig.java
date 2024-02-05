@@ -31,7 +31,7 @@ public class PandoraConfig {
 
 	public static class Enabled {
 		public static PandoraConfig.Enabled ENABLED;
-		
+
 		public boolean EnablePandora = true;
 		public boolean EnableCustomFog = true;
 		public boolean EnableCustomAI = true;
@@ -42,7 +42,7 @@ public class PandoraConfig {
 	@Environment(EnvType.CLIENT)
 	public static class Client {
 		public static PandoraConfig.Client CLIENT;
-		
+
 		// TODO re implement?
 		public boolean ResetGamma;
 		public float GammaValue;
@@ -68,7 +68,7 @@ public class PandoraConfig {
 
 //	@Environment(EnvType.SERVER)
 	public static class Server {
-		
+
 		public static PandoraConfig.Server SERVER;
 
 		public boolean GruesEatItems = true;
@@ -154,8 +154,8 @@ public class PandoraConfig {
 			public int minimumFadeLightLevel;
 			public boolean gruesAttackInWater;
 
-			public DimensionSetting(boolean infested, boolean ignoreSkyLight,
-					boolean lockMoonPhase, int targetMoonPhase, int minimumSafeLightLevel, int minimumFadeLightLevel,
+			public DimensionSetting(boolean infested, boolean ignoreSkyLight, boolean lockMoonPhase,
+					int targetMoonPhase, int minimumSafeLightLevel, int minimumFadeLightLevel,
 					boolean gruesAttackInWater) {
 				this.infested = infested;
 				this.minimumSafeLightLevel = minimumSafeLightLevel;
@@ -216,7 +216,7 @@ public class PandoraConfig {
 
 	public static class Debug {
 		public static PandoraConfig.Debug DEBUG;
-		
+
 		public float flameLightSourceDecayRate = 1.0f;
 		public boolean forceGruesAlwaysAttack = false;
 
@@ -473,8 +473,8 @@ public class PandoraConfig {
 					var gruesAttackInWater = Boolean.parseBoolean(dim.get("grues attack in water").toString());
 
 					server.DimensionSettings.put(id,
-							new Server.DimensionSetting(infested, ignoreSkyLight, lockMoonPhase,
-									targetMoonPhase, minimumSafeLightLevel, minimumFadeLightLevel, gruesAttackInWater));
+							new Server.DimensionSetting(infested, ignoreSkyLight, lockMoonPhase, targetMoonPhase,
+									minimumSafeLightLevel, minimumFadeLightLevel, gruesAttackInWater));
 				}
 			}
 		}
@@ -549,37 +549,37 @@ public class PandoraConfig {
 		LinkedHashMap<String, Object> rootMap = yaml.load(is);
 
 		Client client = new Client();
-		
+
 		client.DimensionSettings = new LinkedHashMap<>();
 
 		client.ResetGamma = Boolean.parseBoolean(rootMap.getOrDefault("reset gamma", client.ResetGamma).toString());
 		client.GammaValue = Float.parseFloat(rootMap.getOrDefault("gamma value", client.GammaValue).toString());
 
 		// dimension settings
-				{
-					@SuppressWarnings("unchecked") // if i could do this without casting i would
-					ArrayList<HashMap<String, Object>> dimensionSettings = (ArrayList<HashMap<String, Object>>) rootMap
-							.get("dimension settings");
+		{
+			@SuppressWarnings("unchecked") // if i could do this without casting i would
+			ArrayList<HashMap<String, Object>> dimensionSettings = (ArrayList<HashMap<String, Object>>) rootMap
+					.get("dimension settings");
 
-					for (HashMap<String, ?> dim : dimensionSettings) {
+			for (HashMap<String, ?> dim : dimensionSettings) {
 
-						@SuppressWarnings("unchecked") // if i could do this without casting i would
-						ArrayList<String> identifiers = (ArrayList<String>) dim.get("ids");
+				@SuppressWarnings("unchecked") // if i could do this without casting i would
+				ArrayList<String> identifiers = (ArrayList<String>) dim.get("ids");
 
-						if (identifiers == null) {
-							throw new IllegalArgumentException(
-									"Element does not contain required key \"ids\", please add it to the element. (" + dim
-											+ ")");
-						}
+				if (identifiers == null) {
+					throw new IllegalArgumentException(
+							"Element does not contain required key \"ids\", please add it to the element. (" + dim
+									+ ")");
+				}
 
-						for (var cid : identifiers) {
+				for (var cid : identifiers) {
 
-							// TODO replace clamps with errors?
+					// TODO replace clamps with errors?
 
-							var id = new Identifier(cid);
-							var fogFactor = MathHelper.clamp(Float.parseFloat(dim.get("fog factor").toString()), 0f, 1f);
+					var id = new Identifier(cid);
+					var fogFactor = MathHelper.clamp(Float.parseFloat(dim.get("fog factor").toString()), 0f, 1f);
 //							var infested = Boolean.parseBoolean(dim.get("infested").toString());
-							var isDark = Boolean.parseBoolean(dim.get("is dark").toString());
+					var isDark = Boolean.parseBoolean(dim.get("is dark").toString());
 //							var ignoreSkyLight = Boolean.parseBoolean(dim.get("ignore sky light").toString());
 //							var lockMoonPhase = Boolean.parseBoolean(dim.get("lock moon phase").toString());
 //							var targetMoonPhase = MathHelper.clamp(Integer.parseInt(dim.get("target moon phase").toString()), 0,
@@ -590,12 +590,11 @@ public class PandoraConfig {
 //									.clamp(Integer.parseInt(dim.get("minimum fade light level").toString()), 0, 15);
 //							var gruesAttackInWater = Boolean.parseBoolean(dim.get("grues attack in water").toString());
 
-							client.DimensionSettings.put(id,
-									new Client.DimensionSetting(fogFactor, isDark));
-						}
-					}
+					client.DimensionSettings.put(id, new Client.DimensionSetting(fogFactor, isDark));
 				}
-		
+			}
+		}
+
 		Client.CLIENT = client;
 		log.info("[Pandora] Client config loaded.");
 	}

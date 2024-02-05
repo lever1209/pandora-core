@@ -33,16 +33,16 @@ public class NativeImageBackedTextureMixin implements TextureAccess {
 
 	@Inject(method = "upload", at = @At(value = "HEAD"))
 	private void onUpload(CallbackInfo ci) {
-		
+
 //		log.info("ON{}",enableHook && DarknessTools.ENABLE_WORKSPACE_DARKNESS && image != null);
-		
+
 		if (enableHook && DarknessTools.ENABLE_WORKSPACE_DARKNESS && image != null) {
 //			final NativeImage img = image;
 
 			for (int b = 0; b < 16; b++) {
 				for (int s = 0; s < 16; s++) {
 					int color = DarknessTools.darken(image.getColor(b, s), b, s);
-					
+
 					image.setColor(b, s, color);
 				}
 			}
