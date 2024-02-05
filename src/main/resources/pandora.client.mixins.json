@@ -1,0 +1,15 @@
+{
+	"required": true,
+	"minVersion": "0.8",
+	"package": "pkg.deepCurse.pandora.client.mixins",
+	"compatibilityLevel": "JAVA_17",
+	"mixins": [
+		"BackgroundRendererMixin",
+		"GameRendererMixin",
+		"LightmapTextureManagerMixin",
+		"NativeImageBackedTextureMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

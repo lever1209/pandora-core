@@ -17,17 +17,19 @@
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"pkg.deepCurse.pandora.core.Pandora"
+			"pkg.deepCurse.pandora.common.Pandora"
 		],
 		"preLaunch": [
-			"pkg.deepCurse.pandora.core.Pandora"
+			"pkg.deepCurse.pandora.common.Pandora"
 		],
 		"modmenu": [
-			"pkg.deepCurse.pandora.core.util.integrations.ModMenuIntegration"
+			"pkg.deepCurse.pandora.common.util.integrations.ModMenuIntegration"
 		]
 	},
 	"mixins": [
-		"pandora.mixins.json"
+		"pandora.mixins.json",
+		"pandora.client.mixins.json",
+		"pandora.server.mixins.json"
 	],
 	"depends": {
 		"fabricloader": ">=0.15.0",

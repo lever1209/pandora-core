@@ -1,0 +1,11 @@
+{
+	"required": true,
+	"minVersion": "0.8",
+	"package": "pkg.deepCurse.pandora.server.mixins",
+	"compatibilityLevel": "JAVA_17",
+	"server": [
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

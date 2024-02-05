@@ -1,0 +1,47 @@
+# To restore this config to its original values, simply delete this file and start the mod again
+# This config is very specific with what it needs for each key
+# But dont worry, the mod will tell you if something goes wrong while loading it
+# And the mod will even tell you what is wrong and how to fix it
+# You just need to look for a message marked [Pandora Help] in the logs (.minecraft/logs/latest.log)
+# You can hit <ctrl> F and notepad to find it for you
+# If you have any questions feel free to join my discord (https://discord.gg/T4kjkyZUw2)
+
+# This section is under debate
+#
+## Should certain sections of this mod be enabled
+#enabled:
+#  # The entire mod # this is not something you can simply disable, TODO re check over all the enable/disable code
+#  # enable pandora: true
+#  # custom dimension fog, the fog that cuts off the edge of the render distance
+#  enable custom fog: true
+#  # Allows entities to run towards light and stay within the light, as well as use grue wards
+#  enable pandora ai: true
+#  # Change block brightness depending on the darkness level of the world
+#  enable light modifications: true
+#  # Should certian glowing items scare away grues
+#  enable grue wards: true
+
+# should your gamma be reset on client start
+reset gamma: true
+# what value it should be reset to
+gamma value: 1.0
+
+# if a dimension id is not included, the mod ignores that dimension
+dimension settings:
+  # The order here does not matter, you can reorganize them however you please
+
+  # ids                         : a list of dimension ids, for example: ["minecraft:overworld", "minecraft:the_nether", "pandora:corruption"] means those three dimensions have these settings
+  # fog factor                  : a double value between 0(black) and 1(vanilla)
+  # is dark                     : whether or not the worlds shadows should be black
+
+  - ids: ["minecraft:overworld"]
+    fog factor: 0.7
+    is dark: true
+  
+  - ids: ["minecraft:the_nether"]
+    fog factor: 0.5
+    is dark: true
+    
+  - ids: ["minecraft:the_end"]
+    fog factor: 0.3
+    is dark: true

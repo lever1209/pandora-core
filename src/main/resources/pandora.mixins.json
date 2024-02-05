@@ -1,23 +1,14 @@
 {
 	"required": true,
 	"minVersion": "0.8",
-	"package": "pkg.deepCurse.pandora.core.mixins",
+	"package": "pkg.deepCurse.pandora.common.mixins",
 	"compatibilityLevel": "JAVA_17",
 	"mixins": [
-		"shared.accessors.LuminanceOverride",
-		"shared.StateMixin",
-		"shared.MobEntityMixin",
-		"shared.SoulFireBlockMixin",
-		"shared.PlayerEntityMixin"
-	],
-	"client": [
-		"client.BackgroundRendererMixin",
-		"client.GameRendererMixin",
-		"client.LightmapTextureManagerMixin",
-		"client.NativeImageBackedTextureMixin"
-	],
-	"server": [
-		
+		"accessors.LuminanceOverride",
+		"StateMixin",
+		"MobEntityMixin",
+		"SoulFireBlockMixin",
+		"PlayerEntityMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

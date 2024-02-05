@@ -1,14 +1,17 @@
 
+should hardcore mode be intentionally unfair? if its tailored to how *you* like it, its already plenty unfair
+should changing difficulties refresh your tutorial information? yes
+
 wrapper block to contain all perishable light blocks and run custom things on em
  ^^ make that a library? at the very least include an api to add custom logic on it
+
+nbt tags for literally everything as read only, for entity specific overrides such as adventure maps or the like
 
 protective gear for dogs and horses
 
 suggestions: trade for ink sacs to emeralds
 
 amethyst glow squids phantom membrane conduit
-
-make an advanced config file that contains everything that needs to sync
 
 add button on worlds menu to recalculate all blocks lighting, potentially dangerous with non vanilla, so throw up a warning, this "solves" the lighting artifacts when changing lighting values without needing too much cpu power in game, should only be used when editing these values or when converting world to pandora since all lighting values are cached
 create a utility to load all chunks within a world, update all block luminance values with the ones stored in configs

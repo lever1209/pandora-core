@@ -1,14 +1,14 @@
 {
 	
 	"pandora.menu.return": "Return",
-	"pandora.true":"True",
-	"pandora.false":"False",
+	"pandora.true": "True",
+	"pandora.false": "False",
 	"pandora.identifier": "Identifier",
 	"pandora.id": "ID",
 	"pandora.identifiers": "Identifiers",
 	"pandora.ids": "IDs",
 	
-	"pandora.config.menu.title":"Pandora Config Menu",
+	"pandora.config.menu.title": "Pandora Config Menu",
 	
 	"pandora.config.menu.enable": "Enabled",
 	"pandora.config.menu.enable.pandora": "Enable Pandora",
@@ -60,10 +60,49 @@
 	"pandora.config.menu.debug.GrueMaximumTickWait": "GrueMaximumTickWait",
 	"pandora.config.menu.debug.GrueMinimumTickWait": "GrueMinimumTickWait",
 	
+	"pandora.menu.debug.title": "Debug Menu",
+	"pandora.menu.debug.previous.page": "Previous page",
+	"pandora.menu.debug.previous.page.tooltip": "Switches to the previous page",
+	"pandora.menu.debug.previous.page.tooltip.disabled": "You are already on the first page",
+	"pandora.menu.debug.next.page": "Next page",
+	"pandora.menu.debug.next.page.tooltip": "Switches to the next page",
+	"pandora.menu.debug.next.page.tooltip.disabled": "You are already on the last page",
 	
+	"pandora.menu.debug.page0": "Empty",
+	"pandora.menu.debug.page1": "Configs",
+	"pandora.menu.debug.page2": "Stuff",
+	
+	"pandora.menu.debug.initialize": "Initialize",
+	"pandora.menu.debug.modify.registries": "Modify registries",
+	"pandora.menu.debug.register.callbacks": "Register callbacks",
+	"pandora.menu.debug.fix.chunk.lighting": "Fix world chunk lighting",
+	"pandora.menu.debug.fix.chunk.lighting.tooltip": "NYI This will take the current world and re cache all lights in all chunks, this is meant to be used after editing the block light settings in the server config as those new values have not been re calculated in the worlds chunks yet, this is an alternative to simply re placing all the blocks that you changed in all chunks they are present in.",
+	
+	"pandora.menu.debug.save.config.client": "Save client config",
+	"pandora.menu.debug.save.config.server": "Save server config",
+	"pandora.menu.debug.save.config.debug": "Save debug config",
+	"pandora.menu.debug.save.config.all": "Save configs",
+	
+	"pandora.menu.debug.load.config.client": "Load client config",
+	"pandora.menu.debug.load.config.server": "Load server config",
+	"pandora.menu.debug.load.config.debug": "Load debug config",
+	"pandora.menu.debug.load.config.all": "Load configs",
+	
+	"pandora.menu.debug.delete.config.client": "Delete client config",
+	"pandora.menu.debug.delete.config.server": "Delete server config",
+	"pandora.menu.debug.delete.config.debug": "Delete debug config",
+	"pandora.menu.debug.delete.config.all": "Delete configs",
+	
+	"pandora.menu.debug.unpack.config.client": "Unpackage client config",
+	"pandora.menu.debug.unpack.config.server": "Unpackage server config",
+	"pandora.menu.debug.unpack.config.debug": "Unpackage debug config",
+	"pandora.menu.debug.unpack.config.all": "Unpackage configs",
+	
+	"pandora.menu.debug.print.modified.block.lights": "Print modified block lights",
+	"pandora.menu.debug.print.dimension.settings": "Print current dimension settings",
 	
 	"death.attack.pandora.darkness": "%1$s was eaten by a grue",
 	"death.attack.pandora.darkness.player": "%1$s was forced into the darkness by %2$s and eaten by a grue",
 	
-	"item.pandora.revenant_flint":"Flint and Soul"
+	"item.pandora.revenant_flint": "Flint and Soul"
 }
