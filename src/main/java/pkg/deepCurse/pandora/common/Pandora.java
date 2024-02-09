@@ -7,10 +7,12 @@ import org.slf4j.LoggerFactory;
 
 import com.llamalad7.mixinextras.MixinExtrasBootstrap;
 
+import net.fabricmc.api.EnvType;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.registry.RegistryEntryAddedCallback;
+import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.entrypoint.PreLaunchEntrypoint;
 import net.minecraft.block.Block;
 import net.minecraft.util.registry.Registry;
@@ -22,6 +24,12 @@ import pkg.deepCurse.pandora.common.util.callbacks.EndServerWorldTickCallback;
 public class Pandora implements ModInitializer, PreLaunchEntrypoint {
 
 	// ASAP environment types on all classes
+	// ASAP fix underground fog
+	// ASAP fix the assumed entries in the config files, mainly just null checks
+
+	// Remember, you can fix a worlds lighting incompatibilities with the config by
+	// "optimizing" it in the edit world option menu, just remember to hit clear
+	// cache and it will take a while
 
 	public static Logger log = LoggerFactory.getLogger(Pandora.class);
 
@@ -39,7 +47,7 @@ public class Pandora implements ModInitializer, PreLaunchEntrypoint {
 
 		log.info("[Pandora] Initializing mod. . .");
 
-		PandoraConfig.loadConfigs();
+		ConfigUtils.loadConfigs();
 
 		modifyRegistries();
 
@@ -69,14 +77,21 @@ public class Pandora implements ModInitializer, PreLaunchEntrypoint {
 			return;
 		}
 
+		callbacksRegistered = true;
+
 		ServerTickEvents.END_WORLD_TICK.register(EndServerWorldTickCallback::onEndTick);
 		ServerPlayerEvents.AFTER_RESPAWN.register(AfterServerPlayerRespawnCallback::afterRespawn);
 
 		RegistryEntryAddedCallback.event(Registry.BLOCK).register(BlockRegisterCallback::onEntryAdded);
 
-		callbacksRegistered = true;
+		if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
+			pkg.deepCurse.pandora.client.ClientInitialization.registerCallbacks();
+		}
+
+		if (FabricLoader.getInstance().getEnvironmentType() == EnvType.SERVER) {
+			pkg.deepCurse.pandora.server.ServerInitialization.registerCallbacks();
+		}
 
 		log.info("[Pandora] Finished registering callbacks.");
 	}
-
 }

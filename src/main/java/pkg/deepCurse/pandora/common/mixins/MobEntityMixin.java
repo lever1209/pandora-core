@@ -14,7 +14,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
-import pkg.deepCurse.pandora.common.PandoraConfig.Server;
+import pkg.deepCurse.pandora.common.CommonConfig;
 import pkg.deepCurse.pandora.common.util.ai.goals.EscapeGrueGoal;
 
 @Mixin(MobEntity.class) // TODO modify all wander goals to prioritize light over dark, but not to make
@@ -37,8 +37,8 @@ public class MobEntityMixin {
 		// TODO give a slight regen effect when near light?
 		var type = self.getType();
 		var identifier = Registry.ENTITY_TYPE.getId(type);
-		var mobSettings = Server.SERVER.MobSettings.get(identifier);
-		var dimensionSettings = Server.SERVER.DimensionSettings.get(world.getDimensionKey().getValue());
+		var mobSettings = CommonConfig.COMMON.MobSettings.get(identifier);
+		var dimensionSettings = CommonConfig.COMMON.DimensionSettings.get(world.getDimensionKey().getValue());
 
 		// TODO add support for prioritizing safe over fade, but allow fade
 		// ASAP come back here later

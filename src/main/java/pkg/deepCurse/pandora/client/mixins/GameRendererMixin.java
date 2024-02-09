@@ -13,13 +13,16 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.util.math.MatrixStack;
+import pkg.deepCurse.pandora.client.ClientTools;
 import pkg.deepCurse.pandora.common.util.interfaces.LightmapAccess;
-import pkg.deepCurse.pandora.common.util.tools.DarknessTools;
 
+@Environment(EnvType.CLIENT)
 @Mixin(GameRenderer.class)
 public class GameRendererMixin {
 
@@ -37,7 +40,7 @@ public class GameRendererMixin {
 
 		if (lightmap.darkness_isDirty()) {
 			client.getProfiler().push("lightTex");
-			DarknessTools.updateLuminance(tickDelta, client, (GameRenderer) (Object) this,
+			ClientTools.updateLuminance(tickDelta, client, (GameRenderer) (Object) this,
 					lightmap.darkness_prevFlicker());
 			client.getProfiler().pop();
 		}

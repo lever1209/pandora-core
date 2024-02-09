@@ -14,11 +14,14 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
+import pkg.deepCurse.pandora.client.ClientTools;
 import pkg.deepCurse.pandora.common.util.interfaces.TextureAccess;
-import pkg.deepCurse.pandora.common.util.tools.DarknessTools;
 
+@Environment(EnvType.CLIENT)
 @Mixin(NativeImageBackedTexture.class)
 public class NativeImageBackedTextureMixin implements TextureAccess {
 
@@ -36,12 +39,12 @@ public class NativeImageBackedTextureMixin implements TextureAccess {
 
 //		log.info("ON{}",enableHook && DarknessTools.ENABLE_WORKSPACE_DARKNESS && image != null);
 
-		if (enableHook && DarknessTools.ENABLE_WORKSPACE_DARKNESS && image != null) {
+		if (enableHook && ClientTools.ENABLE_WORKSPACE_DARKNESS && image != null) {
 //			final NativeImage img = image;
 
 			for (int b = 0; b < 16; b++) {
 				for (int s = 0; s < 16; s++) {
-					int color = DarknessTools.darken(image.getColor(b, s), b, s);
+					int color = ClientTools.darken(image.getColor(b, s), b, s);
 
 					image.setColor(b, s, color);
 				}

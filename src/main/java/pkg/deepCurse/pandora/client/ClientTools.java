@@ -3,7 +3,7 @@
  * I have been given permission to use this file under BSD-3 by grondag <3
  */
 
-package pkg.deepCurse.pandora.common.util.tools;
+package pkg.deepCurse.pandora.client;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -15,8 +15,6 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
-import pkg.deepCurse.pandora.common.PandoraConfig;
-import pkg.deepCurse.pandora.common.PandoraConfig.Client;
 
 /**
  * I dont know how or why, but whenever i touch anything in this entire class it
@@ -25,14 +23,10 @@ import pkg.deepCurse.pandora.common.PandoraConfig.Client;
  * so far ive wasted 12 hours debugging it and trying to fix it
  */
 @Environment(EnvType.CLIENT)
-public class DarknessTools {
-
-//	private static boolean isDark(World world) {
-//		return PandoraConfig.CLIENT.DimensionSettings.get(world.getRegistryKey().getValue()).isDark;
-//	}
+public class ClientTools {
 
 	private static float skyFactor(World world) {
-		var dimSettings = PandoraConfig.Server.SERVER.DimensionSettings.get(world.getRegistryKey().getValue());
+		var dimSettings = ClientConfig.CLIENT.DimensionSettings.get(world.getRegistryKey().getValue());
 
 		if (!world.getDimension().hasSkyLight()) {
 			return 0;
@@ -81,20 +75,43 @@ public class DarknessTools {
 			float prevFlicker) { // TODO fix this up
 		final ClientWorld world = client.world;
 
-		final boolean isDark = Client.CLIENT.DimensionSettings.get(world.getRegistryKey().getValue()).isDark;
+		// FIXME assumed exists
+
+		final var clientSettings = ClientConfig.CLIENT.DimensionSettings.get(world.getRegistryKey().getValue());
 
 //		Pandora.log.info("{}", isDark);
 
 		if (world != null) {
-			if (!isDark || client.player.hasStatusEffect(StatusEffects.NIGHT_VISION)
-					|| (client.player.hasStatusEffect(StatusEffects.CONDUIT_POWER)
-							&& client.player.getUnderwaterVisibility() > 0)
-					|| world.getLightningTicksLeft() > 0) {
+
+			if (clientSettings == null) {
 				ENABLE_WORKSPACE_DARKNESS = false;
 				return;
-			} else {
-				ENABLE_WORKSPACE_DARKNESS = true;
 			}
+
+			final boolean isDark = clientSettings.isDark;
+
+			if (!isDark) {
+				ENABLE_WORKSPACE_DARKNESS = false;
+				return;
+			}
+
+			if (client.player.hasStatusEffect(StatusEffects.NIGHT_VISION)) {
+				ENABLE_WORKSPACE_DARKNESS = false;
+				return;
+			}
+
+			if (client.player.hasStatusEffect(StatusEffects.CONDUIT_POWER)
+					&& client.player.getUnderwaterVisibility() > 0) {
+				ENABLE_WORKSPACE_DARKNESS = false;
+				return;
+			}
+
+			if (world.getLightningTicksLeft() > 0) {
+				ENABLE_WORKSPACE_DARKNESS = false;
+				return;
+			}
+
+			ENABLE_WORKSPACE_DARKNESS = true;
 
 			final float dimSkyFactor = skyFactor(world);
 			final float ambient = world.getStarBrightness(1.0F);

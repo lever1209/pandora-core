@@ -17,14 +17,13 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
+import pkg.deepCurse.pandora.common.CommonConfig;
+import pkg.deepCurse.pandora.common.CommonConfig.DifficultySettingsEnum;
+import pkg.deepCurse.pandora.common.CommonTools;
+import pkg.deepCurse.pandora.common.DebugConfig;
 import pkg.deepCurse.pandora.common.GrueDamageSource;
-import pkg.deepCurse.pandora.common.PandoraConfig;
-import pkg.deepCurse.pandora.common.PandoraConfig.Debug;
-import pkg.deepCurse.pandora.common.PandoraConfig.Server;
-import pkg.deepCurse.pandora.common.PandoraConfig.Server.DifficultySettingsEnum;
 import pkg.deepCurse.pandora.common.util.interfaces.PlayerGrueDataInterface;
 import pkg.deepCurse.pandora.common.util.managers.EntityCooldownManager;
-import pkg.deepCurse.pandora.common.util.tools.PandoraTools;
 
 public class EndServerWorldTickCallback {
 
@@ -40,7 +39,6 @@ public class EndServerWorldTickCallback {
 	// TODO glow squids
 
 	public static void onEndTick(ServerWorld world) {
-		world.getProfiler().push("pandoraEndTickCallback");
 
 		var dimensionKey = world.getDimensionKey().getValue();
 		var dimensionalCooldownManager = dimensionalCooldownManagerHashMap.get(dimensionKey);
@@ -49,10 +47,12 @@ public class EndServerWorldTickCallback {
 			return;
 		}
 
-		var serverSettings = PandoraConfig.Server.SERVER;
-		var dimensionSettings = serverSettings.DimensionSettings.get(dimensionKey);
-		var difficultySettingsEnum = PandoraConfig.Server.DifficultySettingsEnum.getFromWorld(world);
-		var difficultySettings = serverSettings.DifficultySettingsMap.get(difficultySettingsEnum);
+		world.getProfiler().push("pandoraEndTickCallback");
+
+		var commonSettings = CommonConfig.COMMON;
+		var dimensionSettings = commonSettings.DimensionSettings.get(dimensionKey);
+		var difficultySettingsEnum = CommonConfig.DifficultySettingsEnum.getFromDifficulty(world.getDifficulty());
+		var difficultySettings = commonSettings.DifficultySettingsMap.get(difficultySettingsEnum);
 
 		if (dimensionSettings.infested && difficultySettings.damageAmount != 0f) {
 			Iterator<Entity> entities = world.iterateEntities().iterator();
@@ -61,8 +61,8 @@ public class EndServerWorldTickCallback {
 				Entity entity = entities.next();
 
 				if (!(entity instanceof LivingEntity)) {
-					if (entity.getType() == EntityType.ITEM && serverSettings.GruesEatItems
-							&& worldRandomFloat < serverSettings.GruesEatItemsChance) {
+					if (entity.getType() == EntityType.ITEM && commonSettings.GruesEatItems
+							&& worldRandomFloat < commonSettings.GruesEatItemsChance) {
 						entity.kill();
 					}
 					continue;
@@ -70,14 +70,16 @@ public class EndServerWorldTickCallback {
 
 				LivingEntity livingEntity = (LivingEntity) entity;
 
+				float modifiedDamageAmount = difficultySettings.damageAmount;
+
 				if (livingEntity.getType() == EntityType.PLAYER) {
 					var playerEntity = (PlayerEntity) livingEntity;
-					if (playerEntity.isCreative()) {
+					if (playerEntity.isCreative() || playerEntity.isSpectator()) {
 						continue;
 					}
-					if (world.getServer().isHardcore() && serverSettings.Player_UsesHardcoreDifficulty)
-						difficultySettings = serverSettings.DifficultySettingsMap.get(DifficultySettingsEnum.Hardcore);
-					difficultySettings.damageAmount *= serverSettings.Player_DamageMultiplier;
+					if (world.getServer().isHardcore() && commonSettings.Player_UsesHardcoreDifficulty)
+						difficultySettings = commonSettings.DifficultySettingsMap.get(DifficultySettingsEnum.Hardcore);
+					modifiedDamageAmount *= commonSettings.Player_DamageMultiplier;
 				}
 
 				if (livingEntity.getType() != EntityType.PLAYER) {
@@ -85,17 +87,16 @@ public class EndServerWorldTickCallback {
 					if (worldRandomFloat < 0.9f /* 90% chance to not attack */) {
 						continue;
 					}
-					var mob_settings = serverSettings.MobSettings.get(Registry.ENTITY_TYPE.getId(entity.getType()));
+					var mob_settings = commonSettings.MobSettings.get(Registry.ENTITY_TYPE.getId(entity.getType()));
 					if (mob_settings == null) {
 						continue;
 					}
 					if (world.getServer().isHardcore() && mob_settings.isHardcore)
-						difficultySettings = serverSettings.DifficultySettingsMap.get(DifficultySettingsEnum.Hardcore);
-					difficultySettings.damageAmount *= mob_settings.damageMultiplier;
+						difficultySettings = commonSettings.DifficultySettingsMap.get(DifficultySettingsEnum.Hardcore);
+					modifiedDamageAmount *= mob_settings.damageMultiplier;
 				}
 
 				if (livingEntity.isOnFire()) {
-					log.info("on fire");
 					continue;
 				}
 
@@ -121,12 +122,12 @@ public class EndServerWorldTickCallback {
 					continue;
 				}
 
-				if (PandoraTools.isNearLight(world, entityLocation, dimensionSettings.minimumSafeLightLevel)) {
+				if (CommonTools.isNearLight(world, entityLocation, dimensionSettings.minimumSafeLightLevel)) {
 					continue;
 				}
 
 				// TODO config this attack chance in difficulty settings
-				if (PandoraTools.isNearLight(world, entityLocation, dimensionSettings.minimumFadeLightLevel)
+				if (CommonTools.isNearLight(world, entityLocation, dimensionSettings.minimumFadeLightLevel)
 						&& worldRandomFloat < 0.60f/* 60% chance to fail */) {
 					continue;
 				}
@@ -165,7 +166,7 @@ public class EndServerWorldTickCallback {
 				Iterator<ItemStack> itemStack = entity.getItemsEquipped().iterator();
 				while (itemStack.hasNext()) {
 					var item = itemStack.next().getItem();
-					var wardSettings = Server.SERVER.GrueWardSettings.get(Registry.ITEM.getId(item));
+					var wardSettings = CommonConfig.COMMON.GrueWardSettings.get(Registry.ITEM.getId(item));
 					if (wardSettings != null) {
 						if (wardPotency < wardSettings.potency) {
 							wardPotency = wardSettings.potency;
@@ -173,7 +174,7 @@ public class EndServerWorldTickCallback {
 					}
 				}
 
-				if (Debug.DEBUG.forceGruesAlwaysAttack) {
+				if (DebugConfig.DEBUG.forceGruesAlwaysAttack) {
 					worldRandomFloat = 1;
 					wardPotency = 0f;
 				}
@@ -200,13 +201,19 @@ public class EndServerWorldTickCallback {
 
 						// TODO gamerule for grue tutorials?
 						if (playerDataInterface.getTutorialEncountersLeft() > 0
-								&& playerDataInterface.getLastTutorialEncounterTime()
-										+ difficultySettings.grueTutorialGracePeriod < world.getTime()) {
+								&& (playerDataInterface.getLastTutorialEncounterTime()
+										+ difficultySettings.grueTutorialGracePeriod < world.getTime()
+										|| playerDataInterface.skipTimeCheck())) { // the default time check could
+																					// instead be set to a negative
+																					// number, but this feels more solid
 
 							hasTutorial = true;
+
 							playerDataInterface.setTutorialEncountersLeft(
 									(short) (playerDataInterface.getTutorialEncountersLeft() - 1));
 							playerDataInterface.setLastTutorialEncounterTime(world.getTime());
+							playerDataInterface.setSkipTimeCheck(false);
+
 							playerEntity.sendMessage(Text.translatable("pandora.grue.tutorial"));
 							dimensionalCooldownManager.set(entity, cooldownTime + 200);
 						}
@@ -214,7 +221,8 @@ public class EndServerWorldTickCallback {
 					}
 
 					if (!hasTutorial) {
-						entity.damage(GrueDamageSource.GRUE, difficultySettings.damageAmount);
+						entity.damage(new GrueDamageSource(difficultySettings.gruesBypassArmor,
+								difficultySettings.gruesBypassProtection), modifiedDamageAmount);
 
 						dimensionalCooldownManager.set(entity, cooldownTime);
 					}

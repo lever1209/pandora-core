@@ -1,10 +1,14 @@
 package pkg.deepCurse.pandora.client.gui.screens;
 
+import java.util.HashSet;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.SliderWidget;
@@ -19,12 +23,18 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
+import pkg.deepCurse.pandora.client.ClientConfig;
+import pkg.deepCurse.pandora.common.CommonConfig;
+import pkg.deepCurse.pandora.common.CommonTools;
+import pkg.deepCurse.pandora.common.ConfigUtils;
+import pkg.deepCurse.pandora.common.DebugConfig;
 import pkg.deepCurse.pandora.common.Pandora;
-import pkg.deepCurse.pandora.common.PandoraConfig;
-import pkg.deepCurse.pandora.common.PandoraConfig.Client;
-import pkg.deepCurse.pandora.common.PandoraConfig.Server;
 
+@Environment(EnvType.CLIENT)
 public class DebugScreen extends Screen {
 
 	private Screen parent;
@@ -39,10 +49,14 @@ public class DebugScreen extends Screen {
 		this.parent = parent;
 	}
 
+	public DebugScreen(Screen parent, short pageNum) {
+		super(Text.translatable("pandora.menu.debug.title"));
+		this.parent = parent;
+		this.pageNum = pageNum;
+	}
+
 	@Override
 	public void init() {
-
-//		var currentButtonCount = 0;
 
 		var buttonWidthPadding = 4;
 		var buttonHeightPadding = 2;
@@ -60,8 +74,8 @@ public class DebugScreen extends Screen {
 		var columnCount = 3;
 		var rowCount = 8;
 
-		var centerOffsetHorizontalPosition = center_pos_x - (buttonWidth / 2) * columnCount;
-		var centerOffsetVerticalPosition = center_pos_y - (buttonHeight / 2) * rowCount;
+		var centerOffsetHorizontalPosition = center_pos_x - ((buttonWidth / 2) - buttonHeightPadding) * columnCount;
+		var centerOffsetVerticalPosition = center_pos_y - ((buttonHeight / 2) - buttonHeightPadding) * rowCount;
 
 		var buttonPosX = 0;
 		var buttonPosY = 0;
@@ -96,7 +110,7 @@ public class DebugScreen extends Screen {
 		// TODO center the text within the field
 
 		var nextButton = new ButtonWidget(
-				(((buttonPosX * buttonWidth) - buttonWidthPadding) + centerOffsetHorizontalPosition),
+				buttonPosX * buttonWidth - buttonWidthPadding + centerOffsetHorizontalPosition,
 				buttonPosY * buttonHeight - buttonHeightPadding + usable_screen_height_offset,
 				buttonWidth - (buttonWidthPadding * 2), buttonHeight - (buttonHeightPadding * 2),
 				Text.translatable("pandora.menu.debug.next.page"), (ButtonWidget var1) -> {
@@ -129,9 +143,14 @@ public class DebugScreen extends Screen {
 					centerOffsetHorizontalPosition, centerOffsetVerticalPosition - usable_screen_height_offset);
 			break;
 		case 2:
-			nextButton.active = false;
 			enablePageBackground = false;
 			secondPage(buttonPosX, buttonPosY, buttonWidthPadding, buttonHeightPadding, buttonWidth, buttonHeight,
+					centerOffsetHorizontalPosition, centerOffsetVerticalPosition - usable_screen_height_offset);
+			break;
+		case 3:
+			nextButton.active = false;
+			enablePageBackground = false;
+			thirdPage(buttonPosX, buttonPosY, buttonWidthPadding, buttonHeightPadding, buttonWidth, buttonHeight,
 					centerOffsetHorizontalPosition, centerOffsetVerticalPosition - usable_screen_height_offset);
 			break;
 		default:
@@ -146,19 +165,197 @@ public class DebugScreen extends Screen {
 		this.addDrawableChild(previousButton);
 		this.addDrawableChild(nextButton);
 
-		buttonPosX = 1;
-		buttonPosY = 9;
+		buttonPosX = 2;
+		buttonPosY = 8;
 
 		this.addDrawableChild(
-				new ButtonWidget(buttonPosX * buttonWidth - buttonWidthPadding + centerOffsetHorizontalPosition,
-						Math.min(buttonPosY++ * buttonHeight - buttonHeightPadding + centerOffsetVerticalPosition,
-								height - buttonHeight),
+				new ButtonWidget(buttonPosX++ * buttonWidth - buttonWidthPadding + centerOffsetHorizontalPosition,
+						buttonPosY * buttonHeight - buttonHeightPadding
+								+ (centerOffsetVerticalPosition - usable_screen_height_offset),
+//						Math.min(buttonPosY++ * buttonHeight - buttonHeightPadding + centerOffsetVerticalPosition,
+//								height - buttonHeight),
 						buttonWidth - (buttonWidthPadding * 2), buttonHeight - (buttonHeightPadding * 2),
 						Text.translatable("pandora.menu.return"), (ButtonWidget var1) -> {
 							this.client.setScreen(this.parent);
 						}, (ButtonWidget button, MatrixStack matricies, int mouseX, int mouseY) -> {
 						}));
 
+	}
+
+	public static ButtonWidget plotPoints;
+
+	public static BlockPos posA;
+	public static BlockPos posB;
+
+	private void thirdPage(int buttonPosX, int buttonPosY, int buttonWidthPadding, int buttonHeightPadding,
+			int buttonWidth, int buttonHeight, int centerOffsetHorizontalPosition, int centerOffsetVerticalPosition) {
+		this.addDrawableChild(
+				new ButtonWidget(buttonPosX * buttonWidth - buttonWidthPadding + centerOffsetHorizontalPosition,
+						buttonPosY++ * buttonHeight - buttonHeightPadding + centerOffsetVerticalPosition,
+						buttonWidth - (buttonWidthPadding * 2), buttonHeight - (buttonHeightPadding * 2),
+						Text.translatable("pandora.menu.debug.set.pos.a"), (ButtonWidget var1) -> {
+
+							posA = this.client.player.getBlockPos();
+
+						}, (ButtonWidget button, MatrixStack matricies, int mouseX, int mouseY) -> {
+						}));
+
+		this.addDrawableChild(
+				new ButtonWidget(buttonPosX * buttonWidth - buttonWidthPadding + centerOffsetHorizontalPosition,
+						buttonPosY++ * buttonHeight - buttonHeightPadding + centerOffsetVerticalPosition,
+						buttonWidth - (buttonWidthPadding * 2), buttonHeight - (buttonHeightPadding * 2),
+						Text.translatable("pandora.menu.debug.set.pos.b"), (ButtonWidget var1) -> {
+
+							posB = this.client.player.getBlockPos();
+
+						}, (ButtonWidget button, MatrixStack matricies, int mouseX, int mouseY) -> {
+						}));
+
+		plotPoints = new ButtonWidget(buttonPosX * buttonWidth - buttonWidthPadding + centerOffsetHorizontalPosition,
+				buttonPosY++ * buttonHeight - buttonHeightPadding + centerOffsetVerticalPosition,
+				buttonWidth - (buttonWidthPadding * 2), buttonHeight - (buttonHeightPadding * 2),
+				Text.translatable("pandora.menu.debug.place.ray.marched.diamonds"), (ButtonWidget var1) -> {
+
+					var set = new HashSet<Vec3d>();
+
+					float distance = (float) Math.sqrt(posA.getSquaredDistance(posB));
+
+					// given the positions A and B, run the code under this function call distance *
+					// 1.15f times with every interval running the code below
+					CommonTools.segmentedLineTraceImpactPoint(posA, posB, distance * 1.15f, (pos) -> {
+
+						// round off the block position so that the check for if we already placed the
+						// block works (if we dont and the two positions we are checking with the set
+						// are even a single 0.0000000001 off the check will fail and it will attempt to
+						// place the block anyway)
+						pos = new Vec3d(Math.round(pos.x), Math.round(pos.y), Math.round(pos.z));
+
+						// i discovered this after fully implementing my version
+//						this.client.world.getWorldChunk(posA).raycastBlock(pos, pos, posA, null, null); // WTF
+
+						// check if we have already placed this block
+						if (!set.contains(pos)) {
+							// set the block
+							this.client.player.sendCommand(String.format("setblock %s %s %s minecraft:gold_block",
+									(int) pos.x, (int) pos.y, (int) pos.z));
+							// add the position to the set so we do not attempt to place this block again
+							set.add(pos);
+						}
+
+						// should stop after running this block
+						return false;
+					});
+
+					this.client.player.sendCommand(String.format("setblock %s %s %s minecraft:diamond_block",
+							(int) posA.getX(), (int) posA.getY(), (int) posA.getZ()));
+					this.client.player.sendCommand(String.format("setblock %s %s %s minecraft:diamond_block",
+							(int) posB.getX(), (int) posB.getY(), (int) posB.getZ()));
+
+				}, (ButtonWidget button, MatrixStack matricies, int mouseX, int mouseY) -> {
+				});
+
+		this.addDrawableChild(plotPoints);
+
+		this.addDrawableChild(
+				new ButtonWidget(buttonPosX * buttonWidth - buttonWidthPadding + centerOffsetHorizontalPosition,
+						buttonPosY++ * buttonHeight - buttonHeightPadding + centerOffsetVerticalPosition,
+						buttonWidth - (buttonWidthPadding * 2), buttonHeight - (buttonHeightPadding * 2),
+						Text.translatable("pandora.menu.debug.set.sandbox"), (ButtonWidget var1) -> {
+
+							log.info("{} {} {}", posA, posB, Math.sqrt(posA.getSquaredDistance(posB)));
+
+							log.info("{} {} {}", CommonTools.InverseLerp(0, 99, 0.5));
+
+						}, (ButtonWidget button, MatrixStack matricies, int mouseX, int mouseY) -> {
+						}));
+
+		this.addDrawableChild(
+				new ButtonWidget(buttonPosX * buttonWidth - buttonWidthPadding + centerOffsetHorizontalPosition,
+						buttonPosY++ * buttonHeight - buttonHeightPadding + centerOffsetVerticalPosition,
+						buttonWidth - (buttonWidthPadding * 2), buttonHeight - (buttonHeightPadding * 2),
+						Text.translatable("pandora.menu.debug.testing.angles"), (ButtonWidget var1) -> {
+
+//							log.info("{} {} {}", posA, posB, Math.sqrt(posA.getSquaredDistance(posB)));
+//
+//							log.info("{} {} {}", PandoraTools.InverseLerp(0, 99, 0.5));
+
+							var blockPos = this.client.player.getBlockPos();
+							var eyePosY = this.client.player.getPos().y
+									+ this.client.player.getEyeHeight(this.client.player.getPose());
+//							var mulValsAverage = 1f;
+
+							var blockPosSet = new HashSet<Vec3d>();
+
+//							for (var i2 = 0; i2 < 360; i2++) {
+////			break;
+//								for (var i3 = 0; i3 < 360; i3++) {
+//				break;
+//				var headPitch = MathHelper.wrapDegrees(player.getPitch()) * -1;
+//				var headYaw = MathHelper.wrapDegrees(player.getHeadYaw()) * -1;
+
+//							var headPitch = i2;
+//							var headYaw = i3;
+
+							var headPitch = this.client.player.getPitch();
+							var headYaw = this.client.player.getHeadYaw();
+
+//			headPitch = (headPitch >= 0 ? headPitch : Math.abs(headPitch));
+//			headYaw = (headYaw >= 0 ? headYaw : Math.abs(headYaw));
+
+							var dist = 45;
+
+							var phi = (float) Math.toRadians(headPitch);
+							var theta = (float) Math.toRadians(headYaw);
+
+//			var posZ = MathHelper.sin(phi) * MathHelper.cos(theta) * dist;
+//			var posY = Math.sin(phi) * dist; // try isine b // r is distance
+//			var posX = MathHelper.sin(phi) * MathHelper.sin(theta) * dist;
+
+//			var posZ = MathHelper.sin(phi) * MathHelper.cos(theta) * dist;
+//			var posY = Math.sin(phi) * Math.sinh(theta) * dist; // try isine b // r is distance
+//			var posX = MathHelper.sin(phi) * MathHelper.sin(theta) * dist;
+
+//									var posX = Math.sin(theta) * dist;
+//									var posY = Math.sin(phi) * dist;
+//									var posZ = Math.cos(theta) * dist;
+
+//			var posX = Math.sin(theta) * dist;
+//			var posY = Math.sin(phi)   * dist * MathHelper.cos(theta);
+//			var posZ = Math.cos(theta) * dist;
+
+							var posX = dist * Math.sin(theta) * MathHelper.cos(phi);
+							var posY = dist * Math.sin(phi);
+							var posZ = dist * Math.cos(theta) * MathHelper.cos(phi);
+
+//			posY = posY * PandoraTools.InverseLerp(posY, eyePosY, eyePosY + dist);
+
+							Vec3d newPos = new Vec3d(Math.round(blockPos.getX() + posX), Math.round(eyePosY + posY),
+									Math.round(blockPos.getZ() + posZ));
+
+							if (!blockPosSet.contains(newPos)) {
+								this.client.player
+										.sendCommand(String.format("setblock %s %s %s minecraft:glowstone keep",
+												(int) newPos.getX(), (int) newPos.getY(), (int) newPos.getZ()));
+								blockPosSet.add(newPos);
+							}
+//								}
+//							}
+						}, (ButtonWidget button, MatrixStack matricies, int mouseX, int mouseY) -> {
+						}));
+
+	}
+
+	@Override
+	public void tick() {
+		if (plotPoints != null) {
+			if (posA == null || posB == null) {
+				plotPoints.active = false;
+			} else {
+				plotPoints.active = true;
+			}
+		}
+
+		super.tick();
 	}
 
 	private void secondPage(int buttonPosX, int buttonPosY, int buttonWidthPadding, int buttonHeightPadding,
@@ -169,7 +366,7 @@ public class DebugScreen extends Screen {
 						buttonPosY++ * buttonHeight - buttonHeightPadding + usable_screen_height_offset,
 						buttonWidth - (buttonWidthPadding * 2), buttonHeight - (buttonHeightPadding * 2),
 						Text.translatable("pandora.menu.debug.print.modified.block.lights"), (ButtonWidget var1) -> {
-							for (var i : Server.SERVER.BlockLightLevelSettings.entrySet()) {
+							for (var i : CommonConfig.COMMON.BlockLightLevelSettings.entrySet()) {
 								for (var entry : Registry.BLOCK.get(i.getKey()).getStateManager().getStates()) {
 									log.info("[PandoraDebug] {}={}", NbtHelper.fromBlockState(entry).toString(),
 											i.getValue().LightLevel.applyAsInt(entry, entry.getLuminance()));
@@ -180,36 +377,45 @@ public class DebugScreen extends Screen {
 
 		var world = this.client.world;
 		if (world != null) {
-			var fogLevel = Client.CLIENT.DimensionSettings.get(world.getRegistryKey().getValue()).fogLevel;
-			this.addDrawableChild(
-					new SliderWidget(buttonPosX * buttonWidth - buttonWidthPadding + usable_screen_width_offset,
-							buttonPosY++ * buttonHeight - buttonHeightPadding + usable_screen_height_offset,
-							buttonWidth - (buttonWidthPadding * 2), buttonHeight - (buttonHeightPadding * 2),
-							Text.literal("fog factor: " + fogLevel), fogLevel) {
+			if (ClientConfig.CLIENT.DimensionSettings.get(world.getRegistryKey().getValue()) != null) {
+				var fogLevel = ClientConfig.CLIENT.DimensionSettings.get(world.getRegistryKey().getValue()).fogLevel;
 
-						@Override
-						protected void updateMessage() {
-							super.setMessage(Text.literal("fog factor: " + this.value));
-						}
+				this.addDrawableChild(
+						new SliderWidget(buttonPosX * buttonWidth - buttonWidthPadding + usable_screen_width_offset,
+								buttonPosY++ * buttonHeight - buttonHeightPadding + usable_screen_height_offset,
+								buttonWidth - (buttonWidthPadding * 2), buttonHeight - (buttonHeightPadding * 2),
+								Text.literal("fog factor: " + fogLevel), fogLevel) {
 
-						@Override
-						protected void applyValue() {
-							Client.CLIENT.DimensionSettings.get(world.getRegistryKey().getValue()).fogLevel = Float
-									.parseFloat(String.valueOf(this.value));
-						}
-					});
+							@Override
+							protected void updateMessage() {
+								super.setMessage(Text.literal("fog factor: " + this.value));
+							}
+
+							@Override
+							protected void applyValue() {
+								ClientConfig.CLIENT.DimensionSettings
+										.get(world.getRegistryKey().getValue()).fogLevel = Float
+												.parseFloat(String.valueOf(this.value));
+							}
+						});
+				this.addDrawableChild(new ButtonWidget(
+						buttonPosX * buttonWidth - buttonWidthPadding + usable_screen_width_offset,
+						buttonPosY++ * buttonHeight - buttonHeightPadding + usable_screen_height_offset,
+						buttonWidth - (buttonWidthPadding * 2), buttonHeight - (buttonHeightPadding * 2),
+						Text.translatable("pandora.menu.debug.print.dimension.settings"), (ButtonWidget var1) -> {
+							var settings = ClientConfig.CLIENT.DimensionSettings.get(world.getRegistryKey().getValue());
+							log.info(settings.toString());
+						}, (ButtonWidget button, MatrixStack matricies, int mouseX, int mouseY) -> {
+						}));
+			}
 
 			this.addDrawableChild(
 					new ButtonWidget(buttonPosX * buttonWidth - buttonWidthPadding + usable_screen_width_offset,
 							buttonPosY++ * buttonHeight - buttonHeightPadding + usable_screen_height_offset,
 							buttonWidth - (buttonWidthPadding * 2), buttonHeight - (buttonHeightPadding * 2),
-							Text.translatable("pandora.menu.debug.fix.chunk.lighting"), (ButtonWidget var1) -> {
-								this.client.reloadResourcesConcurrently();
-								this.client.getBlockRenderManager().reload(this.client.getResourceManager());
+							Text.translatable("pandora.menu.debug.chunk.stuff"), (ButtonWidget var1) -> {
 								BlockModelRenderer.disableBrightnessCache();
 								BlockModelRenderer.enableBrightnessCache();
-
-//						this.client.getModStatus();
 
 								this.client.world.getChunkManager().getLightingProvider()
 										.doLightUpdates(Integer.MAX_VALUE, true, true);
@@ -217,22 +423,27 @@ public class DebugScreen extends Screen {
 							}, (ButtonWidget button, MatrixStack matricies, int mouseX, int mouseY) -> {
 								renderOrderedTooltip(matricies,
 										textRenderer.wrapLines(
-												Text.translatable("pandora.menu.debug.fix.chunk.lighting.tooltip"),
+												Text.translatable("pandora.menu.debug.chunk.stuff.tooltip"),
 												buttonWidth * 2),
 										mouseX, mouseY);
 							}));
-
-			this.addDrawableChild(
-					new ButtonWidget(buttonPosX * buttonWidth - buttonWidthPadding + usable_screen_width_offset,
-							buttonPosY++ * buttonHeight - buttonHeightPadding + usable_screen_height_offset,
-							buttonWidth - (buttonWidthPadding * 2), buttonHeight - (buttonHeightPadding * 2),
-							Text.translatable("pandora.menu.debug.print.dimension.settings"), (ButtonWidget var1) -> {
-								var settings = Server.SERVER.DimensionSettings.get(world.getRegistryKey().getValue());
-								log.info(settings.toString());
-							}, (ButtonWidget button, MatrixStack matricies, int mouseX, int mouseY) -> {
-							}));
 		}
+		this.addDrawableChild(
+				new ButtonWidget(buttonPosX * buttonWidth - buttonWidthPadding + usable_screen_width_offset,
+						buttonPosY++ * buttonHeight - buttonHeightPadding + usable_screen_height_offset,
+						buttonWidth - (buttonWidthPadding * 2), buttonHeight - (buttonHeightPadding * 2),
+						Text.translatable("pandora.menu.debug.full.resource.reload"), (ButtonWidget var1) -> {
 
+							this.client.reloadResourcesConcurrently();
+							this.client.getBlockRenderManager().reload(this.client.getResourceManager());
+
+						}, (ButtonWidget button, MatrixStack matricies, int mouseX, int mouseY) -> {
+							renderOrderedTooltip(matricies,
+									textRenderer.wrapLines(
+											Text.translatable("pandora.menu.debug.full.resource.reload.tooltip"),
+											buttonWidth * 2),
+									mouseX, mouseY);
+						}));
 	}
 
 	private void firstPage(int buttonPosX, int buttonPosY, int buttonWidthPadding, int buttonHeightPadding,
@@ -271,15 +482,15 @@ public class DebugScreen extends Screen {
 						buttonPosY++ * buttonHeight - buttonHeightPadding + usable_screen_height_offset,
 						buttonWidth - (buttonWidthPadding * 2), buttonHeight - (buttonHeightPadding * 2),
 						Text.translatable("pandora.menu.debug.save.config.client"), (ButtonWidget var1) -> {
-							PandoraConfig.saveClientConfig();
+							ClientConfig.saveClientConfig();
 						}, (ButtonWidget button, MatrixStack matricies, int mouseX, int mouseY) -> {
 						}));
 		this.addDrawableChild(
 				new ButtonWidget(buttonPosX * buttonWidth - buttonWidthPadding + usable_screen_width_offset,
 						buttonPosY++ * buttonHeight - buttonHeightPadding + usable_screen_height_offset,
 						buttonWidth - (buttonWidthPadding * 2), buttonHeight - (buttonHeightPadding * 2),
-						Text.translatable("pandora.menu.debug.save.config.server"), (ButtonWidget var1) -> {
-							PandoraConfig.saveServerConfig();
+						Text.translatable("pandora.menu.debug.save.config.common"), (ButtonWidget var1) -> {
+							CommonConfig.saveCommonConfig();
 						}, (ButtonWidget button, MatrixStack matricies, int mouseX, int mouseY) -> {
 						}));
 		this.addDrawableChild(
@@ -287,7 +498,7 @@ public class DebugScreen extends Screen {
 						buttonPosY++ * buttonHeight - buttonHeightPadding + usable_screen_height_offset,
 						buttonWidth - (buttonWidthPadding * 2), buttonHeight - (buttonHeightPadding * 2),
 						Text.translatable("pandora.menu.debug.save.config.debug"), (ButtonWidget var1) -> {
-							PandoraConfig.saveDebugConfig();
+							DebugConfig.saveDebugConfig();
 						}, (ButtonWidget button, MatrixStack matricies, int mouseX, int mouseY) -> {
 						}));
 		this.addDrawableChild(
@@ -295,7 +506,7 @@ public class DebugScreen extends Screen {
 						buttonPosY++ * buttonHeight - buttonHeightPadding + usable_screen_height_offset,
 						buttonWidth - (buttonWidthPadding * 2), buttonHeight - (buttonHeightPadding * 2),
 						Text.translatable("pandora.menu.debug.save.config.all"), (ButtonWidget var1) -> {
-							PandoraConfig.saveConfigs();
+							ConfigUtils.saveConfigs();
 						}, (ButtonWidget button, MatrixStack matricies, int mouseX, int mouseY) -> {
 						}));
 
@@ -307,15 +518,15 @@ public class DebugScreen extends Screen {
 						buttonPosY++ * buttonHeight - buttonHeightPadding + usable_screen_height_offset,
 						buttonWidth - (buttonWidthPadding * 2), buttonHeight - (buttonHeightPadding * 2),
 						Text.translatable("pandora.menu.debug.load.config.client"), (ButtonWidget var1) -> {
-							PandoraConfig.loadClientConfig();
+							ClientConfig.loadClientConfig();
 						}, (ButtonWidget button, MatrixStack matricies, int mouseX, int mouseY) -> {
 						}));
 		this.addDrawableChild(
 				new ButtonWidget(buttonPosX * buttonWidth - buttonWidthPadding + usable_screen_width_offset,
 						buttonPosY++ * buttonHeight - buttonHeightPadding + usable_screen_height_offset,
 						buttonWidth - (buttonWidthPadding * 2), buttonHeight - (buttonHeightPadding * 2),
-						Text.translatable("pandora.menu.debug.load.config.server"), (ButtonWidget var1) -> {
-							PandoraConfig.loadServerConfig();
+						Text.translatable("pandora.menu.debug.load.config.common"), (ButtonWidget var1) -> {
+							CommonConfig.loadCommonConfig();
 						}, (ButtonWidget button, MatrixStack matricies, int mouseX, int mouseY) -> {
 						}));
 		this.addDrawableChild(
@@ -323,7 +534,7 @@ public class DebugScreen extends Screen {
 						buttonPosY++ * buttonHeight - buttonHeightPadding + usable_screen_height_offset,
 						buttonWidth - (buttonWidthPadding * 2), buttonHeight - (buttonHeightPadding * 2),
 						Text.translatable("pandora.menu.debug.load.config.debug"), (ButtonWidget var1) -> {
-							PandoraConfig.loadDebugConfig();
+							DebugConfig.loadDebugConfig();
 						}, (ButtonWidget button, MatrixStack matricies, int mouseX, int mouseY) -> {
 						}));
 		this.addDrawableChild(
@@ -331,7 +542,7 @@ public class DebugScreen extends Screen {
 						buttonPosY++ * buttonHeight - buttonHeightPadding + usable_screen_height_offset,
 						buttonWidth - (buttonWidthPadding * 2), buttonHeight - (buttonHeightPadding * 2),
 						Text.translatable("pandora.menu.debug.load.config.all"), (ButtonWidget var1) -> {
-							PandoraConfig.loadConfigs();
+							ConfigUtils.loadConfigs();
 						}, (ButtonWidget button, MatrixStack matricies, int mouseX, int mouseY) -> {
 						}));
 
@@ -340,15 +551,15 @@ public class DebugScreen extends Screen {
 						buttonPosY++ * buttonHeight - buttonHeightPadding + usable_screen_height_offset,
 						buttonWidth - (buttonWidthPadding * 2), buttonHeight - (buttonHeightPadding * 2),
 						Text.translatable("pandora.menu.debug.delete.config.client"), (ButtonWidget var1) -> {
-							PandoraConfig.getConfigFile("pandora.client.yaml").delete();
+							ConfigUtils.getConfigFile("pandora.client.yaml").delete();
 						}, (ButtonWidget button, MatrixStack matricies, int mouseX, int mouseY) -> {
 						}));
 		this.addDrawableChild(
 				new ButtonWidget(buttonPosX * buttonWidth - buttonWidthPadding + usable_screen_width_offset,
 						buttonPosY++ * buttonHeight - buttonHeightPadding + usable_screen_height_offset,
 						buttonWidth - (buttonWidthPadding * 2), buttonHeight - (buttonHeightPadding * 2),
-						Text.translatable("pandora.menu.debug.delete.config.server"), (ButtonWidget var1) -> {
-							PandoraConfig.getConfigFile("pandora.server.yaml").delete();
+						Text.translatable("pandora.menu.debug.delete.config.common"), (ButtonWidget var1) -> {
+							ConfigUtils.getConfigFile("pandora.common.yaml").delete();
 						}, (ButtonWidget button, MatrixStack matricies, int mouseX, int mouseY) -> {
 						}));
 		this.addDrawableChild(
@@ -356,7 +567,7 @@ public class DebugScreen extends Screen {
 						buttonPosY++ * buttonHeight - buttonHeightPadding + usable_screen_height_offset,
 						buttonWidth - (buttonWidthPadding * 2), buttonHeight - (buttonHeightPadding * 2),
 						Text.translatable("pandora.menu.debug.delete.config.debug"), (ButtonWidget var1) -> {
-							PandoraConfig.getConfigFile("pandora.debug.properties").delete();
+							ConfigUtils.getConfigFile("pandora.debug.properties").delete();
 						}, (ButtonWidget button, MatrixStack matricies, int mouseX, int mouseY) -> {
 						}));
 		this.addDrawableChild(
@@ -364,9 +575,9 @@ public class DebugScreen extends Screen {
 						buttonPosY++ * buttonHeight - buttonHeightPadding + usable_screen_height_offset,
 						buttonWidth - (buttonWidthPadding * 2), buttonHeight - (buttonHeightPadding * 2),
 						Text.translatable("pandora.menu.debug.delete.config.all"), (ButtonWidget var1) -> {
-							PandoraConfig.getConfigFile("pandora.client.yaml").delete();
-							PandoraConfig.getConfigFile("pandora.server.yaml").delete();
-							PandoraConfig.getConfigFile("pandora.debug.properties").delete();
+							ConfigUtils.getConfigFile("pandora.client.yaml").delete();
+							ConfigUtils.getConfigFile("pandora.common.yaml").delete();
+							ConfigUtils.getConfigFile("pandora.debug.properties").delete();
 						}, (ButtonWidget button, MatrixStack matricies, int mouseX, int mouseY) -> {
 						}));
 
@@ -378,15 +589,15 @@ public class DebugScreen extends Screen {
 						buttonPosY++ * buttonHeight - buttonHeightPadding + usable_screen_height_offset,
 						buttonWidth - (buttonWidthPadding * 2), buttonHeight - (buttonHeightPadding * 2),
 						Text.translatable("pandora.menu.debug.unpack.config.client"), (ButtonWidget var1) -> {
-							PandoraConfig.unpackageFile("pandora.client.yaml");
+							ConfigUtils.unpackageFile("pandora.client.yaml");
 						}, (ButtonWidget button, MatrixStack matricies, int mouseX, int mouseY) -> {
 						}));
 		this.addDrawableChild(
 				new ButtonWidget(buttonPosX * buttonWidth - buttonWidthPadding + usable_screen_width_offset,
 						buttonPosY++ * buttonHeight - buttonHeightPadding + usable_screen_height_offset,
 						buttonWidth - (buttonWidthPadding * 2), buttonHeight - (buttonHeightPadding * 2),
-						Text.translatable("pandora.menu.debug.unpack.config.server"), (ButtonWidget var1) -> {
-							PandoraConfig.unpackageFile("pandora.server.yaml");
+						Text.translatable("pandora.menu.debug.unpack.config.common"), (ButtonWidget var1) -> {
+							ConfigUtils.unpackageFile("pandora.common.yaml");
 						}, (ButtonWidget button, MatrixStack matricies, int mouseX, int mouseY) -> {
 						}));
 		this.addDrawableChild(
@@ -394,7 +605,7 @@ public class DebugScreen extends Screen {
 						buttonPosY++ * buttonHeight - buttonHeightPadding + usable_screen_height_offset,
 						buttonWidth - (buttonWidthPadding * 2), buttonHeight - (buttonHeightPadding * 2),
 						Text.translatable("pandora.menu.debug.unpack.config.debug"), (ButtonWidget var1) -> {
-							PandoraConfig.unpackageFile("pandora.debug.properties");
+							ConfigUtils.unpackageFile("pandora.debug.properties");
 						}, (ButtonWidget button, MatrixStack matricies, int mouseX, int mouseY) -> {
 						}));
 		this.addDrawableChild(
@@ -402,9 +613,9 @@ public class DebugScreen extends Screen {
 						buttonPosY++ * buttonHeight - buttonHeightPadding + usable_screen_height_offset,
 						buttonWidth - (buttonWidthPadding * 2), buttonHeight - (buttonHeightPadding * 2),
 						Text.translatable("pandora.menu.debug.unpack.config.all"), (ButtonWidget var1) -> {
-							PandoraConfig.unpackageFile("pandora.client.yaml");
-							PandoraConfig.unpackageFile("pandora.server.yaml");
-							PandoraConfig.unpackageFile("pandora.debug.properties");
+							ConfigUtils.unpackageFile("pandora.client.yaml");
+							ConfigUtils.unpackageFile("pandora.common.yaml");
+							ConfigUtils.unpackageFile("pandora.debug.properties");
 						}, (ButtonWidget button, MatrixStack matricies, int mouseX, int mouseY) -> {
 						}));
 
@@ -463,7 +674,7 @@ public class DebugScreen extends Screen {
 			this.fillGradient(matrices, 0, 0, this.width, this.height, 0x00_1a_1a_1a, 0xff_00_00_00);
 			this.fillGradient(matrices, 0, 0, this.width, this.height, 0x1f_ff_ff_ff, 0x00_00_00_00);
 		}
-		drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, this.height / 64, 0x00_ff_ff_ff);
+		drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, this.height / 128, 0x00_ff_ff_ff);
 
 		super.render(matrices, mouseX, mouseY, delta);
 	}

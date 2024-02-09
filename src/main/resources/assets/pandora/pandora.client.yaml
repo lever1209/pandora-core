@@ -6,20 +6,9 @@
 # You can hit <ctrl> F and notepad to find it for you
 # If you have any questions feel free to join my discord (https://discord.gg/T4kjkyZUw2)
 
-# This section is under debate
 #
-## Should certain sections of this mod be enabled
-#enabled:
-#  # The entire mod # this is not something you can simply disable, TODO re check over all the enable/disable code
-#  # enable pandora: true
-#  # custom dimension fog, the fog that cuts off the edge of the render distance
-#  enable custom fog: true
-#  # Allows entities to run towards light and stay within the light, as well as use grue wards
-#  enable pandora ai: true
-#  # Change block brightness depending on the darkness level of the world
-#  enable light modifications: true
-#  # Should certian glowing items scare away grues
-#  enable grue wards: true
+# Client Settings
+#
 
 # should your gamma be reset on client start
 reset gamma: true
@@ -37,11 +26,23 @@ dimension settings:
   - ids: ["minecraft:overworld"]
     fog factor: 0.7
     is dark: true
-  
+    ignore sky light: false
+    lock moon phase: false
+    target moon phase: 0
+    do cave fog effects: false
+    
   - ids: ["minecraft:the_nether"]
     fog factor: 0.5
     is dark: true
+    ignore sky light: false
+    lock moon phase: false
+    target moon phase: 0
+    do cave fog effects: false
     
   - ids: ["minecraft:the_end"]
     fog factor: 0.3
     is dark: true
+    ignore sky light: false
+    lock moon phase: false
+    target moon phase: 0
+    do cave fog effects: false

@@ -15,8 +15,8 @@ import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
-import pkg.deepCurse.pandora.common.PandoraConfig.Server;
-import pkg.deepCurse.pandora.common.util.tools.PandoraTools;
+import pkg.deepCurse.pandora.common.CommonConfig;
+import pkg.deepCurse.pandora.common.CommonTools;
 
 /**
  * recovered from old pandora, 2021/10/21
@@ -49,14 +49,14 @@ public class EscapeGrueGoal extends Goal /* MoveToTargetPosGoal? */ {
 	}
 
 	public boolean canStart() {
-		var mobSettings = Server.SERVER.MobSettings.get(Registry.ENTITY_TYPE.getId(this.mob.getType()));
+		var mobSettings = CommonConfig.COMMON.MobSettings.get(Registry.ENTITY_TYPE.getId(this.mob.getType()));
 		if (!mobSettings.fearDarkness) {
 			return false;
 		}
 		if (this.mob.getTarget() != null) {
 			return false;
 		}
-		if (PandoraTools.isNearLight(this.world, this.mob.getBlockPos(), this.minimumLightLevel)) {
+		if (CommonTools.isNearLight(this.world, this.mob.getBlockPos(), this.minimumLightLevel)) {
 			return false;
 		}
 		if (targetLightPos()) {
@@ -89,7 +89,7 @@ public class EscapeGrueGoal extends Goal /* MoveToTargetPosGoal? */ {
 		BlockPos blockPos = this.mob.getBlockPos();
 		for (int i = 0; i < 10; i++) {
 			BlockPos blockPos2 = blockPos.add(random.nextInt(20) - 10, random.nextInt(6) - 3, random.nextInt(20) - 10);
-			if (PandoraTools.isNearLight(this.world, blockPos2, this.minimumLightLevel)) {
+			if (CommonTools.isNearLight(this.world, blockPos2, this.minimumLightLevel)) {
 				if (this.mob instanceof PathAwareEntity) {
 					if (((PathAwareEntity) this.mob).getPathfindingFavor(blockPos2) < 0.0F)
 						;

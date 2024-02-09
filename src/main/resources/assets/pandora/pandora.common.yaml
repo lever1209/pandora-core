@@ -1,0 +1,457 @@
+# To restore this config to its original values, simply delete this file and start the mod again
+# This config is very specific with what it needs for each key
+# But dont worry, the mod will tell you if something goes wrong while loading it
+# And the mod will even tell you what is wrong and how to fix it
+# You just need to look for a message marked [Pandora Help] in the logs (.minecraft/logs/latest.log)
+# You can hit <ctrl> F and notepad to find it for you
+# If you have any questions feel free to join my discord (https://discord.gg/T4kjkyZUw2)
+
+#
+# Common Settings, used in both the Dedicated Server and the Client Integrated Server
+#
+
+## TODO sync when joining a server, unsync and reload when leaving, make sure to re calculate all cached values like block light settings
+# TODO put data types and min/max values in here too
+
+# CAUTION: Be VERY careful when enabling this setting as there are 0, count it: 0 ways to recover lost items eaten by grues, and there are 0 safeties surrounding this
+# unless you know exactly what you are doing and can understand the following code please leave this as is
+# this means it can and will destroy stacks of items as well instead of removing one item from the stack
+# yes this is exactly how simple it is
+
+#   if (entity.getType() == EntityType.ITEM && serverSettings.GruesEatItems
+#   		&& worldRandomFloat < serverSettings.GruesEatItemsChance) {
+#   	entity.kill();
+#   }
+
+# grues eat items            : Should grues be able to eat items
+# grues eat items chance     : What is the chance it succeeds in eating an item, 0.1 is a 10% chance, 0.9 is a 90% chance
+grues eat items: false
+grues eat items chance: 0.0001
+
+player settings:
+  # damage multiplier         : what the incoming damage should be multiplied against, 0.1 means the player will take 10% of the damage it should, 1.0 is 100%, and 2.0 is 200%
+  # uses hardcore difficulty  : should the player use the hardcore difficulty settings if the world is hardcore
+  # can use grue wards        : should the player be able to hold or equip items that may scare grues away or generate light (if false you can still hold or equip them, they will just have no effect)
+  damage multiplier: 1.0
+  uses hardcore difficulty: true
+  can use grue wards: true
+
+difficulty settings:
+  # damage amount               : how much damage should grues do to entities, divide the number by 2 to get the total hearts of damage, if its 0.0 grue damage calculations are skipped entirely and tutorials are not spent
+  # grue tutorial count         : how many tutorials you get before there are no more tutorials
+  # grue tutorial grace period  : how many extra ticks does the player get before the next attack after a tutorial
+  # grue maximum tick wait      : how many ticks maximum should a grue wait before attacking
+  # grue minimum tick wait      : how many ticks minimum should a grue wait before attacking
+  # grues ignore armor          : should grue attacks ignore armor
+  
+  hardcore:
+    damage amount: 999999.0
+    grue tutorial count: 1
+    grue tutorial grace period: 200 # 10 seconds or a 1/120th minecraft day
+    grue maximum tick wait: 100 # 5 seconds
+    grue minimum tick wait: 20 # 1 second
+    grues bypass armor: true
+    grues bypass protection: true
+  hard:
+    damage amount: 8.0
+    grue tutorial count: 3
+    grue tutorial grace period: 6000 # 300 seconds or 5 minutes, a quarter minecraft day
+    grue maximum tick wait: 160 # 8 seconds
+    grue minimum tick wait: 60 # 3 seconds
+    grues bypass armor: true
+    grues bypass protection: false
+  normal:
+    damage amount: 4.0
+    grue tutorial count: 5
+    grue tutorial grace period: 12000 # 600 seconds or 10 minutes, half a minecraft day
+    grue maximum tick wait: 240 # 12 seconds
+    grue minimum tick wait: 120 # 6 seconds
+    grues bypass armor: true
+    grues bypass protection: false
+  easy:
+    damage amount: 2.0
+    grue tutorial count: 7
+    grue tutorial grace period: 24000 # 1200 seconds or 20 minutes, a whole minecraft day
+    grue maximum tick wait: 300 # 15 seconds
+    grue minimum tick wait: 220 # 11 seconds
+    grues bypass armor: false
+    grues bypass protection: false
+  peaceful:
+    damage amount: 0.0
+    grue tutorial count: 7
+    grue tutorial grace period: 24000 # 1200 seconds or 20 minutes, a whole minecraft day
+    grue maximum tick wait: 600 # 30 seconds
+    grue minimum tick wait: 300 # 15 seconds
+    grues bypass armor: false
+    grues bypass protection: false
+
+# if a block id is not included, the mod ignores that block
+block light settings:
+  # This section is split up into categories based on the light type, it is simply a comment and the order does not matter, you can reorganize them however you please
+  
+  # TODO make this an array of ids too?
+  # id            : the block id you wish to modify
+  # light level   : the light level you wish to set it to
+  # properties    : this optional value represents the in game block state you wish to change, useful for furnaces or other blocks that dont always glow, if a property is not listed it is ignored, this means you dont need to list all possible states, please check my discord if you need help with this system
+  
+  # Fire based lights
+  - id: "minecraft:lava"
+    light level: 10
+    properties:
+      level: 0
+  - id: "minecraft:lava"
+    light level: 1
+    properties:
+      level: 1
+  - id: "minecraft:lava"
+    light level: 2
+    properties:
+      level: 2
+  - id: "minecraft:lava"
+    light level: 3
+    properties:
+      level: 3
+  - id: "minecraft:lava"
+    light level: 4
+    properties:
+      level: 4
+  - id: "minecraft:lava"
+    light level: 5
+    properties:
+      level: 5
+  - id: "minecraft:lava"
+    light level: 6
+    properties:
+      level: 6
+  - id: "minecraft:lava"
+    light level: 7
+    properties:
+      level: 7
+  - id: "minecraft:lava"
+    light level: 8
+    properties:
+      level: 8
+  - id: "minecraft:lava"
+    light level: 9
+    properties:
+      level: 9
+  - id: "minecraft:lava"
+    light level: 10
+    properties:
+      level: 10
+  - id: "minecraft:lava"
+    light level: 11
+    properties:
+      level: 10
+  - id: "minecraft:lava"
+    light level: 11
+    properties:
+      level: 10
+  - id: "minecraft:lava"
+    light level: 12
+    properties:
+      level: 10
+  - id: "minecraft:lava"
+    light level: 13
+    properties:
+      level: 10
+  - id: "minecraft:lava"
+    light level: 14
+    properties:
+      level: 10
+  - id: "minecraft:lava"
+    light level: 15
+    properties:
+      level: 10
+  - id: "minecraft:lava_cauldron"
+    light level: 10
+  - id: "minecraft:fire"
+    light level: 10
+  - id: "minecraft:torch"
+    light level: 10
+  - id: "minecraft:wall_torch"
+    light level: 10
+  - id: "minecraft:furnace"
+    light level: 4
+    properties:
+      lit: true
+  - id: "minecraft:candle"
+    light level: 7
+    properties:
+      lit: true
+  - id: "minecraft:candle_cake"
+    light level: 7
+    properties:
+      lit: true
+  - id: "minecraft:campfire"
+    light level: 10
+    properties:
+      lit: true
+  - id: "minecraft:lantern"
+    light level: 7
+  - id: "minecraft:magma"
+    light level: 5
+  - id: "minecraft:smoker"
+    properties:
+      lit: true
+    light level: 4
+  - id: "minecraft:blast_furnace"
+    light level: 4
+    properties:
+      lit: true
+    
+  - id: "minecraft:coal_block"
+    light level: 0
+
+  # Soul based lights
+  - id: "minecraft:soul_torch"
+    light level: 7
+  - id: "minecraft:soul_wall_torch"
+    light level: 7
+  - id: "minecraft:soul_campfire"
+    light level: 7
+  - id: "minecraft:soul_lantern"
+    light level: 7
+
+  # Redstone
+  - id: "minecraft:redstone_torch"
+    light level: 5
+    properties:
+      lit: true
+  - id: "minecraft:redstone_wall_torch"
+    light level: 5
+    properties:
+      lit: true
+  - id: "minecraft:redstone_lamp"
+    light level: 7
+    properties:
+      lit: true
+  - id: "minecraft:redstone_ore"
+    light level: 5
+    properties:
+      lit: true
+
+  # Low grade magic
+  - id: "minecraft:glowstone"
+    light level: 8
+  - id: "minecraft:nether_portal"
+    light level: 6
+  - id: "minecraft:brewing_stand"
+    light level: 2
+  - id: "minecraft:sea_lantern"
+    light level: 8
+  - id: "minecraft:crying_obsidian"
+    light level: 2
+  - id: "minecraft:ender_chest"
+    light level: 5
+  - id: "minecraft:conduit"
+    light level: 5
+  - id: "minecraft:respawn_anchor"
+    light level: 7
+  - id: "minecraft:amethyst_cluster"
+    light level: 7
+  - id: "minecraft:large_amethyst_bud"
+    light level: 5
+  - id: "minecraft:medium_amethyst_bud"
+    light level: 3
+  - id: "minecraft:small_amethyst_bud"
+    light level: 1
+  - id: "minecraft:ochre_froglight"
+    light level: 8
+  - id: "minecraft:verdant_froglight"
+    light level: 8
+  - id: "minecraft:pearlescent_froglight"
+    light level: 8
+
+  # High grade magic
+  - id: "minecraft:enchanting_table"
+    light level: 7
+  - id: "minecraft:end_portal"
+    light level: 12
+  - id: "minecraft:end_portal_frame"
+    light level: 6
+    properties:
+      eye: true
+  - id: "minecraft:end_rod"
+    light level: 15
+  - id: "minecraft:end_gateway"
+    light level: 15
+  - id: "minecraft:dragon_egg"
+    light level: 15
+#    - id: "minecraft:light"
+#      light level: 15
+  - id: "minecraft:beacon"
+    light level: 15
+    properties:
+      lit: true
+
+  # Glowing plants
+  - id: "minecraft:glow_lichen"
+    light level: 5
+  - id: "minecraft:cave_vines"
+    light level: 12
+    properties:
+      berries: true
+  - id: "minecraft:cave_vines_plant"
+    light level: 12
+    properties:
+      berries: true
+  - id: "minecraft:sea_pickle"
+    properties:
+      pickles: 1
+      waterlogged: true
+    light level: 4
+  - id: "minecraft:sea_pickle"
+    properties:
+      pickles: 2
+      waterlogged: true
+    light level: 6
+  - id: "minecraft:sea_pickle"
+    properties:
+      pickles: 3
+      waterlogged: true
+    light level: 8
+  - id: "minecraft:sea_pickle"
+    properties:
+      pickles: 4
+      waterlogged: true
+    light level: 10
+  - id: "minecraft:shroomlight"
+    light level: 8
+  - id: "minecraft:jack_o_lantern"
+    light level: 7
+  - id: "minecraft:brown_mushroom"
+    light level: 2
+  - id: "minecraft:sculk_sensor"
+    light level: 9
+    properties:
+      sculk_sensor_phase: "active"
+  - id: "minecraft:sculk_shrieker"
+    light level: 15
+    properties:
+      shrieking: true
+  - id: "minecraft:sculk_catalyst"
+    light level: 9
+    properties:
+      bloom: true
+  - id: "minecraft:sculk_vein"
+    light level: 2
+  - id: "minecraft:sculk"
+    light level: 3
+
+# if a dimension id is not included, the mod ignores that dimension
+dimension settings:
+  # The order here does not matter, you can reorganize them however you please
+
+  # ids                         : a list of dimension ids, for example: ["minecraft:overworld", "minecraft:the_nether", "pandora:corruption"] means those three dimensions have these settings
+  # fog factor                  : a double value between 0(dark) and 1(light)
+  # infested                    : whether or not grues should be present and attacking things
+  # is dark                     : whether or not the worlds shadows should be black
+  # ignore sky light            : should pandora ignore the dimensional sky light values when calculating darkness, assuming the dimension has one
+  # lock moon phase             : should pandora use a constant moon phase instead of what the world is currently using
+  # target moon phase           : the moon phase pandora will use if the moon phase is locked, a valid number from 0 to 7 # TODO look into how to make this better, enum perhaps?
+  # minimum safe light level    : the minimum light level an entity needs to have before a grue might attack
+  # minimum fade light level    : the minimum light level an entity needs to have before a grue will attack
+  # grues attack in water       : should grues attack in water, this was revealed to be extremely unfair as you would not be able to swim very far even in broad daylight
+
+  - ids: ["minecraft:overworld"]
+    infested: true
+    ignore sky light: false
+    lock moon phase: false
+    target moon phase: 0
+    minimum safe light level: 5
+    minimum fade light level: 3
+    grues attack in water: false
+  
+  - ids: ["minecraft:the_nether"]
+    infested: true
+    ignore sky light: false # the nether has no sky light, so this option does not matter
+    lock moon phase: false # the nether has no moon, so this option does not matter
+    target moon phase: 0 # the nether has no moon, so this option does not matter
+    minimum safe light level: 5
+    minimum fade light level: 3
+    grues attack in water: false
+    
+  - ids: ["minecraft:the_end"]
+    infested: true # maybe the end should not have grues? it doesnt seem very habitable for them as they cannot teleport or fly, maybe a new kind of grue afraid of the dragon that can teleport? save that for when there are grue entities
+    ignore sky light: false
+    lock moon phase: false
+    target moon phase: 0
+    minimum safe light level: 5
+    minimum fade light level: 3
+    grues attack in water: false
+
+grue wards:
+  # The order here does not matter, you can reorganize them however you please
+  
+  # ids                 : a list of minecraft item ids, for example: ["minecraft:torch", "minecraft:blaze_rod"]
+  # potency             : the chance a grue will not attack while you hold the item or have it equipped, 0.1 is 10% 0.9 is 90%
+  # light level         : how much light will the item generate assuming lambdynamiclights is present
+  - ids: ["minecraft:glowstone_dust"]
+    potency: 0.2
+    light level: 4
+
+  - ids: ["minecraft:torch", "minecraft:glowstone"]
+    potency: 0.6
+    light level: 10
+
+# if a mob id is not included, pandora ignores that mob
+mob settings:
+  # This section is split up into categories based on the mob type, it is simply a comment and the order does not matter, you can reorganize them however you please
+  
+  # ids                        : a list of mob ids, for example: ["minecraft:creeper", "minecraft:sheep", "minecraft villager"]
+  # damage multiplier          : what the damage dealt to the mob gets multiplied against
+  # fears darkness             : should pandora add an AI goal to stay in the light
+  # fear weight                : how much the mob is afraid of the dark
+  # uses hardcore difficulty   : should the mob use the hardcore difficulty settings if the world is hardcore
+  # can use grue wards         : should the mob be able to hold or equip items that may scare grues away or generate light (if false you can still hold or equip them, they will just have no effect)
+  
+  # passive types
+  - ids: ["minecraft:axolotl", "minecraft:bat", "minecraft:bee", "minecraft:cat","minecraft:chicken", "minecraft:cod","minecraft:cow","minecraft:dolphin", "minecraft:donkey", "minecraft:fox", "minecraft:frog", "minecraft:glow_squid", "minecraft:goat", "minecraft:horse", "minecraft:llama", "minecraft:mooshroom", "minecraft:mule", "minecraft:ocelot", "minecraft:panda", "minecraft:parrot", "minecraft:pig", "minecraft:polar_bear", "minecraft:pufferfish", "minecraft:rabbit", "minecraft:salmon", "minecraft:sheep","minecraft:skeleton_horse", "minecraft:squid", "minecraft:strider", "minecraft:tadpole", "minecraft:trader_llama", "minecraft:tropical_fish", "minecraft:turtle", "minecraft:zombie_horse"]
+    damage multiplier: 0.0
+    fears darkness: false
+    fear weight: 0.0
+    uses hardcore difficulty: false
+    can use grue wards: false
+  # golem types
+  - ids: ["minecraft:iron_golem", "minecraft:snow_golem", "minecraft:wolf"]
+    damage multiplier: 0.0
+    fears darkness: false
+    fear weight: 0.0
+    uses hardcore difficulty: false
+    can use grue wards: true
+  # boss mob types
+  - ids: ["minecraft:elder_guardian", "minecraft:ender_dragon", "minecraft:wither", "minecraft:warden"]
+    damage multiplier: 0.0
+    fears darkness: false
+    fear weight: 0.0
+    uses hardcore difficulty: false
+    can use grue wards: false
+  # villager types
+  - ids: ["minecraft:villager", "minecraft:wandering_trader"]
+    damage multiplier: 0.6
+    fears darkness: true
+    fear weight: 0.0
+    uses hardcore difficulty: false
+    can use grue wards: true
+  # hostile mob types
+  - ids: ["minecraft:blaze", "minecraft:cave_spider","minecraft:creeper", "minecraft:drowned", "minecraft:enderman", "minecraft:endermite", "minecraft:ghast", "minecraft:giant", "minecraft:guardian", "minecraft:hoglin", "minecraft:husk", "minecraft:magma_cube", "minecraft:phantom", "minecraft:piglin", "minecraft:piglin_brute", "minecraft:ravager", "minecraft:shulker", "minecraft:silverfish", "minecraft:skeleton", "minecraft:slime", "minecraft:spider", "minecraft:stray", "minecraft:vex", "minecraft:witch", "minecraft:wither_skeleton", "minecraft:zoglin", "minecraft:zombie", "minecraft:zombie_villager", "minecraft:zombified_piglin"]
+    damage multiplier: 0.0
+    fears darkness: false
+    fear weight: 0.0
+    uses hardcore difficulty: false
+    can use grue wards: false
+  # illager types
+  - ids: ["minecraft:evoker", "minecraft:illusioner", "minecraft:pillager", "minecraft:vindicator"]
+    damage multiplier: 0.2
+    fears darkness: true
+    fear weight: 0.0
+    uses hardcore difficulty: false
+    can use grue wards: true
+  # whatever else, just add another category for each different set of settings, you can organize them however you like
+  - ids: []
+    damage multiplier: 1.0
+    fears darkness: true
+    fear weight: 0.0 # TODO fix these fear weight values
+    uses hardcore difficulty: false
+    can use grue wards: false

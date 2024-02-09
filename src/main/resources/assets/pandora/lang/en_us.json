@@ -8,6 +8,8 @@
 	"pandora.identifiers": "Identifiers",
 	"pandora.ids": "IDs",
 	
+	"pandora.grue.tutorial": "It's pitch black! You are likely to be eaten by a grue!",
+	
 	"pandora.config.menu.title": "Pandora Config Menu",
 	
 	"pandora.config.menu.enable": "Enabled",
@@ -75,25 +77,32 @@
 	"pandora.menu.debug.initialize": "Initialize",
 	"pandora.menu.debug.modify.registries": "Modify registries",
 	"pandora.menu.debug.register.callbacks": "Register callbacks",
+	"pandora.menu.debug.full.resource.reload": "Reload ALL resources",
+	"pandora.menu.debug.full.resource.reload.tooltip": "This will force reload all resources minecraft loads from its own assets",
+	
 	"pandora.menu.debug.fix.chunk.lighting": "Fix world chunk lighting",
 	"pandora.menu.debug.fix.chunk.lighting.tooltip": "NYI This will take the current world and re cache all lights in all chunks, this is meant to be used after editing the block light settings in the server config as those new values have not been re calculated in the worlds chunks yet, this is an alternative to simply re placing all the blocks that you changed in all chunks they are present in.",
 	
 	"pandora.menu.debug.save.config.client": "Save client config",
+	"pandora.menu.debug.save.config.common": "Save common config",
 	"pandora.menu.debug.save.config.server": "Save server config",
 	"pandora.menu.debug.save.config.debug": "Save debug config",
 	"pandora.menu.debug.save.config.all": "Save configs",
 	
 	"pandora.menu.debug.load.config.client": "Load client config",
+	"pandora.menu.debug.load.config.common": "Load common config",
 	"pandora.menu.debug.load.config.server": "Load server config",
 	"pandora.menu.debug.load.config.debug": "Load debug config",
 	"pandora.menu.debug.load.config.all": "Load configs",
 	
 	"pandora.menu.debug.delete.config.client": "Delete client config",
+	"pandora.menu.debug.delete.config.common": "Delete common config",
 	"pandora.menu.debug.delete.config.server": "Delete server config",
 	"pandora.menu.debug.delete.config.debug": "Delete debug config",
 	"pandora.menu.debug.delete.config.all": "Delete configs",
 	
 	"pandora.menu.debug.unpack.config.client": "Unpackage client config",
+	"pandora.menu.debug.unpack.config.common": "Unpackage common config",
 	"pandora.menu.debug.unpack.config.server": "Unpackage server config",
 	"pandora.menu.debug.unpack.config.debug": "Unpackage debug config",
 	"pandora.menu.debug.unpack.config.all": "Unpackage configs",
