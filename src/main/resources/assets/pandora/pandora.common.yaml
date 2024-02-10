@@ -97,72 +97,8 @@ block light settings:
   # Fire based lights
   - id: "minecraft:lava"
     light level: 10
-    properties:
-      level: 0
-  - id: "minecraft:lava"
-    light level: 1
-    properties:
-      level: 1
-  - id: "minecraft:lava"
-    light level: 2
-    properties:
-      level: 2
-  - id: "minecraft:lava"
-    light level: 3
-    properties:
-      level: 3
-  - id: "minecraft:lava"
-    light level: 4
-    properties:
-      level: 4
-  - id: "minecraft:lava"
-    light level: 5
-    properties:
-      level: 5
-  - id: "minecraft:lava"
-    light level: 6
-    properties:
-      level: 6
-  - id: "minecraft:lava"
-    light level: 7
-    properties:
-      level: 7
-  - id: "minecraft:lava"
-    light level: 8
-    properties:
-      level: 8
-  - id: "minecraft:lava"
-    light level: 9
-    properties:
-      level: 9
-  - id: "minecraft:lava"
+  - id: "minecraft:flowing_lava"
     light level: 10
-    properties:
-      level: 10
-  - id: "minecraft:lava"
-    light level: 11
-    properties:
-      level: 10
-  - id: "minecraft:lava"
-    light level: 11
-    properties:
-      level: 10
-  - id: "minecraft:lava"
-    light level: 12
-    properties:
-      level: 10
-  - id: "minecraft:lava"
-    light level: 13
-    properties:
-      level: 10
-  - id: "minecraft:lava"
-    light level: 14
-    properties:
-      level: 10
-  - id: "minecraft:lava"
-    light level: 15
-    properties:
-      level: 10
   - id: "minecraft:lava_cauldron"
     light level: 10
   - id: "minecraft:fire"
@@ -361,6 +297,7 @@ dimension settings:
     target moon phase: 0
     minimum safe light level: 5
     minimum fade light level: 3
+    fade light level attack chance: 0.4
     grues attack in water: false
   
   - ids: ["minecraft:the_nether"]
@@ -370,6 +307,7 @@ dimension settings:
     target moon phase: 0 # the nether has no moon, so this option does not matter
     minimum safe light level: 5
     minimum fade light level: 3
+    fade light level attack chance: 0.4
     grues attack in water: false
     
   - ids: ["minecraft:the_end"]
@@ -379,6 +317,7 @@ dimension settings:
     target moon phase: 0
     minimum safe light level: 5
     minimum fade light level: 3
+    fade light level attack chance: 0.4
     grues attack in water: false
 
 grue wards:
@@ -410,48 +349,55 @@ mob settings:
   - ids: ["minecraft:axolotl", "minecraft:bat", "minecraft:bee", "minecraft:cat","minecraft:chicken", "minecraft:cod","minecraft:cow","minecraft:dolphin", "minecraft:donkey", "minecraft:fox", "minecraft:frog", "minecraft:glow_squid", "minecraft:goat", "minecraft:horse", "minecraft:llama", "minecraft:mooshroom", "minecraft:mule", "minecraft:ocelot", "minecraft:panda", "minecraft:parrot", "minecraft:pig", "minecraft:polar_bear", "minecraft:pufferfish", "minecraft:rabbit", "minecraft:salmon", "minecraft:sheep","minecraft:skeleton_horse", "minecraft:squid", "minecraft:strider", "minecraft:tadpole", "minecraft:trader_llama", "minecraft:tropical_fish", "minecraft:turtle", "minecraft:zombie_horse"]
     damage multiplier: 0.0
     fears darkness: false
-    fear weight: 0.0
+    fear priority: 0
     uses hardcore difficulty: false
     can use grue wards: false
+    attack chance: 0.0
   # golem types
   - ids: ["minecraft:iron_golem", "minecraft:snow_golem", "minecraft:wolf"]
     damage multiplier: 0.0
     fears darkness: false
-    fear weight: 0.0
+    fear priority: 0
     uses hardcore difficulty: false
     can use grue wards: true
+    attack chance: 0.0
   # boss mob types
   - ids: ["minecraft:elder_guardian", "minecraft:ender_dragon", "minecraft:wither", "minecraft:warden"]
     damage multiplier: 0.0
     fears darkness: false
-    fear weight: 0.0
+    fear priority: 0
     uses hardcore difficulty: false
     can use grue wards: false
+    attack chance: 0.0
   # villager types
   - ids: ["minecraft:villager", "minecraft:wandering_trader"]
     damage multiplier: 0.6
     fears darkness: true
-    fear weight: 0.0
+    fear priority: 0
     uses hardcore difficulty: false
     can use grue wards: true
+    attack chance: 0.1
   # hostile mob types
   - ids: ["minecraft:blaze", "minecraft:cave_spider","minecraft:creeper", "minecraft:drowned", "minecraft:enderman", "minecraft:endermite", "minecraft:ghast", "minecraft:giant", "minecraft:guardian", "minecraft:hoglin", "minecraft:husk", "minecraft:magma_cube", "minecraft:phantom", "minecraft:piglin", "minecraft:piglin_brute", "minecraft:ravager", "minecraft:shulker", "minecraft:silverfish", "minecraft:skeleton", "minecraft:slime", "minecraft:spider", "minecraft:stray", "minecraft:vex", "minecraft:witch", "minecraft:wither_skeleton", "minecraft:zoglin", "minecraft:zombie", "minecraft:zombie_villager", "minecraft:zombified_piglin"]
     damage multiplier: 0.0
     fears darkness: false
-    fear weight: 0.0
+    fear priority: 0
     uses hardcore difficulty: false
     can use grue wards: false
+    attack chance: 0.0
   # illager types
   - ids: ["minecraft:evoker", "minecraft:illusioner", "minecraft:pillager", "minecraft:vindicator"]
     damage multiplier: 0.2
     fears darkness: true
-    fear weight: 0.0
+    fear priority: 0
     uses hardcore difficulty: false
     can use grue wards: true
+    attack chance: 0.0
   # whatever else, just add another category for each different set of settings, you can organize them however you like
   - ids: []
     damage multiplier: 1.0
     fears darkness: true
-    fear weight: 0.0 # TODO fix these fear weight values
+    fear priority: 0 # TODO fix these fear priority values
     uses hardcore difficulty: false
     can use grue wards: false
+    attack chance: 0.0

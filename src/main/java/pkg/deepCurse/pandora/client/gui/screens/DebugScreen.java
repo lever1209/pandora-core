@@ -23,22 +23,21 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
-import pkg.deepCurse.pandora.client.ClientConfig;
-import pkg.deepCurse.pandora.common.CommonConfig;
+import pkg.deepCurse.pandora.client.config.ClientConfig;
 import pkg.deepCurse.pandora.common.CommonTools;
-import pkg.deepCurse.pandora.common.ConfigUtils;
-import pkg.deepCurse.pandora.common.DebugConfig;
 import pkg.deepCurse.pandora.common.Pandora;
+import pkg.deepCurse.pandora.common.config.CommonConfig;
+import pkg.deepCurse.pandora.common.config.DebugConfig;
+import pkg.deepCurse.pandora.common.util.ConfigUtils;
 
 @Environment(EnvType.CLIENT)
 public class DebugScreen extends Screen {
 
 	private Screen parent;
-	private short pageNum = 1;
+	private int pageNum = 1;
 	private boolean enablePageBackground = true;
 	private Text pageName = Text.translatable("pandora.menu.debug.page" + pageNum);
 
@@ -49,10 +48,10 @@ public class DebugScreen extends Screen {
 		this.parent = parent;
 	}
 
-	public DebugScreen(Screen parent, short pageNum) {
+	public DebugScreen(Screen parent, int i) {
 		super(Text.translatable("pandora.menu.debug.title"));
 		this.parent = parent;
-		this.pageNum = pageNum;
+		this.pageNum = i;
 	}
 
 	@Override
@@ -184,18 +183,21 @@ public class DebugScreen extends Screen {
 
 	public static ButtonWidget plotPoints;
 
-	public static BlockPos posA;
-	public static BlockPos posB;
+	public static Vec3d posA;
+	public static Vec3d posB;
 
 	private void thirdPage(int buttonPosX, int buttonPosY, int buttonWidthPadding, int buttonHeightPadding,
 			int buttonWidth, int buttonHeight, int centerOffsetHorizontalPosition, int centerOffsetVerticalPosition) {
+		if (this.client.player == null) {
+			return;
+		}
 		this.addDrawableChild(
 				new ButtonWidget(buttonPosX * buttonWidth - buttonWidthPadding + centerOffsetHorizontalPosition,
 						buttonPosY++ * buttonHeight - buttonHeightPadding + centerOffsetVerticalPosition,
 						buttonWidth - (buttonWidthPadding * 2), buttonHeight - (buttonHeightPadding * 2),
 						Text.translatable("pandora.menu.debug.set.pos.a"), (ButtonWidget var1) -> {
 
-							posA = this.client.player.getBlockPos();
+							posA = this.client.player.getPos();
 
 						}, (ButtonWidget button, MatrixStack matricies, int mouseX, int mouseY) -> {
 						}));
@@ -206,7 +208,7 @@ public class DebugScreen extends Screen {
 						buttonWidth - (buttonWidthPadding * 2), buttonHeight - (buttonHeightPadding * 2),
 						Text.translatable("pandora.menu.debug.set.pos.b"), (ButtonWidget var1) -> {
 
-							posB = this.client.player.getBlockPos();
+							posB = this.client.player.getPos();
 
 						}, (ButtonWidget button, MatrixStack matricies, int mouseX, int mouseY) -> {
 						}));
@@ -218,11 +220,11 @@ public class DebugScreen extends Screen {
 
 					var set = new HashSet<Vec3d>();
 
-					float distance = (float) Math.sqrt(posA.getSquaredDistance(posB));
+					double distance = posA.distanceTo(posB);
 
 					// given the positions A and B, run the code under this function call distance *
 					// 1.15f times with every interval running the code below
-					CommonTools.segmentedLineTraceImpactPoint(posA, posB, distance * 1.15f, (pos) -> {
+					CommonTools.rayMarch(posA, posB, (float) (distance * 1.15f), (pos) -> {
 
 						// round off the block position so that the check for if we already placed the
 						// block works (if we dont and the two positions we are checking with the set
@@ -262,9 +264,9 @@ public class DebugScreen extends Screen {
 						buttonWidth - (buttonWidthPadding * 2), buttonHeight - (buttonHeightPadding * 2),
 						Text.translatable("pandora.menu.debug.set.sandbox"), (ButtonWidget var1) -> {
 
-							log.info("{} {} {}", posA, posB, Math.sqrt(posA.getSquaredDistance(posB)));
+							log.info("{} {} {}", posA, posB, posA.distanceTo(posB));
 
-							log.info("{} {} {}", CommonTools.InverseLerp(0, 99, 0.5));
+							log.info("{} {} {}", CommonTools.iLerp(0, 99, 0.5));
 
 						}, (ButtonWidget button, MatrixStack matricies, int mouseX, int mouseY) -> {
 						}));
@@ -377,8 +379,9 @@ public class DebugScreen extends Screen {
 
 		var world = this.client.world;
 		if (world != null) {
-			if (ClientConfig.CLIENT.DimensionSettings.get(world.getRegistryKey().getValue()) != null) {
-				var fogLevel = ClientConfig.CLIENT.DimensionSettings.get(world.getRegistryKey().getValue()).fogLevel;
+			if (ClientConfig.CLIENT.clientDimensionConfigMap.get(world.getRegistryKey().getValue()) != null) {
+				var fogLevel = ClientConfig.CLIENT.clientDimensionConfigMap.get(world.getRegistryKey().getValue())
+						.getFogLevel();
 
 				this.addDrawableChild(
 						new SliderWidget(buttonPosX * buttonWidth - buttonWidthPadding + usable_screen_width_offset,
@@ -393,9 +396,8 @@ public class DebugScreen extends Screen {
 
 							@Override
 							protected void applyValue() {
-								ClientConfig.CLIENT.DimensionSettings
-										.get(world.getRegistryKey().getValue()).fogLevel = Float
-												.parseFloat(String.valueOf(this.value));
+								ClientConfig.CLIENT.clientDimensionConfigMap.get(world.getRegistryKey().getValue())
+										.setFogLevel(Float.parseFloat(String.valueOf(this.value)));
 							}
 						});
 				this.addDrawableChild(new ButtonWidget(
@@ -403,7 +405,8 @@ public class DebugScreen extends Screen {
 						buttonPosY++ * buttonHeight - buttonHeightPadding + usable_screen_height_offset,
 						buttonWidth - (buttonWidthPadding * 2), buttonHeight - (buttonHeightPadding * 2),
 						Text.translatable("pandora.menu.debug.print.dimension.settings"), (ButtonWidget var1) -> {
-							var settings = ClientConfig.CLIENT.DimensionSettings.get(world.getRegistryKey().getValue());
+							var settings = ClientConfig.CLIENT.clientDimensionConfigMap
+									.get(world.getRegistryKey().getValue());
 							log.info(settings.toString());
 						}, (ButtonWidget button, MatrixStack matricies, int mouseX, int mouseY) -> {
 						}));

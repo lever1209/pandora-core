@@ -1,4 +1,4 @@
-package pkg.deepCurse.pandora.common;
+package pkg.deepCurse.pandora.common.util;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -11,8 +11,8 @@ import org.slf4j.LoggerFactory;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
-//import ;
-//import ;
+import pkg.deepCurse.pandora.common.config.CommonConfig;
+import pkg.deepCurse.pandora.common.config.DebugConfig;
 
 public class ConfigUtils {
 	private static Logger log = LoggerFactory.getLogger(ConfigUtils.class);
@@ -39,11 +39,11 @@ public class ConfigUtils {
 		}
 
 		if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
-			pkg.deepCurse.pandora.client.ClientConfig.loadClientConfig();
+			pkg.deepCurse.pandora.client.config.ClientConfig.loadClientConfig();
 		}
 
 		if (FabricLoader.getInstance().getEnvironmentType() == EnvType.SERVER) {
-			pkg.deepCurse.pandora.server.ServerConfig.loadServerConfig();
+			pkg.deepCurse.pandora.server.config.ServerConfig.loadServerConfig();
 		}
 
 		CommonConfig.loadCommonConfig();
@@ -54,10 +54,12 @@ public class ConfigUtils {
 	public static void saveConfigs() { // TODO finish save configs
 		log.info("[Pandora] Saving config files. . .");
 		if (FabricLoader.getInstance().getEnvironmentType() == EnvType.SERVER) {
-			pkg.deepCurse.pandora.client.ClientConfig.saveClientConfigToFile(getConfigFile("pandora.client.yaml"));
+			pkg.deepCurse.pandora.client.config.ClientConfig
+					.saveClientConfigToFile(getConfigFile("pandora.client.yaml"));
 		}
 		if (FabricLoader.getInstance().getEnvironmentType() == EnvType.SERVER) {
-			pkg.deepCurse.pandora.server.ServerConfig.saveServerConfigToFile(getConfigFile("pandora.server.yaml"));
+			pkg.deepCurse.pandora.server.config.ServerConfig
+					.saveServerConfigToFile(getConfigFile("pandora.server.yaml"));
 		}
 
 		CommonConfig.saveCommonConfigToFile(getConfigFile("pandora.common.yaml"));

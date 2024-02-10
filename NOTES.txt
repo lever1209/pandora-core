@@ -1,4 +1,53 @@
 
+***********list of things the mod actually does so far**************
+
+before reading this list please find the config files you are concerned with and follow along with them
+
+client:
+config file
+f7 through f10 debug menu
+cave fog effects (disabled by default, enable in config)
+client mode config
+config screen (empty)
+debug screen
+modmenu integration to open the mod settings screen from within mod menu
+world chunk fog becomes darker as the sun sets and depending on the moon size
+darkness overlays on blocks are now pitch black (you cant see the blocks with max gamma anymore, although that is not the only reason this exists)
+
+common:
+config file
+debug config file (not created by default, if you wish to use debug configs you have to copy it out from inside the jar)
+default block light levels are replaced 
+if the world is infested you will take damage in the dark
+depending on the difficulty you will get some tutorial messages before being attacked
+items can be eaten but its disabled by default (check config)
+hardcore has its own difficulty settings outside of the usual ones
+non players have a 90% (by default) chance of not being attacked
+entities on fire will not be attacked by grues
+entities touching water (not rain) will not be attacked by grues (this is configurable)
+entities with night vision will not be attacked (this will be configurable eventually once i figure out how to filter potion effects by id)
+if the entity position is inside a block it will be shifted up a single block, this is a patch for soul sand
+if the entity is suffocating it will not be attacked by grues (this would be unfair)
+if the entities light level is equal to or above the safe light level, grues will not attack
+if the entities light level is equal to or above the fade light level, grues have a 60% chance (by default) of not being attacked
+if the entity does not have a block in a 3x3x5 centered grid below their feet, they will not be attacked (grues cannot fly, but some entities can)
+if the entity is holding a grue ward, there is a chance it will not attack (fully configurable, check config)
+there is a debug setting to override the random chance values used here, and disable grue wards
+there is a cooldown tracker per dimension that clears out invalid entries (death, removed, moved to another dimension, etc) every time it ticks
+if the entity is a player, and they have a tutorial, and it has been longer than (configurable time) after the last tutorial or it is their first tutorial, it will spend a tutorial and send a message in chat warning about grues, adding additional (configurable) grace time to the cooldown tracker
+damage to the entity is configurable
+adds a grue escape goal to entities (configurable)
+adds a flint and steel item (it is outdated and cannot light candles, it is meant to light soul fires anywhere)
+adds a debug stick item that prints out block states
+adds a grue damage source
+when the worlds difficulty gets updated through normal means (MinecraftServer#setDifficulty) it will refresh all players tutorial counts according to the new difficulty and set last tutorial times to 0
+saves custom nbt data inside player entries in the world files to store their total tutorial count left, the last tutorial usage time, and whether it should skip the time check on the next tutorial (used to check if its the first tutorial or not)
+
+server
+config file (empty)
+
+***********end of list**************
+
 should hardcore mode be intentionally unfair? if its tailored to how *you* like it, its already plenty unfair
 
 wrapper block to contain all perishable light blocks and run custom things on em

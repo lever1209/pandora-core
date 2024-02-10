@@ -14,9 +14,9 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.network.encryption.PlayerPublicKey;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import pkg.deepCurse.pandora.common.CommonConfig;
 import pkg.deepCurse.pandora.common.Pandora;
-import pkg.deepCurse.pandora.common.util.interfaces.PlayerGrueDataInterface;
+import pkg.deepCurse.pandora.common.config.CommonConfig;
+import pkg.deepCurse.pandora.common.interfaces.PlayerGrueDataInterface;
 
 @Mixin(PlayerEntity.class)
 public class PlayerEntityMixin implements PlayerGrueDataInterface {

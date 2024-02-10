@@ -1,4 +1,4 @@
-package pkg.deepCurse.pandora.server;
+package pkg.deepCurse.pandora.server.config;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,7 +12,7 @@ import org.yaml.snakeyaml.Yaml;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import pkg.deepCurse.pandora.common.ConfigUtils;
+import pkg.deepCurse.pandora.common.util.ConfigUtils;
 
 @Environment(EnvType.SERVER)
 public class ServerConfig {

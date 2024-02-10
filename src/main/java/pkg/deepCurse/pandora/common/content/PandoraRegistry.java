@@ -1,4 +1,4 @@
-package pkg.deepCurse.pandora.common;
+package pkg.deepCurse.pandora.common.content;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,8 +12,8 @@ import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.registry.Registry;
-import pkg.deepCurse.pandora.common.items.PandoraDebugStickItem;
-import pkg.deepCurse.pandora.common.items.RevenantFlintAndSteelItem;
+import pkg.deepCurse.pandora.common.content.items.PandoraDebugStickItem;
+import pkg.deepCurse.pandora.common.content.items.RevenantFlintAndSteelItem;
 
 public class PandoraRegistry {
 
@@ -33,21 +33,5 @@ public class PandoraRegistry {
 	public static final Item DEBUG_STICK = Registry.register(Registry.ITEM, new Identifier("pandora", "debug_stick"),
 			new PandoraDebugStickItem(
 					new Item.Settings().fireproof().group(PANDORA_ITEM_GROUP).maxCount(1).rarity(Rarity.EPIC)));
-
-//	public static void init() {
-//
-//		if (hasInitialized) {
-//			log.info("[Pandora] Items already registered. Aborting.");
-//			return;
-//		}
-//
-//		Registry.register(Registry.ITEM, new Identifier("pandora", "revenant_flint_and_steel"),
-//				REVENANT_FLINT_AND_STEEL);
-//		Registry.register(Registry.ITEM, new Identifier("pandora", "debug_stick"), DEBUG_STICK);
-//		// Registry.register(Registry.BLOCK, new Identifier("pandora", "soul_fire"),
-//		// SOUL_FIRE);
-//
-//		hasInitialized = true;
-//	}
 
 }

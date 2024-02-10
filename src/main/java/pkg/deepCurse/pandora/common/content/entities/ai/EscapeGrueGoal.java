@@ -1,4 +1,4 @@
-package pkg.deepCurse.pandora.common.util.ai.goals;
+package pkg.deepCurse.pandora.common.content.entities.ai;
 
 import java.util.EnumSet;
 
@@ -15,8 +15,8 @@ import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
-import pkg.deepCurse.pandora.common.CommonConfig;
 import pkg.deepCurse.pandora.common.CommonTools;
+import pkg.deepCurse.pandora.common.config.CommonConfig;
 
 /**
  * recovered from old pandora, 2021/10/21

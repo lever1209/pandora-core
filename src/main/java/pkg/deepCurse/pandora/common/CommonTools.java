@@ -1,18 +1,13 @@
 package pkg.deepCurse.pandora.common;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
+import pkg.deepCurse.pandora.common.config.CommonConfig;
 
 public class CommonTools {
-
-	@SuppressWarnings("unused")
-	private static Logger log = LoggerFactory.getLogger(CommonTools.class);
 
 	// i hate that logical mess down there with the angles and stuff // TODO re work
 	// that at some point, there may be a simpler way of doing it
@@ -37,42 +32,49 @@ public class CommonTools {
 		return false;
 	}
 
-	public static float InverseLerp(float min, float max, float input) {
+	public static float iLerp(float min, float max, float input) {
 		return (input - min) / (max - min);
 	}
 
-	public static double InverseLerp(double input, double min, double max) {
+	public static double iLerp(double min, double max, double input) {
 		return (input - min) / (max - min);
 	}
 
-	public static void segmentedLineTraceImpactPoint(Vec3d origin, Vec3d target, float stepDistance,
+	public static Vec3d rayMarch(Vec3d origin, Vec3d target, float stepDistance,
 			LineTraceResultFunction lineTraceResultFunction) {
 
 		Vec3d cPos = origin;
 
-		for (float i = 0; InverseLerp(cPos.x, origin.x, target.x) < 1 || InverseLerp(cPos.y, origin.y, target.y) < 1
-				|| InverseLerp(cPos.z, origin.z, target.z) < 1; i++) {
+		for (float i = 0; i <= stepDistance; i++) {
 			float t = i / stepDistance;
 
-			if (InverseLerp(cPos.x, origin.x, target.x) < 1) {
+			if (iLerp(origin.x, target.x, cPos.x) < 1) {
 				cPos = new Vec3d(MathHelper.lerp(t, origin.x, target.x), cPos.y, cPos.z);
 			}
 
-			if (InverseLerp(cPos.y, origin.y, target.y) < 1) {
+			if (iLerp(origin.y, target.y, cPos.y) < 1) {
 				cPos = new Vec3d(cPos.x, MathHelper.lerp(t, origin.y, target.y), cPos.z);
 			}
 
-			if (InverseLerp(cPos.z, origin.z, target.z) < 1) {
+			if (iLerp(origin.z, target.z, cPos.z) < 1) {
 				cPos = new Vec3d(cPos.x, cPos.y, MathHelper.lerp(t, origin.z, target.z));
 			}
 
 //			cPos = new Vec3d(MathHelper.lerp(t, origin.x, target.x), MathHelper.lerp(t, origin.y, target.y),
 //					MathHelper.lerp(t, origin.z, target.z));
-//			log.info("C {}", cPos);
+
 			if (lineTraceResultFunction.onPoint(cPos)) {
-				break;
+				return cPos;
 			}
 		}
+
+		// return null instead of cpos because needing cpos on fail is specific to my
+		// need and not ray marching, ill handle it myself after the ray march
+		return null;
+	}
+
+	public static int clamp(int in, int min, int max) {
+		return Math.max(Math.min(in, max), min);
 	}
 
 	public static float clamp(float in, float min, float max) {
@@ -87,11 +89,13 @@ public class CommonTools {
 		public boolean onPoint(Vec3d point);
 	}
 
-	public static void segmentedLineTraceImpactPoint(BlockPos origin, BlockPos target, float distanceInterval,
-			LineTraceResultFunction lineTraceResultFunction) {
-		segmentedLineTraceImpactPoint(new Vec3d(origin.getX(), origin.getY(), origin.getZ()),
-				new Vec3d(target.getX(), target.getY(), target.getZ()), distanceInterval, lineTraceResultFunction);
-	}
+//	public static Vec3d rayMarch(BlockPos origin, BlockPos target, float stepDistance,
+//			LineTraceResultFunction lineTraceResultFunction) {
+//		return rayMarch(new Vec3d(origin.getX(), origin.getY(), origin.getZ()),
+//				new Vec3d(target.getX(), target.getY(), target.getZ()), stepDistance, lineTraceResultFunction);
+//	}
+
+	// TODO remove to radians and just hand radians to the func instead
 
 	/**
 	 * 

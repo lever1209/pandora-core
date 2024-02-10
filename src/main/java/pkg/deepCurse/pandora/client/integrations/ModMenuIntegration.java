@@ -1,4 +1,4 @@
-package pkg.deepCurse.pandora.common.util.integrations;
+package pkg.deepCurse.pandora.client.integrations;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -6,9 +6,13 @@ import org.slf4j.LoggerFactory;
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;
 
-import net.minecraft.client.gui.screen.Screen;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import pkg.deepCurse.pandora.client.gui.screens.ConfigScreen;
 import pkg.deepCurse.pandora.client.gui.screens.DebugScreen;
+import pkg.deepCurse.pandora.common.config.DebugConfig;
 
+@Environment(EnvType.CLIENT)
 public class ModMenuIntegration implements ModMenuApi {
 
 	@SuppressWarnings("unused")
@@ -16,11 +20,7 @@ public class ModMenuIntegration implements ModMenuApi {
 
 	@Override
 	public ConfigScreenFactory<?> getModConfigScreenFactory() {
-		return screen -> createNewConfigScreen(screen);
-	}
-
-	public Screen createNewConfigScreen(Screen parent) {
-		return new DebugScreen(parent);
+		return screen -> DebugConfig.DEBUG.useDebugMenuForModMenu ? new DebugScreen(screen) : new ConfigScreen(screen);
 	}
 
 //	public Screen createNewConfigScreenClothConfig(Screen parent) {

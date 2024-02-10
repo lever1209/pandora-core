@@ -3,7 +3,7 @@
  * I have been given permission to use this file under BSD-3 by grondag <3
  */
 
-package pkg.deepCurse.pandora.common.util.interfaces;
+package pkg.deepCurse.pandora.common.interfaces;
 
 public interface TextureAccess {
 	void darkness_enableUploadHook();

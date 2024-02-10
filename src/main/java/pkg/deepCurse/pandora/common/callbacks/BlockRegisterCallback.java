@@ -1,9 +1,9 @@
-package pkg.deepCurse.pandora.common.util.callbacks;
+package pkg.deepCurse.pandora.common.callbacks;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.Identifier;
-import pkg.deepCurse.pandora.common.CommonConfig;
+import pkg.deepCurse.pandora.common.config.CommonConfig;
 import pkg.deepCurse.pandora.common.mixins.accessors.LuminanceOverride;
 
 public class BlockRegisterCallback {

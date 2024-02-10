@@ -1,4 +1,4 @@
-package pkg.deepCurse.pandora.common.util.callbacks;
+package pkg.deepCurse.pandora.common.callbacks;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -17,20 +17,20 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
-import pkg.deepCurse.pandora.common.CommonConfig;
-import pkg.deepCurse.pandora.common.CommonConfig.DifficultySettingsEnum;
 import pkg.deepCurse.pandora.common.CommonTools;
-import pkg.deepCurse.pandora.common.DebugConfig;
-import pkg.deepCurse.pandora.common.GrueDamageSource;
-import pkg.deepCurse.pandora.common.util.interfaces.PlayerGrueDataInterface;
-import pkg.deepCurse.pandora.common.util.managers.EntityCooldownManager;
+import pkg.deepCurse.pandora.common.config.CommonConfig;
+import pkg.deepCurse.pandora.common.config.CommonConfig.DifficultySettingsEnum;
+import pkg.deepCurse.pandora.common.config.DebugConfig;
+import pkg.deepCurse.pandora.common.content.GrueDamageSource;
+import pkg.deepCurse.pandora.common.interfaces.PlayerGrueDataInterface;
+import pkg.deepCurse.pandora.common.util.CooldownTracker;
 
 public class EndServerWorldTickCallback {
 
 	@SuppressWarnings("unused")
 	private static Logger log = LoggerFactory.getLogger(EndServerWorldTickCallback.class);
 
-	private static HashMap<Identifier, EntityCooldownManager> dimensionalCooldownManagerHashMap = new HashMap<>();
+	private static HashMap<Identifier, CooldownTracker<Entity>> dimensionalCooldownManagerHashMap = new HashMap<>();
 
 	// TODO prevent villagers from walking into the darkness willingly, optimize
 	// their pathfinding for light
@@ -43,7 +43,7 @@ public class EndServerWorldTickCallback {
 		var dimensionKey = world.getDimensionKey().getValue();
 		var dimensionalCooldownManager = dimensionalCooldownManagerHashMap.get(dimensionKey);
 		if (dimensionalCooldownManager == null) {
-			dimensionalCooldownManagerHashMap.put(dimensionKey, new EntityCooldownManager());
+			dimensionalCooldownManagerHashMap.put(dimensionKey, new CooldownTracker<Entity>());
 			return;
 		}
 
@@ -59,6 +59,12 @@ public class EndServerWorldTickCallback {
 			while (entities.hasNext()) {
 				var worldRandomFloat = world.random.nextFloat();
 				Entity entity = entities.next();
+
+				float wardPotency = 0f;
+				if (DebugConfig.DEBUG.forceGruesAlwaysAttack) {
+					worldRandomFloat = 1;
+					wardPotency = 0f;
+				}
 
 				if (!(entity instanceof LivingEntity)) {
 					if (entity.getType() == EntityType.ITEM && commonSettings.GruesEatItems
@@ -83,17 +89,16 @@ public class EndServerWorldTickCallback {
 				}
 
 				if (livingEntity.getType() != EntityType.PLAYER) {
-					// TODO config this
-					if (worldRandomFloat < 0.9f /* 90% chance to not attack */) {
+					var mobSettings = commonSettings.MobSettings.get(Registry.ENTITY_TYPE.getId(entity.getType()));
+					if (mobSettings == null) {
 						continue;
 					}
-					var mob_settings = commonSettings.MobSettings.get(Registry.ENTITY_TYPE.getId(entity.getType()));
-					if (mob_settings == null) {
+					if (worldRandomFloat < mobSettings.attackChance) {
 						continue;
 					}
-					if (world.getServer().isHardcore() && mob_settings.isHardcore)
+					if (world.getServer().isHardcore() && mobSettings.isHardcore)
 						difficultySettings = commonSettings.DifficultySettingsMap.get(DifficultySettingsEnum.Hardcore);
-					modifiedDamageAmount *= mob_settings.damageMultiplier;
+					modifiedDamageAmount *= mobSettings.damageMultiplier;
 				}
 
 				if (livingEntity.isOnFire()) {
@@ -128,7 +133,7 @@ public class EndServerWorldTickCallback {
 
 				// TODO config this attack chance in difficulty settings
 				if (CommonTools.isNearLight(world, entityLocation, dimensionSettings.minimumFadeLightLevel)
-						&& worldRandomFloat < 0.60f/* 60% chance to fail */) {
+						&& worldRandomFloat < dimensionSettings.fadeLightLevelAttackChance) {
 					continue;
 				}
 
@@ -162,7 +167,6 @@ public class EndServerWorldTickCallback {
 				// get strongest ward on player
 				// perhaps change this to average out all valid wards?
 				// idk, do something so it cant be broken by some golden shoes or something
-				float wardPotency = 0f;
 				Iterator<ItemStack> itemStack = entity.getItemsEquipped().iterator();
 				while (itemStack.hasNext()) {
 					var item = itemStack.next().getItem();
@@ -172,11 +176,6 @@ public class EndServerWorldTickCallback {
 							wardPotency = wardSettings.potency;
 						}
 					}
-				}
-
-				if (DebugConfig.DEBUG.forceGruesAlwaysAttack) {
-					worldRandomFloat = 1;
-					wardPotency = 0f;
 				}
 
 				if (worldRandomFloat < wardPotency) {

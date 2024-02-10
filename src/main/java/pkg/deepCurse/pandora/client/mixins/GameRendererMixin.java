@@ -20,7 +20,7 @@ import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.util.math.MatrixStack;
 import pkg.deepCurse.pandora.client.ClientTools;
-import pkg.deepCurse.pandora.common.util.interfaces.LightmapAccess;
+import pkg.deepCurse.pandora.common.interfaces.LightmapAccess;
 
 @Environment(EnvType.CLIENT)
 @Mixin(GameRenderer.class)
@@ -35,7 +35,7 @@ public class GameRendererMixin {
 	private LightmapTextureManager lightmapTextureManager;
 
 	@Inject(method = "renderWorld", at = @At(value = "HEAD"))
-	private void onRenderLevel(float tickDelta, long nanos, MatrixStack matrixStack, CallbackInfo ci) {
+	private void pandora_onRenderWorld(float tickDelta, long nanos, MatrixStack matrixStack, CallbackInfo ci) {
 		final LightmapAccess lightmap = (LightmapAccess) lightmapTextureManager;
 
 		if (lightmap.darkness_isDirty()) {

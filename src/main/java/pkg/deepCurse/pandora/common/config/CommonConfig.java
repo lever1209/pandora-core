@@ -1,4 +1,4 @@
-package pkg.deepCurse.pandora.common;
+package pkg.deepCurse.pandora.common.config;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -16,7 +16,8 @@ import net.minecraft.block.BlockState;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.Difficulty;
-import pkg.deepCurse.pandora.common.util.interfaces.ConditionalToIntFunction;
+import pkg.deepCurse.pandora.common.CommonTools;
+import pkg.deepCurse.pandora.common.util.ConfigUtils;
 
 public class CommonConfig {
 
@@ -98,6 +99,11 @@ public class CommonConfig {
 		}
 	}
 
+	@FunctionalInterface
+	public interface ConditionalToIntFunction<T> {
+		int applyAsInt(T value, int oldValue);
+	}
+
 	public static class DimensionSetting {
 		public boolean infested;
 		public boolean ignoreSkyLight;
@@ -106,9 +112,11 @@ public class CommonConfig {
 		public int minimumSafeLightLevel;
 		public int minimumFadeLightLevel;
 		public boolean gruesAttackInWater;
+		public float fadeLightLevelAttackChance;
 
 		public DimensionSetting(boolean infested, boolean ignoreSkyLight, boolean lockMoonPhase, int targetMoonPhase,
-				int minimumSafeLightLevel, int minimumFadeLightLevel, boolean gruesAttackInWater) {
+				int minimumSafeLightLevel, int minimumFadeLightLevel, boolean gruesAttackInWater,
+				float fadeLightLevelAttackChance) {
 			this.infested = infested;
 			this.minimumSafeLightLevel = minimumSafeLightLevel;
 			this.minimumFadeLightLevel = minimumFadeLightLevel;
@@ -116,6 +124,7 @@ public class CommonConfig {
 			this.ignoreSkyLight = ignoreSkyLight;
 			this.lockMoonPhase = lockMoonPhase;
 			this.targetMoonPhase = targetMoonPhase;
+			this.fadeLightLevelAttackChance = fadeLightLevelAttackChance;
 		}
 
 		@Override
@@ -148,12 +157,15 @@ public class CommonConfig {
 		// TODO setup fear weight
 		public float fearWeight;
 		public boolean isHardcore;
+		public float attackChance;
 
-		public MobSetting(float damageMultiplier, boolean fearsDarkness, float fearWeight, boolean isHardcore) {
+		public MobSetting(float damageMultiplier, boolean fearsDarkness, float fearWeight, boolean isHardcore,
+				float attackChance) {
 			this.damageMultiplier = damageMultiplier;
 			this.fearDarkness = fearsDarkness;
 			this.fearWeight = fearWeight;
 			this.isHardcore = isHardcore;
+			this.attackChance = attackChance;
 		}
 
 		@Override
@@ -289,22 +301,23 @@ public class CommonConfig {
 					// TODO replace clamps with errors?
 
 					var id = new Identifier(cid);
-//					var fogFactor = MathHelper.clamp(Float.parseFloat(dim.get("fog factor").toString()), 0f, 1f);
 					var infested = Boolean.parseBoolean(dim.get("infested").toString());
-//					var isDark = Boolean.parseBoolean(dim.get("is dark").toString());
 					var ignoreSkyLight = Boolean.parseBoolean(dim.get("ignore sky light").toString());
 					var lockMoonPhase = Boolean.parseBoolean(dim.get("lock moon phase").toString());
 					var targetMoonPhase = MathHelper.clamp(Integer.parseInt(dim.get("target moon phase").toString()), 0,
 							7);
-					var minimumSafeLightLevel = MathHelper
+					var minimumSafeLightLevel = CommonTools
 							.clamp(Integer.parseInt(dim.get("minimum safe light level").toString()), 0, 15);
-					var minimumFadeLightLevel = MathHelper
+					var minimumFadeLightLevel = CommonTools
 							.clamp(Integer.parseInt(dim.get("minimum fade light level").toString()), 0, 15);
+					var fadeLightLevelAttackChance = CommonTools
+							.clamp(Float.parseFloat(dim.get("fade light level attack chance").toString()), 0, 1);
 					var gruesAttackInWater = Boolean.parseBoolean(dim.get("grues attack in water").toString());
 
 					common.DimensionSettings.put(id,
 							new CommonConfig.DimensionSetting(infested, ignoreSkyLight, lockMoonPhase, targetMoonPhase,
-									minimumSafeLightLevel, minimumFadeLightLevel, gruesAttackInWater));
+									minimumSafeLightLevel, minimumFadeLightLevel, gruesAttackInWater,
+									fadeLightLevelAttackChance));
 				}
 			}
 		}
@@ -334,12 +347,13 @@ public class CommonConfig {
 				var ids = (ArrayList<String>) i.get("ids");
 				var damageMultiplier = Float.parseFloat(i.get("damage multiplier").toString());
 				var fearsDarkness = Boolean.parseBoolean(i.get("fears darkness").toString());
-				var fearWeight = Float.parseFloat(i.get("fear weight").toString());
+				var fearWeight = Integer.parseInt(i.get("fear priority").toString());
 				var usesHardcoreDifficulty = Boolean.parseBoolean(i.get("uses hardcore difficulty").toString());
+				var attackChance = Float.parseFloat(i.get("attack chance").toString());
 
 				for (var id : ids) {
 					common.MobSettings.put(new Identifier(id), new CommonConfig.MobSetting(damageMultiplier,
-							fearsDarkness, fearWeight, usesHardcoreDifficulty));
+							fearsDarkness, fearWeight, usesHardcoreDifficulty, attackChance));
 				}
 			}
 

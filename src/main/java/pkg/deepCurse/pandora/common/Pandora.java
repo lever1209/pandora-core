@@ -17,19 +17,21 @@ import net.fabricmc.loader.api.entrypoint.PreLaunchEntrypoint;
 import net.minecraft.block.Block;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
-import pkg.deepCurse.pandora.common.util.callbacks.AfterServerPlayerRespawnCallback;
-import pkg.deepCurse.pandora.common.util.callbacks.BlockRegisterCallback;
-import pkg.deepCurse.pandora.common.util.callbacks.EndServerWorldTickCallback;
+import pkg.deepCurse.pandora.common.callbacks.AfterServerPlayerRespawnCallback;
+import pkg.deepCurse.pandora.common.callbacks.BlockRegisterCallback;
+import pkg.deepCurse.pandora.common.callbacks.EndServerWorldTickCallback;
+import pkg.deepCurse.pandora.common.util.ConfigUtils;
 
 public class Pandora implements ModInitializer, PreLaunchEntrypoint {
 
-	// ASAP environment types on all classes
-	// ASAP fix underground fog
+	// TODO fix underground fog
 	// ASAP fix the assumed entries in the config files, mainly just null checks
 
 	// Remember, you can fix a worlds lighting incompatibilities with the config by
 	// "optimizing" it in the edit world option menu, just remember to hit clear
 	// cache and it will take a while
+
+	// TODO log neuter villagers dying
 
 	public static Logger log = LoggerFactory.getLogger(Pandora.class);
 

@@ -24,25 +24,32 @@ dimension settings:
   # is dark                     : whether or not the worlds shadows should be black
 
   - ids: ["minecraft:overworld"]
+    fog factor: 1.0
+    is dark: true
+    ignore sky light: false
+    lock moon phase: false
+    target moon phase: 0
+    do cave fog effects: false
+    cave fog transition speed: 0.0002
+    
+  - ids: ["minecraft:the_nether"]
     fog factor: 0.7
     is dark: true
     ignore sky light: false
     lock moon phase: false
     target moon phase: 0
     do cave fog effects: false
+    cave fog transition speed: 0.0002
     
-  - ids: ["minecraft:the_nether"]
+  - ids: ["minecraft:the_end"]
     fog factor: 0.5
     is dark: true
     ignore sky light: false
     lock moon phase: false
     target moon phase: 0
     do cave fog effects: false
-    
-  - ids: ["minecraft:the_end"]
-    fog factor: 0.3
-    is dark: true
-    ignore sky light: false
-    lock moon phase: false
-    target moon phase: 0
-    do cave fog effects: false
+    cave fog transition speed: 0.0002
+
+# TODO api to add configurable conditions for config file users?
+
+potion effects: ["minecraft:night_vision", "minecraft:conduit_power", "minecraft:invisibility", "minecraft:water_breathing"]

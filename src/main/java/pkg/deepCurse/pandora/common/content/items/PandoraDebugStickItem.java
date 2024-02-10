@@ -1,4 +1,4 @@
-package pkg.deepCurse.pandora.common.items;
+package pkg.deepCurse.pandora.common.content.items;
 
 import java.util.Collection;
 

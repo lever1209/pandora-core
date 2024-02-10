@@ -8,8 +8,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.Difficulty;
-import pkg.deepCurse.pandora.common.CommonConfig;
-import pkg.deepCurse.pandora.common.util.interfaces.PlayerGrueDataInterface;
+import pkg.deepCurse.pandora.common.config.CommonConfig;
+import pkg.deepCurse.pandora.common.interfaces.PlayerGrueDataInterface;
 
 @Mixin(MinecraftServer.class)
 public class MinecraftServerMixin {

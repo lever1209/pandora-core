@@ -1,4 +1,4 @@
-package pkg.deepCurse.pandora.common;
+package pkg.deepCurse.pandora.common.content;
 
 import net.minecraft.entity.damage.DamageSource;
 

@@ -14,8 +14,8 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
-import pkg.deepCurse.pandora.common.CommonConfig;
-import pkg.deepCurse.pandora.common.util.ai.goals.EscapeGrueGoal;
+import pkg.deepCurse.pandora.common.config.CommonConfig;
+import pkg.deepCurse.pandora.common.content.entities.ai.EscapeGrueGoal;
 
 @Mixin(MobEntity.class) // TODO modify all wander goals to prioritize light over dark, but not to make
 						// it a requirement

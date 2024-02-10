@@ -1,4 +1,4 @@
-package pkg.deepCurse.pandora.common.util.interfaces;
+package pkg.deepCurse.pandora.common.interfaces;
 
 public interface PlayerGrueDataInterface {
 

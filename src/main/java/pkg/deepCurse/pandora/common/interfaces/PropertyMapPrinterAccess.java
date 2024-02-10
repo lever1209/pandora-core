@@ -1,4 +1,4 @@
-package pkg.deepCurse.pandora.common.util.interfaces;
+package pkg.deepCurse.pandora.common.interfaces;
 
 import java.util.Map;
 import java.util.function.Function;
